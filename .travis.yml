@@ -1,4 +1,3 @@
-#archivo de Travis
 language: android
 jdk: oraclejdk8
 env:
