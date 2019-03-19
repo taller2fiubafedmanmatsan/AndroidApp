@@ -18,7 +18,7 @@ import android.widget.Button;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity {
+public class StartActivity extends AppCompatActivity {
 
     private TextView mTextViewResult;
     private RequestQueue mQueue;
