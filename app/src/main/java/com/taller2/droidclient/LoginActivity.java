@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
                 String password = password_v.getText().toString();
 
                 if (TextUtils.isEmpty(email_address) || TextUtils.isEmpty(password)) {
-                    Toast.makeText(RegisterActivity.this, "Invalid email/password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Invalid email/password", Toast.LENGTH_SHORT).show();
                 } else {
                     login(email_address, password);
                 }
@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             finish();
                         } else {
-                            Toast.makeText(RegisterActivity.this, "Login Failed. Please try again.",
+                            Toast.makeText(LoginActivity.this, "Login Failed. Please try again.",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
