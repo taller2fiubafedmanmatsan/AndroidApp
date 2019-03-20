@@ -26,7 +26,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText email_address_v;
     private EditText password_v;
     private Button button_register;
-    private FirebaseAuth mAuth;
+    private FirebaseAuth auth;
     private DatabaseReference reference;
 
     @Override
@@ -34,7 +34,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        mAuth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
 
         username_v = findViewById(R.id.username);
         email_address_v = findViewById(R.id.email_address);
@@ -60,14 +60,14 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void register(final String username, String email_address, String password) {
-        mAuth.createUserWithEmailAndPassword(email_address, password)
+        auth.createUserWithEmailAndPassword(email_address, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             //Log.d(TAG, "createUserWithEmail:success");
-                           /* FirebaseUser user = mAuth.getCurrentUser();
+                            FirebaseUser user = auth.getCurrentUser();
 
                             String userid = user.getUid();
                             //updateUI(user);
@@ -89,13 +89,14 @@ public class RegisterActivity extends AppCompatActivity {
 
                                         startActivity(intent);
 
+                                        Toast.makeText(RegisterActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
                                         //Can't go back
                                         finish();
                                     }
                                 }
-                            });*/
-                            Toast.makeText(RegisterActivity.this, "Register success.",
-                                    Toast.LENGTH_SHORT).show();
+                            });
+                           /* Toast.makeText(RegisterActivity.this, "Register success.",
+                                    Toast.LENGTH_SHORT).show();*/
 
                         } else {
                             // If sign in fails, display a message to the user.

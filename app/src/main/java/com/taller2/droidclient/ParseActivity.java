@@ -33,7 +33,7 @@ public class ParseActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Parse();
-                buttonParse.invalidate();
+                buttonParse.setEnabled(false);
             }
         });
     }

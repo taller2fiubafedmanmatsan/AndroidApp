@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //jsonParse();
-                changeActivityTest(MainActivity.this, LoginActivity.class);
+                changeActivityTest(MainActivity.this, RegisterActivity.class);
             }
         });
     }
