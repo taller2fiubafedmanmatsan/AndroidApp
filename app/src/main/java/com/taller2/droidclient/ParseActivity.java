@@ -41,6 +41,7 @@ public class ParseActivity extends AppCompatActivity {
     private void Parse() {
         String url = "https://app-server-t2.herokuapp.com/";
 
+        //Future for json
         /*JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
