@@ -16,18 +16,18 @@ import com.android.volley.toolbox.Volley;
 
 public class ParseActivity extends AppCompatActivity {
 
-    private TextView mTextViewResult;
-    private RequestQueue mQueue;
+    private TextView text_view_res;
+    private RequestQueue queue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parse);
 
-        mTextViewResult = findViewById(R.id.text_view_result);
+        text_view_res = findViewById(R.id.text_view_result);
         final Button buttonParse = findViewById(R.id.button_parse);
 
-        mQueue = Volley.newRequestQueue(this);
+        queue = Volley.newRequestQueue(this);
 
         buttonParse.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +68,7 @@ public class ParseActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        mTextViewResult.setText(response);
+                        text_view_res.setText(response);
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -77,6 +77,6 @@ public class ParseActivity extends AppCompatActivity {
             }
         });
 
-        mQueue.add(request);
+        queue.add(request);
     }
 }
