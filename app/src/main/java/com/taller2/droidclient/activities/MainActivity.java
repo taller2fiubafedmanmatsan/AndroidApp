@@ -14,6 +14,9 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,12 +26,16 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.taller2.droidclient.R;
+import com.taller2.droidclient.model.User;
 
 public class MainActivity extends AppCompatActivity {
 
     private CallbackManager callbackManager;
     private FirebaseAuth auth;
+    private DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 // App code
-                AccessToken token = loginResult.getAccessToken();
+                final AccessToken token = loginResult.getAccessToken();
 
                 AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
 
@@ -79,16 +86,40 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    FirebaseUser user = auth.getCurrentUser();
+                                   // FirebaseUser user = auth.getCurrentUser();
+
+                                    //String userid = user.getUid();
+                                    //updateUI(user);
+                                    //reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
+
+                                    //User user = new User(userid, username, "default");
+
+                                    new GraphRequest(
+                                            token,
+                                            "/{name}/",
+                                            null,
+                                            HttpMethod.GET,
+                                            new GraphRequest.Callback() {
+                                                public void onCompleted(GraphResponse response) {
+                                                    //response.
+                                                }
+                                            }
+                                    ).executeAsync();
 
                                     Toast.makeText(MainActivity.this, "Logged successfully", Toast.LENGTH_SHORT).show();
+
+                                    Intent intent = new Intent(MainActivity.this, ParseActivity.class);
+
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                    startActivity(intent);
+
+                                    finish();
                                 } else {
                                     Toast.makeText(MainActivity.this, "Logging failed", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
-                // boolean isLoggedIn = token != null && !token.isExpired();
-
 
             }
 
