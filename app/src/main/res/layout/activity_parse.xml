@@ -4,31 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".MainActivity">
+    tools:context=".ParseActivity">
 
     <TextView
+        android:id="@+id/text_view_result"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:layout_height="wrap_content"
-        android:text="Authentication"
         android:textSize="20sp"
-        />
+        android:textColor="@android:color/black"
+        android:layout_marginTop="150dp" />
 
     <Button
-        android:id="@+id/button_login"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:layout_marginTop="150dp"
-        android:text="Login" />
-
-    <Button
-        android:id="@+id/button_register"
+        android:id="@+id/button_parse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
         android:layout_marginTop="222dp"
-        android:text="Register" />
+        android:text="Parse" />
 
 </RelativeLayout>
