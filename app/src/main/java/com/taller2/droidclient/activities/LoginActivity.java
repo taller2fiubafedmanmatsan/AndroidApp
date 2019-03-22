@@ -23,7 +23,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText password_v;
     private Button button_login;
     private FirebaseAuth auth;
-    private DatabaseReference reference;
+    //private DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +36,10 @@ public class LoginActivity extends AppCompatActivity {
         password_v = findViewById(R.id.password);
         button_login = findViewById(R.id.button_login);
 
+        set_button_login_action();
+    }
+
+    private void set_button_login_action() {
         button_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

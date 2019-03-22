@@ -27,6 +27,7 @@ public class ParseActivity extends AppCompatActivity {
 
     private TextView username_view;
     private TextView text_view_res;
+    private Button button_parse;
     private FirebaseAuth auth;
     private DatabaseReference reference;
     private RequestQueue queue;
@@ -36,22 +37,15 @@ public class ParseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parse);
 
+        auth = FirebaseAuth.getInstance();
+
         text_view_res = findViewById(R.id.text_view_result);
         username_view = findViewById(R.id.username);
-
-        final Button buttonParse = findViewById(R.id.button_parse);
+        button_parse = findViewById(R.id.button_parse);
 
         queue = Volley.newRequestQueue(this);
 
-        buttonParse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Parse();
-                buttonParse.setEnabled(false);
-            }
-        });
-
-        auth = FirebaseAuth.getInstance();
+        set_button_parse_action();
 
         FirebaseUser user = auth.getCurrentUser();
         String userid = user.getUid();
@@ -71,6 +65,16 @@ public class ParseActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
+            }
+        });
+    }
+
+    private void set_button_parse_action() {
+        button_parse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Parse();
+                button_parse.setEnabled(false);
             }
         });
     }

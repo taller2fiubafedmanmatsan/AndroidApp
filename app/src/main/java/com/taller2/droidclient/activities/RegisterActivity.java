@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,8 +20,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.User;
-
-import java.util.HashMap;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -43,6 +42,10 @@ public class RegisterActivity extends AppCompatActivity {
         password_v = findViewById(R.id.password);
         button_register = findViewById(R.id.button_register);
 
+        set_button_register_action();
+    }
+
+    private void set_button_register_action() {
         button_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,51 +64,48 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void register(final String username, String email_address, String password) {
+    private void register(final String username, final String email_address, final String password) {
+        //Register with firebase
         auth.createUserWithEmailAndPassword(email_address, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            //Log.d(TAG, "createUserWithEmail:success");
-                            FirebaseUser user_f = auth.getCurrentUser();
-
-                            String userid = user_f.getUid();
-                            //updateUI(user);
-                            reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
-
-                            User user = new User(userid, username, "default");
-
-                            reference.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                                        startActivity(intent);
-
-                                        Toast.makeText(RegisterActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
-                                        //Can't go back
-                                        finish();
-                                    }
-                                }
-                            });
-                           /* Toast.makeText(RegisterActivity.this, "Register success.",
-                                    Toast.LENGTH_SHORT).show();*/
-
+                            registerUserInDatabase(username, email_address, password);
                         } else {
-                            // If sign in fails, display a message to the user.
-                            //Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             Toast.makeText(RegisterActivity.this, "Register failed. Please try again",
                                     Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
                         }
-
-                        // ...
                     }
                 });
+    }
+
+    private void registerUserInDatabase(String username, String email_address, String password) {
+        FirebaseUser user_f = auth.getCurrentUser();
+        String userid = user_f.getUid();
+
+        User user = new User(userid, username, "default");
+        //Save user in a firebase database temporary
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
+
+        reference.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    startActivity(intent);
+
+                    Toast.makeText(RegisterActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
+
+                    finish();
+                } else {
+                    Toast.makeText(RegisterActivity.this, "Register failed. Please try again",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }
