@@ -1,5 +1,6 @@
 package com.taller2.droidclient.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -17,13 +18,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.taller2.droidclient.R;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BasicActivity {
 
     private EditText email_address_v;
     private EditText password_v;
     private Button button_login;
+    private Button button_back;
     private FirebaseAuth auth;
     //private DatabaseReference reference;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,11 +38,13 @@ public class LoginActivity extends AppCompatActivity {
         email_address_v = findViewById(R.id.email_address);
         password_v = findViewById(R.id.password);
         button_login = findViewById(R.id.button_login);
+        button_back = findViewById(R.id.button_back);
 
-        set_button_login_action();
+        setListeners();
     }
 
-    private void set_button_login_action() {
+    private void setListeners() {
+
         button_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -53,6 +58,14 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+
+        button_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeActivity(LoginActivity.this, MainActivity.class);
+
+            }
+        });
     }
 
     private void login(String email_address, String password) {
@@ -61,13 +74,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Intent intent = new Intent(LoginActivity.this, ParseActivity.class);
-
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                            startActivity(intent);
-
-                            finish();
+                            changeActivity(LoginActivity.this, ProfileActivity.class);
 
                             Toast.makeText(LoginActivity.this, "Login successful",
                                     Toast.LENGTH_SHORT).show();
@@ -78,4 +85,6 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
 }

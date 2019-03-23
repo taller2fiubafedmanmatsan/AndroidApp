@@ -31,42 +31,35 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.User;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BasicActivity {
 
     private CallbackManager callbackManager;
     private FirebaseAuth auth;
     private DatabaseReference reference;
+    private Button button_login;
+    private Button button_register;
+    private Button button_exit;
+    private LoginButton loginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button button_login = findViewById(R.id.button_login);
-        Button button_register = findViewById(R.id.button_register);
-
-        button_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //jsonParse();
-                changeActivityTest(MainActivity.this, LoginActivity.class);
-            }
-        });
-
-        button_register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //jsonParse();
-                changeActivityTest(MainActivity.this, RegisterActivity.class);
-            }
-        });
-
         auth = FirebaseAuth.getInstance();
 
+        button_login = findViewById(R.id.button_login);
+        button_register = findViewById(R.id.button_register);
+        button_exit = findViewById(R.id.button_exit);
+        loginButton = findViewById(R.id.login_facebook);
+
+        setListeners();
+        setCallbacks();
+    }
+
+    private void setCallbacks() {
         //Facebook integration
         callbackManager = CallbackManager.Factory.create();
-
-        LoginButton loginButton = findViewById(R.id.login_facebook);
 
         loginButton.setReadPermissions("email", "public_profile");
         // If using in a fragment
@@ -86,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                   // FirebaseUser user = auth.getCurrentUser();
+                                    // FirebaseUser user = auth.getCurrentUser();
 
                                     //String userid = user.getUid();
                                     //updateUI(user);
@@ -141,13 +134,29 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void changeActivityTest(Context from, Class to) {
-        Intent intent = new Intent(from, to);
+    private void setListeners(){
+        button_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeActivity(MainActivity.this, LoginActivity.class);
+            }
+        });
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        button_register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeActivity(MainActivity.this, RegisterActivity.class);
+            }
+        });
 
-        startActivity(intent);
+        button_exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                System.exit(0);
+            }
+        });
 
-        finish();
     }
+
 }

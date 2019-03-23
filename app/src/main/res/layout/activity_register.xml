@@ -51,4 +51,11 @@
         android:layout_marginTop="222dp"
         android:text="Register" />
 
+    <Button
+        android:id="@+id/button_back"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="300dp"
+        android:text="Volver a inicio" />
+
 </RelativeLayout>
