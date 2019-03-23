@@ -23,7 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.User;
 
-public class ParseActivity extends AppCompatActivity {
+public class ParseActivity extends BasicActivity {
 
     private TextView username_view;
     private TextView text_view_res;

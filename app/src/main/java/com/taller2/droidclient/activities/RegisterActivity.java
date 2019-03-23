@@ -21,12 +21,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.User;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends BasicActivity{
 
     private EditText username_v;
     private EditText email_address_v;
     private EditText password_v;
     private Button button_register;
+    private Button button_back;
     private FirebaseAuth auth;
     private DatabaseReference reference;
 
@@ -41,11 +42,12 @@ public class RegisterActivity extends AppCompatActivity {
         email_address_v = findViewById(R.id.email_address);
         password_v = findViewById(R.id.password);
         button_register = findViewById(R.id.button_register);
+        button_back = findViewById(R.id.button_back);
 
-        set_button_register_action();
+        setListeners();
     }
 
-    private void set_button_register_action() {
+    private void setListeners() {
         button_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,6 +62,14 @@ public class RegisterActivity extends AppCompatActivity {
                 } else {
                     register(username, email_address, password);
                 }
+            }
+        });
+
+        button_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeActivity(RegisterActivity.this,MainActivity.class);
+
             }
         });
     }
