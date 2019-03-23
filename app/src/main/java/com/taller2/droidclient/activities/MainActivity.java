@@ -31,6 +31,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.User;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class MainActivity extends BasicActivity {
 
     private CallbackManager callbackManager;
@@ -79,35 +82,51 @@ public class MainActivity extends BasicActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    // FirebaseUser user = auth.getCurrentUser();
-
-                                    //String userid = user.getUid();
-                                    //updateUI(user);
-                                    //reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
-
-                                    //User user = new User(userid, username, "default");
-
-                                    new GraphRequest(
+                                    GraphRequest request = GraphRequest.newMeRequest(
                                             token,
-                                            "/{name}/",
-                                            null,
-                                            HttpMethod.GET,
-                                            new GraphRequest.Callback() {
-                                                public void onCompleted(GraphResponse response) {
-                                                    //response.
+                                            new GraphRequest.GraphJSONObjectCallback() {
+                                                @Override
+                                                public void onCompleted(JSONObject object, GraphResponse response) {
+                                                    try {
+                                                        String id = object.getString("id");
+                                                        String name = object.getString("name");
+                                                        String email = object.getString("email");
+                                                        final String imageURL = object.getJSONObject("picture").getJSONObject("data").getString("url");
+
+                                                        //Temporary use firebase database
+                                                        FirebaseUser user_f = auth.getCurrentUser();
+
+                                                        String userid = user_f.getUid();
+                                                        reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
+
+                                                        User user = new User(userid, name, "default");
+
+                                                        reference.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if (task.isSuccessful()) {
+                                                                    changeActivity(MainActivity.this, ParseActivity.class);
+                                                                    Toast.makeText(MainActivity.this, "Logged successfully", Toast.LENGTH_SHORT).show();
+                                                                } else {
+                                                                    Toast.makeText(MainActivity.this, "Logging failed. Please try again",
+                                                                            Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            }
+                                                        });
+
+                                                        //Toast.makeText(MainActivity.this, "Logged successfully", Toast.LENGTH_SHORT).show();
+
+                                                        //changeActivity(MainActivity.this, ParseActivity.class);
+                                                    } catch (JSONException e) {
+                                                        Toast.makeText(MainActivity.this, "Logging failed", Toast.LENGTH_SHORT).show();
+                                                    }
                                                 }
-                                            }
-                                    ).executeAsync();
+                                            });
 
-                                    Toast.makeText(MainActivity.this, "Logged successfully", Toast.LENGTH_SHORT).show();
-
-                                    Intent intent = new Intent(MainActivity.this, ParseActivity.class);
-
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                                    startActivity(intent);
-
-                                    finish();
+                                    Bundle parameters = new Bundle();
+                                    parameters.putString("fields", "id,name,email,picture{url}");
+                                    request.setParameters(parameters);
+                                    request.executeAsync();
                                 } else {
                                     Toast.makeText(MainActivity.this, "Logging failed", Toast.LENGTH_SHORT).show();
                                 }
