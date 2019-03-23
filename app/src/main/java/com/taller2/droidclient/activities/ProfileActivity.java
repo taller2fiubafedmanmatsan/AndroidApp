@@ -28,6 +28,7 @@ public class ProfileActivity extends BasicActivity{
     private Button button_update_profile;
     private Button button_exit;
     private RequestQueue queue;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +65,13 @@ public class ProfileActivity extends BasicActivity{
     }
 
     private void get_user_request(){
-        String url = "https://app-server-t2.herokuapp.com/";
+        String url = "https://app-server-t2.herokuapp.com/"+getUserToken();
 
         //Future for json
-        /*
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
+                url,
+                null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -77,15 +80,16 @@ public class ProfileActivity extends BasicActivity{
                         user_profile.setText(usuario.getUsername());
                         email_profile.setText(usuario.getUsername());
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
         });
 
         queue.add(request);
-        */
+
     }
 
     private void update_profile() {
