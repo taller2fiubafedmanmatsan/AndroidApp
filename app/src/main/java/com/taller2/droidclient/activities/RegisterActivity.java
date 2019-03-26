@@ -19,27 +19,50 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.taller2.droidclient.R;
+import com.taller2.droidclient.model.RegisterUser;
 import com.taller2.droidclient.model.User;
+import com.taller2.droidclient.requesters.UserRequester;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class RegisterActivity extends BasicActivity{
 
     private EditText username_v;
     private EditText email_address_v;
     private EditText password_v;
+    private EditText fullname_v;
     private Button button_register;
     private Button button_back;
     private FirebaseAuth auth;
     private DatabaseReference reference;
+
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+    private UserRequester userRequester;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        userRequester = new UserRequester();
+
         auth = FirebaseAuth.getInstance();
 
         username_v = findViewById(R.id.username);
         email_address_v = findViewById(R.id.email_address);
+        fullname_v = findViewById(R.id.fullname);
         password_v = findViewById(R.id.password);
         button_register = findViewById(R.id.button_register);
         button_back = findViewById(R.id.button_back);
@@ -54,13 +77,16 @@ public class RegisterActivity extends BasicActivity{
                 String username = username_v.getText().toString();
                 String email_address = email_address_v.getText().toString();
                 String password = password_v.getText().toString();
+                String fullname = fullname_v.getText().toString();
 
                 if (TextUtils.isEmpty(username) || TextUtils.isEmpty(email_address) || TextUtils.isEmpty(password)) {
                     Toast.makeText(RegisterActivity.this, "All fields are required", Toast.LENGTH_SHORT).show();
                 } else if (password.length() < 6) {
                     Toast.makeText(RegisterActivity.this, "Password must have at least 6 characters", Toast.LENGTH_SHORT).show();
                 } else {
-                    register(username, email_address, password);
+                    //register(username, email_address, password);
+                    RegisterUser user = new RegisterUser(fullname,username,email_address,password);
+                    userRequester.registerUser(user);
                 }
             }
         });
@@ -74,6 +100,8 @@ public class RegisterActivity extends BasicActivity{
         });
     }
 
+// Metodo deprecado
+/*
     private void register(final String username, final String email_address, final String password) {
         //Register with firebase
         auth.createUserWithEmailAndPassword(email_address, password)
@@ -89,6 +117,7 @@ public class RegisterActivity extends BasicActivity{
                     }
                 });
     }
+    */
 
     private void registerUserInDatabase(String username, String email_address, String password) {
         FirebaseUser user_f = auth.getCurrentUser();
@@ -102,11 +131,8 @@ public class RegisterActivity extends BasicActivity{
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
 
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                    startActivity(intent);
+                    changeActivity(RegisterActivity.this,MainActivity.class);
 
                     Toast.makeText(RegisterActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
 
@@ -118,4 +144,5 @@ public class RegisterActivity extends BasicActivity{
             }
         });
     }
+
 }
