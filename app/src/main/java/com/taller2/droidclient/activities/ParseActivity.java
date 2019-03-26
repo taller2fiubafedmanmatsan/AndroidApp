@@ -1,18 +1,10 @@
 package com.taller2.droidclient.activities;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -30,7 +22,6 @@ public class ParseActivity extends BasicActivity {
     private Button button_parse;
     private FirebaseAuth auth;
     private DatabaseReference reference;
-    private RequestQueue queue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +33,6 @@ public class ParseActivity extends BasicActivity {
         text_view_res = findViewById(R.id.text_view_result);
         username_view = findViewById(R.id.username);
         button_parse = findViewById(R.id.button_parse);
-
-        queue = Volley.newRequestQueue(this);
 
         set_button_parse_action();
 
@@ -103,7 +92,7 @@ public class ParseActivity extends BasicActivity {
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
             }
-        });*/
+        });
 
         StringRequest request = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -120,5 +109,8 @@ public class ParseActivity extends BasicActivity {
 
 
         queue.add(request);
+
+        */
     }
+
 }
