@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import android.widget.Button;
@@ -29,24 +30,38 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.taller2.droidclient.R;
+import com.taller2.droidclient.model.CallbackUserRequester;
+import com.taller2.droidclient.model.RegisterUser;
 import com.taller2.droidclient.model.User;
+import com.taller2.droidclient.requesters.UserRequester;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class MainActivity extends BasicActivity {
 
     private CallbackManager callbackManager;
-    private FirebaseAuth auth;
-    private DatabaseReference reference;
+    //private FirebaseAuth auth;
+    //private DatabaseReference reference;
     private Button button_login;
     private Button button_register;
     private Button button_exit;
     private LoginButton loginButton;
+    private UserRequester userRequester;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        auth = FirebaseAuth.getInstance();
+        //auth = FirebaseAuth.getInstance();
+
+        userRequester = new UserRequester();
 
         button_login = findViewById(R.id.button_login);
         button_register = findViewById(R.id.button_register);
@@ -74,46 +89,54 @@ public class MainActivity extends BasicActivity {
 
                 AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
 
-                auth.signInWithCredential(credential)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                GraphRequest request = GraphRequest.newMeRequest(
+                        token,
+                        new GraphRequest.GraphJSONObjectCallback() {
                             @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    // FirebaseUser user = auth.getCurrentUser();
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+                                try {
+                                    String id = object.getString("id");
+                                    String fullname = object.getString("name");
+                                    String email = object.getString("email");
+                                    final String imageURL = object.getJSONObject("picture").getJSONObject("data").getString("url");
 
-                                    //String userid = user.getUid();
-                                    //updateUI(user);
-                                    //reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
+                                    RegisterUser user = new RegisterUser(fullname, "John", email, id);
 
-                                    //User user = new User(userid, username, "default");
+                                    userRequester.registerUser(user, new CallbackUserRequester() {
+                                        @Override
+                                        public void onSuccess(Call call, Response response) throws IOException {
+                                            changeActivity(MainActivity.this, ProfileActivity.class);
 
-                                    new GraphRequest(
-                                            token,
-                                            "/{name}/",
-                                            null,
-                                            HttpMethod.GET,
-                                            new GraphRequest.Callback() {
-                                                public void onCompleted(GraphResponse response) {
-                                                    //response.
+                                            MainActivity.this.runOnUiThread(new Runnable() {
+                                                public void run() {
+                                                    Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
                                                 }
-                                            }
-                                    ).executeAsync();
+                                            });
 
-                                    Toast.makeText(MainActivity.this, "Logged successfully", Toast.LENGTH_SHORT).show();
+                                            Log.d("LOG/Register", response.body().string());
+                                        }
 
-                                    Intent intent = new Intent(MainActivity.this, ParseActivity.class);
-
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                                    startActivity(intent);
-
-                                    finish();
-                                } else {
+                                        @Override
+                                        public void onFailure(Call call, IOException e) {
+                                            Log.d("LOG/Register", e.getMessage());
+                                            MainActivity.this.runOnUiThread(new Runnable() {
+                                                public void run() {
+                                                    Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                            call.cancel();
+                                        }
+                                    });
+                                } catch (JSONException e) {
                                     Toast.makeText(MainActivity.this, "Logging failed", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
 
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,name,email,picture{url}");
+                request.setParameters(parameters);
+                request.executeAsync();
             }
 
             @Override
@@ -123,7 +146,7 @@ public class MainActivity extends BasicActivity {
 
             @Override
             public void onError(FacebookException exception) {
-                Toast.makeText(MainActivity.this, "Cannot login via facebook", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
             }
         });
     }

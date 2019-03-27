@@ -3,6 +3,7 @@ package com.taller2.droidclient.requesters;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.RegisterUser;
 import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.utils.JsonConverter;
@@ -26,17 +27,44 @@ public class UserRequester {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
 
-    public void registerUser(RegisterUser user){
+    public void registerUser(RegisterUser user, CallbackUserRequester callback){
         try {
-            postRequest(postUrl, new JsonConverter().objectToJsonString(user));
+            postRequest(postUrl, new JsonConverter().objectToJsonString(user), callback);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void postRequest(String postUrl, String postBody) throws IOException{
+    public void getUser(String id, CallbackUserRequester callback) {
+        try {
+            getRequest(postUrl + "/" + id, callback);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    private void getRequest(String url, final CallbackUserRequester callback) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder().url(url).get().build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(call, e);
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful())
+                    callback.onSuccess(call, response);
+                else
+                    callback.onFailure(call, new IOException("Failed response"));
+            }
+        });
+    }
+
+    private void postRequest(String postUrl, String postBody, final CallbackUserRequester callback) throws IOException {
         OkHttpClient client = new OkHttpClient();
 
         RequestBody body = RequestBody.create(JSON, postBody);
@@ -46,12 +74,18 @@ public class UserRequester {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                call.cancel();
+                callback.onFailure(call, e);
+                /*call.cancel();*/
             }
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful())
+                    callback.onSuccess(call, response);
+                else
+                    callback.onFailure(call, new IOException("Failed response"));
+            } /*throws IOException {
                 Log.d("LOG/Register",response.body().string());
-            }
+            }*/
         });
     }
 
