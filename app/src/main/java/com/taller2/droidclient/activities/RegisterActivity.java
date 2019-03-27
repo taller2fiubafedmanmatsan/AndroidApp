@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.taller2.droidclient.R;
+import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.RegisterUser;
 import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.requesters.UserRequester;
@@ -86,7 +87,21 @@ public class RegisterActivity extends BasicActivity{
                 } else {
                     //register(username, email_address, password);
                     RegisterUser user = new RegisterUser(fullname,username,email_address,password);
-                    userRequester.registerUser(user);
+                    userRequester.registerUser(user, new CallbackUserRequester() {
+                        @Override
+                        public void onSuccess(Call call, Response response) {
+                            try {
+                                Log.d("LOG/Register", response.body().string());
+                            } catch (IOException e) {
+
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            call.cancel();
+                        }
+                    });
                 }
             }
         });
