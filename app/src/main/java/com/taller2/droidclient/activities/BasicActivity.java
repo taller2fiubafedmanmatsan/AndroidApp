@@ -35,8 +35,4 @@ public class BasicActivity extends AppCompatActivity {
         String userToken = bundle.getString("userToken");
         return userToken;
     }
-
-
-
-
 }

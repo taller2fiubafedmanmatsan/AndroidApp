@@ -36,8 +36,35 @@ public class UserRequester {
         }
     }
 
-    private void postRequest(String postUrl, String postBody, final CallbackUserRequester callback) throws IOException{
+    public void getUser(String id, CallbackUserRequester callback) {
+        try {
+            getRequest(postUrl + "/" + id, callback);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    private void getRequest(String url, final CallbackUserRequester callback) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder().url(url).get().build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(call, e);
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful())
+                    callback.onSuccess(call, response);
+                else
+                    callback.onFailure(call, new IOException("Failed response"));
+            }
+        });
+    }
+
+    private void postRequest(String postUrl, String postBody, final CallbackUserRequester callback) throws IOException {
         OkHttpClient client = new OkHttpClient();
 
         RequestBody body = RequestBody.create(JSON, postBody);
@@ -51,8 +78,11 @@ public class UserRequester {
                 /*call.cancel();*/
             }
             @Override
-            public void onResponse(Call call, Response response) {
-                callback.onSuccess(call, response);
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful())
+                    callback.onSuccess(call, response);
+                else
+                    callback.onFailure(call, new IOException("Failed response"));
             } /*throws IOException {
                 Log.d("LOG/Register",response.body().string());
             }*/

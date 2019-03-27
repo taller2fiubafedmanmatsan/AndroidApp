@@ -89,16 +89,26 @@ public class RegisterActivity extends BasicActivity{
                     RegisterUser user = new RegisterUser(fullname,username,email_address,password);
                     userRequester.registerUser(user, new CallbackUserRequester() {
                         @Override
-                        public void onSuccess(Call call, Response response) {
-                            try {
-                                Log.d("LOG/Register", response.body().string());
-                            } catch (IOException e) {
+                        public void onSuccess(Call call, Response response) throws IOException {
+                            changeActivity(RegisterActivity.this, ProfileActivity.class);
 
-                            }
+                            RegisterActivity.this.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(RegisterActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                            Log.d("LOG/Register", response.body().string());
                         }
 
                         @Override
                         public void onFailure(Call call, IOException e) {
+                            RegisterActivity.this.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(RegisterActivity.this, "Register failed", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
                             call.cancel();
                         }
                     });
@@ -114,50 +124,4 @@ public class RegisterActivity extends BasicActivity{
             }
         });
     }
-
-// Metodo deprecado
-/*
-    private void register(final String username, final String email_address, final String password) {
-        //Register with firebase
-        auth.createUserWithEmailAndPassword(email_address, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            registerUserInDatabase(username, email_address, password);
-                        } else {
-                            Toast.makeText(RegisterActivity.this, "Register failed. Please try again",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
-    */
-
-    private void registerUserInDatabase(String username, String email_address, String password) {
-        FirebaseUser user_f = auth.getCurrentUser();
-        String userid = user_f.getUid();
-
-        User user = new User(userid, username, "default");
-        //Save user in a firebase database temporary
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
-
-        reference.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-
-                    changeActivity(RegisterActivity.this,MainActivity.class);
-
-                    Toast.makeText(RegisterActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
-
-                    finish();
-                } else {
-                    Toast.makeText(RegisterActivity.this, "Register failed. Please try again",
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
 }

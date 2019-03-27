@@ -28,7 +28,7 @@ public class ParseActivity extends BasicActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parse);
 
-        auth = FirebaseAuth.getInstance();
+        //auth = FirebaseAuth.getInstance();
 
         text_view_res = findViewById(R.id.text_view_result);
         username_view = findViewById(R.id.username);
@@ -36,7 +36,7 @@ public class ParseActivity extends BasicActivity {
 
         set_button_parse_action();
 
-        FirebaseUser user = auth.getCurrentUser();
+        /*FirebaseUser user = auth.getCurrentUser();
         String userid = user.getUid();
 
         reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
@@ -55,7 +55,7 @@ public class ParseActivity extends BasicActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        });*/
     }
 
     private void set_button_parse_action() {
