@@ -2,6 +2,7 @@ package com.taller2.droidclient.activities;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -11,9 +12,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -44,9 +55,7 @@ public class RegisterActivity extends BasicActivity{
     private EditText password_v;
     private EditText fullname_v;
     private Button button_register;
-    private Button button_back;
-    private FirebaseAuth auth;
-    private DatabaseReference reference;
+    //private Button button_back;
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -59,16 +68,21 @@ public class RegisterActivity extends BasicActivity{
 
         userRequester = new UserRequester();
 
-        auth = FirebaseAuth.getInstance();
+        //auth = FirebaseAuth.getInstance();
 
         username_v = findViewById(R.id.username);
         email_address_v = findViewById(R.id.email_address);
         fullname_v = findViewById(R.id.fullname);
         password_v = findViewById(R.id.password);
         button_register = findViewById(R.id.button_register);
-        button_back = findViewById(R.id.button_back);
+        //button_back = findViewById(R.id.button_back);
 
         setListeners();
+    }
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        changeActivity(RegisterActivity.this, MainActivity.class);
     }
 
     private void setListeners() {
@@ -86,17 +100,25 @@ public class RegisterActivity extends BasicActivity{
                     Toast.makeText(RegisterActivity.this, "Password must have at least 6 characters", Toast.LENGTH_SHORT).show();
                 } else {
                     //register(username, email_address, password);
-                    RegisterUser user = new RegisterUser(fullname,username,email_address,password);
+                    RegisterUser user = new RegisterUser(fullname,username,email_address,password, false);
                     userRequester.registerUser(user, new CallbackUserRequester() {
                         @Override
-                        public void onSuccess(Call call, Response response) throws IOException {
-                            changeActivity(RegisterActivity.this, ProfileActivity.class);
+                        public void onResponse(Call call, Response response) throws IOException {
+                            if (response.isSuccessful()) {
+                                changeActivity(RegisterActivity.this, ProfileActivity.class);
 
-                            RegisterActivity.this.runOnUiThread(new Runnable() {
-                                public void run() {
-                                    Toast.makeText(RegisterActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                                RegisterActivity.this.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(RegisterActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            } else {
+                                RegisterActivity.this.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(RegisterActivity.this, "Register failed", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
 
                             Log.d("LOG/Register", response.body().string());
                         }
@@ -113,14 +135,6 @@ public class RegisterActivity extends BasicActivity{
                         }
                     });
                 }
-            }
-        });
-
-        button_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                changeActivity(RegisterActivity.this,MainActivity.class);
-
             }
         });
     }

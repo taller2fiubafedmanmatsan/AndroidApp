@@ -3,6 +3,7 @@ package com.taller2.droidclient.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -19,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.CallbackUserRequester;
+import com.taller2.droidclient.model.LoginUser;
 import com.taller2.droidclient.requesters.UserRequester;
 
 import java.io.IOException;
@@ -31,7 +33,6 @@ public class LoginActivity extends BasicActivity {
     private EditText email_address_v;
     private EditText password_v;
     private Button button_login;
-    private Button button_back;
     //private FirebaseAuth auth;
     //private DatabaseReference reference;
     private UserRequester userRequester;
@@ -48,11 +49,14 @@ public class LoginActivity extends BasicActivity {
         email_address_v = findViewById(R.id.email_address);
         password_v = findViewById(R.id.password);
         button_login = findViewById(R.id.button_login);
-        button_back = findViewById(R.id.button_back);
 
         setListeners();
     }
-
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        changeActivity(LoginActivity.this, MainActivity.class);
+    }
     private void setListeners() {
 
         button_login.setOnClickListener(new View.OnClickListener() {
@@ -64,25 +68,36 @@ public class LoginActivity extends BasicActivity {
                 if (TextUtils.isEmpty(email_address) || TextUtils.isEmpty(password)) {
                     Toast.makeText(LoginActivity.this, "Invalid email/password", Toast.LENGTH_SHORT).show();
                 } else {
-                    userRequester.getUser("5c99a05240c3d40004bdb06c", new CallbackUserRequester() {
+                    LoginUser loginuser = new LoginUser(email_address, password, false);
+                    userRequester.loginUser(loginuser, new CallbackUserRequester() {
                         @Override
-                        public void onSuccess(Call call, Response response) throws IOException {
-                            changeActivity(LoginActivity.this, ProfileActivity.class);
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String msg = response.body().string();
 
-                            LoginActivity.this.runOnUiThread(new Runnable() {
-                                public void run() {
-                                    Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                            if (response.isSuccessful()) {
+                                changeActivity(LoginActivity.this, ProfileActivity.class, msg);
 
-                            Log.d("LOG/Login", response.body().string());
+                                LoginActivity.this.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            } else {
+                                LoginActivity.this.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+
+                            Log.d("LOG/Login", msg);
                         }
 
                         @Override
                         public void onFailure(Call call, IOException e) {
                             LoginActivity.this.runOnUiThread(new Runnable() {
                                 public void run() {
-                                    Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
                                 }
                             });
 
@@ -90,14 +105,6 @@ public class LoginActivity extends BasicActivity {
                         }
                     });
                 }
-            }
-        });
-
-        button_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                changeActivity(LoginActivity.this, MainActivity.class);
-
             }
         });
     }

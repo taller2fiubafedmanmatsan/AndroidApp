@@ -4,46 +4,81 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:padding="2dp"
     tools:context=".activities.MainActivity">
+    <ImageView
+        android:id="@+id/main_backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/main_background"
+        />
 
     <TextView
         android:layout_width="match_parent"
         android:gravity="center_horizontal"
         android:layout_height="wrap_content"
-        android:text="Authentication"
-        android:textSize="20sp"
+        android:layout_centerHorizontal="true"
+        android:text="@string/Hypechat"
+        android:textStyle="italic"
+        android:textColor="#FFFFFF"
+        android:textSize="60sp"
         />
 
-    <Button
+    <!--<Button
         android:id="@+id/button_login"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-
-        android:layout_marginTop="150dp"
-        android:text="Login" />
-
-    <Button
-        android:id="@+id/button_register"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:layout_marginTop="222dp"
-        android:text="Register" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="500dp"
+        android:background="@drawable/round_border_button"
+        android:text="Login" />-->
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/login_facebook"
-        android:layout_width="match_parent"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="294dp"
-        android:text="Login with facebook"/>
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="155dp" />
 
     <Button
+        android:id="@+id/button_login"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="100dp"
+        android:background="@drawable/round_border_button"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:text="Sign in" />
+
+    <Button
+        android:id="@+id/button_register"
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_alignTop="@+id/button_login"
+        android:textColor="#FFFFFF"
+        android:textAllCaps="false"
+        style="?android:attr/borderlessButtonStyle"
+        android:text="Join now" />
+
+    <!--<com.facebook.login.widget.LoginButton
+        android:id="@+id/login_facebook"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="620dp"
+        android:text="Login with facebook"/>-->
+
+    <!--<Button
         android:id="@+id/button_exit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="500dp"
-        android:text="Salir" />
+        android:text="Salir" />-->
 
 </RelativeLayout>

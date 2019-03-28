@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.taller2.droidclient.model.CallbackUserRequester;
+import com.taller2.droidclient.model.LoginUser;
 import com.taller2.droidclient.model.RegisterUser;
 import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.utils.JsonConverter;
@@ -23,6 +24,7 @@ import okhttp3.Response;
 public class UserRequester {
 
     private String postUrl = "https://app-server-t2.herokuapp.com/api/users";
+    private String authUrl = "https://app-server-t2.herokuapp.com/api/auth/singin";
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -36,18 +38,26 @@ public class UserRequester {
         }
     }
 
-    public void getUser(String id, CallbackUserRequester callback) {
+    public void loginUser(LoginUser user, CallbackUserRequester callback) {
         try {
-            getRequest(postUrl + "/" + id, callback);
+            postRequest(authUrl, new JsonConverter().objectToJsonString(user), callback);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void getRequest(String url, final CallbackUserRequester callback) throws IOException {
+    public void getUser(String id, CallbackUserRequester callback) {
+        try {
+            getRequest(postUrl + "/me", id, callback);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getRequest(String url, String id, final CallbackUserRequester callback) throws IOException {
         OkHttpClient client = new OkHttpClient();
 
-        Request request = new Request.Builder().url(url).get().build();
+        Request request = new Request.Builder().url(url).header("x-auth-token", id).get().build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -56,10 +66,7 @@ public class UserRequester {
             }
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful())
-                    callback.onSuccess(call, response);
-                else
-                    callback.onFailure(call, new IOException("Failed response"));
+                callback.onResponse(call, response);
             }
         });
     }
@@ -79,10 +86,7 @@ public class UserRequester {
             }
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful())
-                    callback.onSuccess(call, response);
-                else
-                    callback.onFailure(call, new IOException("Failed response"));
+                callback.onResponse(call, response);
             } /*throws IOException {
                 Log.d("LOG/Register",response.body().string());
             }*/

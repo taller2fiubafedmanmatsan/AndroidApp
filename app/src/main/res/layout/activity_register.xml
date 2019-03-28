@@ -16,56 +16,57 @@
 
     <EditText
         android:id="@+id/fullname"
-        android:layout_width="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:gravity="center_horizontal"
         android:layout_marginTop="50dp"
+        android:gravity="center_horizontal"
         android:hint="Full name"
         android:inputType="textWebEditText" />
 
     <EditText
         android:id="@+id/username"
-        android:layout_width="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:gravity="center_horizontal"
         android:layout_marginTop="100dp"
+        android:gravity="center_horizontal"
         android:hint="Username"
         android:inputType="textWebEditText" />
 
     <EditText
         android:id="@+id/email_address"
-        android:gravity="center_horizontal"
-        android:layout_width="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:ems="10"
         android:layout_marginTop="150dp"
+        android:gravity="center_horizontal"
         android:hint="Email address"
         android:inputType="textWebEditText|textEmailAddress" />
 
     <EditText
         android:id="@+id/password"
-        android:gravity="center_horizontal"
-        android:layout_width="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:ems="10"
         android:layout_marginTop="200dp"
+        android:gravity="center_horizontal"
         android:hint="Password"
         android:inputType="textPassword" />
 
     <Button
         android:id="@+id/button_register"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="275dp"
+        android:background="@drawable/round_border_button"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
         android:text="Register" />
-
-    <Button
-        android:id="@+id/button_back"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="350dp"
-        android:text="Volver a inicio" />
 
 </RelativeLayout>
