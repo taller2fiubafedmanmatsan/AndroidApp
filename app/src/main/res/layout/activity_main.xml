@@ -26,15 +26,6 @@
         android:textSize="60sp"
         />
 
-    <!--<Button
-        android:id="@+id/button_login"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="500dp"
-        android:background="@drawable/round_border_button"
-        android:text="Login" />-->
-
     <com.facebook.login.widget.LoginButton
         android:id="@+id/login_facebook"
         android:layout_width="220dp"

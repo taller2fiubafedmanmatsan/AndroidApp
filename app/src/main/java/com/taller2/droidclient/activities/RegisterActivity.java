@@ -32,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.CallbackUserRequester;
+import com.taller2.droidclient.model.LoginUser;
 import com.taller2.droidclient.model.RegisterUser;
 import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.requesters.UserRequester;
@@ -91,8 +92,8 @@ public class RegisterActivity extends BasicActivity{
             @Override
             public void onClick(View view) {
                 String username = username_v.getText().toString();
-                String email_address = email_address_v.getText().toString();
-                String password = password_v.getText().toString();
+                final String email_address = email_address_v.getText().toString();
+                final String password = password_v.getText().toString();
                 String fullname = fullname_v.getText().toString();
 
                 if (TextUtils.isEmpty(username) || TextUtils.isEmpty(email_address) || TextUtils.isEmpty(password)) {
@@ -106,13 +107,14 @@ public class RegisterActivity extends BasicActivity{
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
                             if (response.isSuccessful()) {
-                                changeActivity(RegisterActivity.this, ProfileActivity.class);
+                                loginUser(email_address, password);
+                                /*changeActivity(RegisterActivity.this, ProfileActivity.class);
 
                                 RegisterActivity.this.runOnUiThread(new Runnable() {
                                     public void run() {
                                         Toast.makeText(RegisterActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
                                     }
-                                });
+                                });*/
                             } else {
                                 RegisterActivity.this.runOnUiThread(new Runnable() {
                                     public void run() {
@@ -136,6 +138,46 @@ public class RegisterActivity extends BasicActivity{
                         }
                     });
                 }
+            }
+        });
+    }
+
+    private void loginUser(String email, String password) {
+        LoginUser loginuser = new LoginUser(email, password, false);
+
+        userRequester.loginUser(loginuser, new CallbackUserRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String msg = response.body().string();
+
+                if (response.isSuccessful()) {
+                    changeActivity(RegisterActivity.this, ProfileActivity.class, msg);
+
+                    RegisterActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(RegisterActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    RegisterActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(RegisterActivity.this, "This should not occur", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                Log.d("Register/Login", msg);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                RegisterActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(RegisterActivity.this, "Can't enter into account. Try login in later", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                call.cancel();
             }
         });
     }

@@ -67,6 +67,12 @@ public class ProfileActivity extends BasicActivity{
 
     }
 
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        changeActivity(ProfileActivity.this, MainActivity.class);
+    }
+
     private void setUserNameProfile() {
         userRequester.getUser(token, new CallbackUserRequester() {
             @Override
