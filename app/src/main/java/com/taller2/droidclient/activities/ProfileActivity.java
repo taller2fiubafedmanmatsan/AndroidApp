@@ -37,7 +37,6 @@ public class ProfileActivity extends BasicActivity{
     private TextView email_profile;
     private Button button_update_profile;
     private ImageView profile_picture;
-    //private Button button_exit;
     private User userdata;
     private String token;
     private UserRequester userRequester;
@@ -80,7 +79,7 @@ public class ProfileActivity extends BasicActivity{
                     ProfileActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
                             user_profile.setText(userdata.getName());
-                            Log.d("Profile/Username", userdata.getName());
+                            email_profile.setText(userdata.getEmail());
                         }
                     });
                 }
@@ -105,13 +104,6 @@ public class ProfileActivity extends BasicActivity{
                 changeActivity(ProfileActivity.this, MainActivity.class);
             }
         });
-
-        /*button_exit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeActivity(ProfileActivity.this, MainActivity.class);
-            }
-        });*/
     }
 
 

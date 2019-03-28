@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,25 +58,25 @@ public class RegisterActivity extends BasicActivity{
     private Button button_register;
     //private Button button_back;
 
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    //public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private UserRequester userRequester;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        changeTextActionBar("Register");
+
         setContentView(R.layout.activity_register);
 
         userRequester = new UserRequester();
-
-        //auth = FirebaseAuth.getInstance();
 
         username_v = findViewById(R.id.username);
         email_address_v = findViewById(R.id.email_address);
         fullname_v = findViewById(R.id.fullname);
         password_v = findViewById(R.id.password);
         button_register = findViewById(R.id.button_register);
-        //button_back = findViewById(R.id.button_back);
 
         setListeners();
     }
@@ -137,5 +138,16 @@ public class RegisterActivity extends BasicActivity{
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                changeActivity(RegisterActivity.this, MainActivity.class);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -22,6 +22,7 @@ import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -69,10 +70,10 @@ public class MainActivity extends BasicActivity {
         loginButton = findViewById(R.id.login_facebook);
 
         setListeners();
-        setCallbacks();
+        setCallbacksFacebook();
     }
 
-    private void setCallbacks() {
+    private void setCallbacksFacebook() {
         //Facebook integration
         callbackManager = CallbackManager.Factory.create();
 
@@ -100,13 +101,15 @@ public class MainActivity extends BasicActivity {
                                     String email = object.getString("email");
                                     final String imageURL = object.getJSONObject("picture").getJSONObject("data").getString("url");
 
-                                    RegisterUser user = new RegisterUser(fullname, id, email, id, false);
+                                    RegisterUser user = new RegisterUser(fullname, id, email, id, true);
 
                                     userRequester.registerUser(user, new CallbackUserRequester() {
                                         @Override
                                         public void onResponse(Call call, Response response) throws IOException {
+                                            String msg = response.body().string();
+
                                             if (response.isSuccessful()) {
-                                                changeActivity(MainActivity.this, ProfileActivity.class);
+                                                changeActivity(MainActivity.this, ProfileActivity.class, msg);
 
                                                 MainActivity.this.runOnUiThread(new Runnable() {
                                                     public void run() {
@@ -114,14 +117,18 @@ public class MainActivity extends BasicActivity {
                                                     }
                                                 });
                                             } else {
+                                                //Handle already registered
                                                 MainActivity.this.runOnUiThread(new Runnable() {
                                                     public void run() {
-                                                        Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(MainActivity.this, "There's already an account with that email", Toast.LENGTH_SHORT).show();
                                                     }
                                                 });
+
+                                                //Log out...
+                                                LoginManager.getInstance().logOut();
                                             }
 
-                                            Log.d("LOG/Register", response.body().string());
+                                            Log.d("LOG/Register", msg);
                                         }
 
                                         @Override
@@ -129,14 +136,14 @@ public class MainActivity extends BasicActivity {
                                             Log.d("LOG/Register", e.getMessage());
                                             MainActivity.this.runOnUiThread(new Runnable() {
                                                 public void run() {
-                                                    Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(MainActivity.this, "Facebook authentication failed", Toast.LENGTH_SHORT).show();
                                                 }
                                             });
                                             call.cancel();
                                         }
                                     });
                                 } catch (JSONException e) {
-                                    Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MainActivity.this, "Facebook authentication failed", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
