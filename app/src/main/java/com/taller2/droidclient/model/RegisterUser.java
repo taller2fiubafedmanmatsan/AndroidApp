@@ -7,13 +7,15 @@ public class RegisterUser {
     private String email;
     private String password;
     private boolean isAdmin;
+    private boolean facebook_log;
 
-    public RegisterUser(String name, String nickname, String email, String password) {
+    public RegisterUser(String name, String nickname, String email, String password, Boolean facebook_log) {
         this.name = name;
         this.nickname = nickname;
         this.email = email;
         this.password = password;
         this.isAdmin = true;
+        this.facebook_log = facebook_log;
     }
 
     public String getEmail() {
@@ -39,4 +41,8 @@ public class RegisterUser {
     public void setAdmin(boolean admin) {
         isAdmin = admin;
     }
+
+    public void setUsingFacebook(boolean facebook) {this.facebook_log = facebook; }
+
+    public boolean getUsingFacebook() { return this.facebook_log; }
 }

@@ -3,13 +3,17 @@ package com.taller2.droidclient.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -18,6 +22,7 @@ import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -46,33 +51,29 @@ import okhttp3.Response;
 public class MainActivity extends BasicActivity {
 
     private CallbackManager callbackManager;
-    //private FirebaseAuth auth;
-    //private DatabaseReference reference;
     private Button button_login;
     private Button button_register;
-    private Button button_exit;
     private LoginButton loginButton;
     private UserRequester userRequester;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        deleteActionBar();
+
         setContentView(R.layout.activity_main);
-
-        //auth = FirebaseAuth.getInstance();
-
         userRequester = new UserRequester();
 
         button_login = findViewById(R.id.button_login);
         button_register = findViewById(R.id.button_register);
-        button_exit = findViewById(R.id.button_exit);
         loginButton = findViewById(R.id.login_facebook);
 
         setListeners();
-        setCallbacks();
+        setCallbacksFacebook();
     }
 
-    private void setCallbacks() {
+    private void setCallbacksFacebook() {
         //Facebook integration
         callbackManager = CallbackManager.Factory.create();
 
@@ -100,20 +101,34 @@ public class MainActivity extends BasicActivity {
                                     String email = object.getString("email");
                                     final String imageURL = object.getJSONObject("picture").getJSONObject("data").getString("url");
 
-                                    RegisterUser user = new RegisterUser(fullname, "John", email, id);
+                                    RegisterUser user = new RegisterUser(fullname, id, email, id, true);
 
                                     userRequester.registerUser(user, new CallbackUserRequester() {
                                         @Override
-                                        public void onSuccess(Call call, Response response) throws IOException {
-                                            changeActivity(MainActivity.this, ProfileActivity.class);
+                                        public void onResponse(Call call, Response response) throws IOException {
+                                            String msg = response.body().string();
 
-                                            MainActivity.this.runOnUiThread(new Runnable() {
-                                                public void run() {
-                                                    Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
+                                            if (response.isSuccessful()) {
+                                                changeActivity(MainActivity.this, ProfileActivity.class, msg);
 
-                                            Log.d("LOG/Register", response.body().string());
+                                                MainActivity.this.runOnUiThread(new Runnable() {
+                                                    public void run() {
+                                                        Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                            } else {
+                                                //Handle already registered
+                                                MainActivity.this.runOnUiThread(new Runnable() {
+                                                    public void run() {
+                                                        Toast.makeText(MainActivity.this, "There's already an account with that email", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+
+                                                //Log out...
+                                                LoginManager.getInstance().logOut();
+                                            }
+
+                                            Log.d("LOG/Register", msg);
                                         }
 
                                         @Override
@@ -121,14 +136,14 @@ public class MainActivity extends BasicActivity {
                                             Log.d("LOG/Register", e.getMessage());
                                             MainActivity.this.runOnUiThread(new Runnable() {
                                                 public void run() {
-                                                    Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(MainActivity.this, "Facebook authentication failed", Toast.LENGTH_SHORT).show();
                                                 }
                                             });
                                             call.cancel();
                                         }
                                     });
                                 } catch (JSONException e) {
-                                    Toast.makeText(MainActivity.this, "Logging failed", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MainActivity.this, "Facebook authentication failed", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -171,15 +186,6 @@ public class MainActivity extends BasicActivity {
                 changeActivity(MainActivity.this, RegisterActivity.class);
             }
         });
-
-        button_exit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                System.exit(0);
-            }
-        });
-
     }
 
 }

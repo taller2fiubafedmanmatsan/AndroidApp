@@ -1,110 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.ProfileActivity">
 
-
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
+        android:id="@+id/background_profile_photo"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:alpha="0.75"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="128dp"
-        android:layout_marginLeft="128dp"
-        android:layout_marginTop="43dp"
-        tools:srcCompat="@tools:sample/avatars" />
-
+        android:scaleType="centerCrop"
+        android:src="@drawable/profile_background" />
+    
     <TextView
         android:id="@+id/user_label"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="38dp"
-        android:layout_marginLeft="38dp"
-        android:layout_marginTop="224dp"
-        android:editable="false"
-        android:text="Usuario"
-        android:textColor="@color/colorPrimary"
-        android:textSize="26dp"
-        android:textStyle="bold"
+        android:gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/profile_picture"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
         tools:fontFamily="sans-serif-light" />
 
-    <EditText
-        android:id="@+id/username_profile"
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/icon_edit_name"
+        android:layout_width="30dp"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/profile_picture"
+        android:layout_toEndOf="@id/user_label"
+        android:layout_alignTop="@id/user_label"
+        android:layout_alignBottom="@id/user_label"
+        android:background="@android:drawable/ic_menu_edit" />
+
+    <ImageView
+        android:id="@+id/icon_email"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
         android:layout_below="@+id/user_label"
-        android:layout_alignStart="@+id/user_label"
-        android:layout_alignLeft="@+id/user_label"
-        android:layout_marginStart="-1dp"
-        android:layout_marginLeft="-1dp"
-        android:layout_marginTop="29dp"
-        android:ems="10"
-        android:hint="Username"
-        android:inputType="textWebEditText" />
+        android:layout_alignTop="@+id/email_label"
+        android:layout_alignBottom="@+id/email_label"
+        android:tint="#000000"
+        android:background="@android:drawable/sym_action_email" />
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/profile_picture"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:scaleType="fitCenter"
+        app:riv_corner_radius="30dip"
+        app:riv_border_width="2dip"
+        app:riv_border_color="#333333"
+        app:riv_mutate_background="true"
+        app:riv_tile_mode="repeat"
+        app:riv_oval="true" />
 
     <TextView
         android:id="@+id/email_label"
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/user_label"
-        android:layout_alignStart="@+id/user_label"
-        android:layout_alignLeft="@+id/user_label"
-        android:layout_marginStart="-3dp"
-        android:layout_marginLeft="-3dp"
-        android:layout_marginTop="94dp"
-        android:editable="false"
-        android:text="Email"
-        android:textColor="@color/colorPrimary"
-        android:textSize="26dp"
-        android:textStyle="bold"
+        android:layout_below="@+id/background_profile_photo"
+        android:layout_toEndOf="@id/icon_email"
+        android:layout_marginTop="20dp"
+        android:textSize="18sp"
         tools:fontFamily="sans-serif-light" />
 
-    <EditText
-        android:id="@+id/email_profile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/user_label"
-        android:layout_alignStart="@+id/user_label"
-        android:layout_alignLeft="@+id/user_label"
-        android:layout_marginStart="0dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginTop="161dp"
-        android:ems="10"
-        android:hint="Email"
-        android:inputType="textWebEditText" />
-
-    <Button
-        android:id="@+id/buttonChangeProfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/user_label"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="37dp"
-        android:layout_marginLeft="37dp"
-        android:layout_marginTop="281dp"
-        android:layout_marginBottom="143dp"
-        android:text="Actualizar Perfil" />
-
-    <Button
-        android:id="@+id/buttonExit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="218dp"
-        android:layout_marginLeft="218dp"
-        android:layout_marginBottom="144dp"
-        android:text="Salir del perfil" />
-
-</android.widget.RelativeLayout>
+</RelativeLayout>
