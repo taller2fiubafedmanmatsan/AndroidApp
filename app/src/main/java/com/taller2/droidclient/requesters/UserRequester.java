@@ -13,6 +13,8 @@ import com.taller2.droidclient.utils.JsonConverter;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -50,6 +52,18 @@ public class UserRequester {
     public void changePasswordUser(PasswordUser pass, String token, CallbackUserRequester callback) {
         try{
             putRequest(postUrl + "/me",new JsonConverter().objectToJsonString(pass), token,callback);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void changeNicknameUser(String nickname, String token, CallbackUserRequester callback){
+        try{
+            Map<String, String> nicknameMap = new HashMap<String,String>();
+            nicknameMap.put("nickname",nickname);
+
+            putRequest(postUrl+ "/me",new JsonConverter().mapToJsonString(nicknameMap),token,callback);
+
         } catch (IOException e){
             e.printStackTrace();
         }

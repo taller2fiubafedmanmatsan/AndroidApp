@@ -33,8 +33,9 @@ import org.json.JSONObject;
 
 public class ProfileActivity extends BasicActivity{
 
-    private TextView user_profile;
+    private EditText user_profile;
     private TextView email_profile;
+    private TextView name_profile;
     private Button button_update_profile;
     private ImageView profile_picture;
     private Button button_change_password;
@@ -52,6 +53,7 @@ public class ProfileActivity extends BasicActivity{
 
         user_profile = findViewById(R.id.user_label);
         email_profile = findViewById(R.id.email_label);
+        name_profile = findViewById(R.id.name_label);
         button_update_profile = findViewById(R.id.icon_edit_name);
         profile_picture = findViewById(R.id.profile_picture);
         button_change_password = findViewById(R.id.change_password);
@@ -86,8 +88,9 @@ public class ProfileActivity extends BasicActivity{
                 if (response.isSuccessful()) {
                     ProfileActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
-                            user_profile.setText(userdata.getName());
+                            user_profile.setText(userdata.getNickname());
                             email_profile.setText(userdata.getEmail());
+                            name_profile.setText(userdata.getName());
                         }
                     });
                 }
@@ -107,9 +110,18 @@ public class ProfileActivity extends BasicActivity{
         button_update_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                update_profile();
-                button_update_profile.setEnabled(false);
-                changeActivity(ProfileActivity.this, MainActivity.class);
+                String newNick = user_profile.getText().toString();
+                if(!userdata.getNickname().equals(newNick)){
+                    update_profile(newNick);
+                    button_update_profile.setEnabled(false);
+                }else{
+                    ProfileActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(ProfileActivity.this, "Introduzca un nuevo Nickname", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
             }
         });
 
@@ -122,8 +134,37 @@ public class ProfileActivity extends BasicActivity{
     }
 
 
-    private void update_profile() {
-        String url = "https://app-server-t2.herokuapp.com/";
+    private void update_profile(String newNick) {
+        userRequester.changeNicknameUser(newNick, token, new CallbackUserRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    changeActivity(ProfileActivity.this, ProfileActivity.class, token);
+
+                    ProfileActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(ProfileActivity.this, "Success!!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    ProfileActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(ProfileActivity.this, "Invalid new password", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                Log.d("LOG/Change Name", response.body().string().toString());
+
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("ERROR", e.getMessage());
+                call.cancel();
+            }
+        });
+
     }
 
     @Override

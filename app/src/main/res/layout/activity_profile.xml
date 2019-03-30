@@ -15,7 +15,7 @@
         android:scaleType="centerCrop"
         android:src="@drawable/profile_background" />
     
-    <TextView
+    <EditText
         android:id="@+id/user_label"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
@@ -69,6 +69,26 @@
         android:layout_below="@+id/background_profile_photo"
         android:layout_toEndOf="@id/icon_email"
         android:layout_marginTop="20dp"
+        android:textSize="18sp"
+        tools:fontFamily="sans-serif-light" />
+
+    <ImageView
+        android:id="@+id/icon_name"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/user_label"
+        android:layout_alignTop="@+id/name_label"
+        android:layout_alignBottom="@+id/name_label"
+        android:layout_marginStart="20dp"
+        android:background="@drawable/com_facebook_profile_picture_blank_square"
+        android:tint="#000000" />
+    <TextView
+        android:id="@+id/name_label"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/background_profile_photo"
+        android:layout_toEndOf="@id/icon_email"
+        android:layout_marginTop="60dp"
         android:textSize="18sp"
         tools:fontFamily="sans-serif-light" />
 
