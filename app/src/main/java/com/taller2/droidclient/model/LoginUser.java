@@ -5,12 +5,12 @@ public class LoginUser {
     private String password;
 
     //Temporary
-    private Boolean facebook_log;
+    //private Boolean facebook_log;
 
     public LoginUser(String email, String password, Boolean facebook_log) {
         this.email = email;
         this.password = password;
-        this.facebook_log = facebook_log;
+        //this.facebook_log = facebook_log;
     }
 
     public String getEmail() {
@@ -21,7 +21,9 @@ public class LoginUser {
         return password;
     }
 
+    /*
     public Boolean getFacebook_log() {
         return facebook_log;
     }
+    */
 }

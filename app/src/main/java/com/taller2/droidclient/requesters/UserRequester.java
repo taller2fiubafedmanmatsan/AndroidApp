@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.LoginUser;
+import com.taller2.droidclient.model.PasswordUser;
 import com.taller2.droidclient.model.RegisterUser;
 import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.utils.JsonConverter;
@@ -24,7 +25,7 @@ import okhttp3.Response;
 public class UserRequester {
 
     private String postUrl = "https://app-server-t2.herokuapp.com/api/users";
-    private String authUrl = "https://app-server-t2.herokuapp.com/api/auth/singin";
+    private String authUrl = "https://app-server-t2.herokuapp.com/api/auth/signin";
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -42,6 +43,14 @@ public class UserRequester {
         try {
             postRequest(authUrl, new JsonConverter().objectToJsonString(user), callback);
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void changePasswordUser(PasswordUser pass, String token, CallbackUserRequester callback) {
+        try{
+            putRequest(postUrl + "/me",new JsonConverter().objectToJsonString(pass), token,callback);
+        } catch (IOException e){
             e.printStackTrace();
         }
     }
@@ -78,6 +87,8 @@ public class UserRequester {
 
         Request request = new Request.Builder().url(postUrl).post(body).build();
 
+        Log.d("DEBUG", postBody);
+
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -91,6 +102,31 @@ public class UserRequester {
                 Log.d("LOG/Register",response.body().string());
             }*/
         });
+    }
+
+    private void putRequest(String putUrl, String putBody, String token, final CallbackUserRequester callback) throws  IOException {
+
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody body = RequestBody.create(JSON,putBody);
+        Request request = new Request.Builder().url(putUrl).put(body).header("x-auth-token",token).build();
+
+        Log.d("REQUEST", request.toString());
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(call,e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                callback.onResponse(call,response);
+
+            }
+        });
+
+
     }
 
 

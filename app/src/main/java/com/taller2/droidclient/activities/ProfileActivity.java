@@ -37,6 +37,7 @@ public class ProfileActivity extends BasicActivity{
     private TextView email_profile;
     private Button button_update_profile;
     private ImageView profile_picture;
+    private Button button_change_password;
     private User userdata;
     private String token;
     private UserRequester userRequester;
@@ -53,6 +54,7 @@ public class ProfileActivity extends BasicActivity{
         email_profile = findViewById(R.id.email_label);
         button_update_profile = findViewById(R.id.icon_edit_name);
         profile_picture = findViewById(R.id.profile_picture);
+        button_change_password = findViewById(R.id.change_password);
 
         token = this.getUserToken();
 
@@ -108,6 +110,13 @@ public class ProfileActivity extends BasicActivity{
                 update_profile();
                 button_update_profile.setEnabled(false);
                 changeActivity(ProfileActivity.this, MainActivity.class);
+            }
+        });
+
+        button_change_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeActivity(ProfileActivity.this,ChangePasswordActivity.class,token);
             }
         });
     }
