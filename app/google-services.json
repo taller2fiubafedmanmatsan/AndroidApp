@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "211622801483-m6nnu22g4s70jbjriq372imjtjrmsgia.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.taller2.droidclient",
+            "certificate_hash": "c27e95158d99d451e6fe6063faffa1b22866f4f3"
+          }
+        },
+        {
           "client_id": "211622801483-ookbd8c14kt6ptbuhdamqrl5flpa4hn6.apps.googleusercontent.com",
           "client_type": 3
         }
