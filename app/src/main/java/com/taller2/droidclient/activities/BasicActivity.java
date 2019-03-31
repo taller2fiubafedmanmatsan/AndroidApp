@@ -65,7 +65,25 @@ public class BasicActivity extends AppCompatActivity {
         finish();
     }
 
+    public void changeActivity(Context from, Class to, String token, String data) {
+        Intent intent = new Intent(from, to);
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("userToken",token);
+        intent.putExtra("userdata",data);
+
+        startActivity(intent);
+
+        finish();
+    }
+
     public String getUserToken(){
+        Bundle bundle = getIntent().getExtras();
+        String userToken = bundle.getString("userToken");
+        return userToken;
+    }
+
+    public String getUserData(){
         Bundle bundle = getIntent().getExtras();
         String userToken = bundle.getString("userToken");
         return userToken;
