@@ -1,5 +1,6 @@
 package com.taller2.droidclient.requesters;
 
+import android.net.Uri;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -63,6 +64,18 @@ public class UserRequester {
             nicknameMap.put("nickname",nickname);
 
             putRequest(postUrl+ "/me",new JsonConverter().mapToJsonString(nicknameMap),token,callback);
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void changeProfilePic(Uri url, String token, CallbackUserRequester callback){
+        try{
+            Map<String, String> urlMap = new HashMap<String,String>();
+            urlMap.put("photo_url",url.toString());
+
+            putRequest(postUrl+ "/me",new JsonConverter().mapToJsonString(urlMap),token,callback);
 
         } catch (IOException e){
             e.printStackTrace();

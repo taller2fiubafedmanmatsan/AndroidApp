@@ -84,10 +84,20 @@ public class ProfileActivity extends BasicActivity{
 
         userRequester = new UserRequester();
 
+        userdata = this.getUserData();
+
         setUserNameProfile();
 
-        Glide.with(this)
-                .load("https://i.imgur.com/D0OqHFa.jpg").into(profile_picture);
+        //Sacar check NULL cuando el servidor devuelva la url
+        if (userdata.getPhotoUrl() == null || userdata.getPhotoUrl().equals("")) {
+            Glide.with(this)
+                    .load(getResources()
+                            .getIdentifier("default_profile_pic", "drawable", this.getPackageName()))
+                    .into(profile_picture);
+        } else {
+            Glide.with(this)
+                    .load(Uri.parse(userdata.getPhotoUrl())/*"https://i.imgur.com/D0OqHFa.jpg"*/).into(profile_picture);
+        }
 
         setListeners();
 
@@ -100,7 +110,10 @@ public class ProfileActivity extends BasicActivity{
     }
 
     private void setUserNameProfile() {
-        userRequester.getUser(token, new CallbackUserRequester() {
+        user_profile.setText(userdata.getNickname());
+        email_profile.setText(userdata.getEmail());
+        name_profile.setText(userdata.getName());
+        /*userRequester.getUser(token, new CallbackUserRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String msg = response.body().string();
@@ -125,7 +138,7 @@ public class ProfileActivity extends BasicActivity{
                 Log.d("Profile/Username", e.getMessage());
                 call.cancel();
             }
-        });
+        });*/
     }
 
     private void setListeners(){
@@ -203,6 +216,8 @@ public class ProfileActivity extends BasicActivity{
     }
 
     private void changeProfilePicture(Bitmap bitmap) {
+        //Mejor generar un string aleatorio sino puede ocurrir que se sobreescriba la foto en firebase
+        //Pero el put fracase hacia el servidor.
         String image_name = "profile-" + userdata.getId() + ".jpg";
         StorageReference mountainsRef = mStorageRef.child(image_name);
 
@@ -220,12 +235,29 @@ public class ProfileActivity extends BasicActivity{
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                final Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                //Send to server pending
+                userRequester.changeProfilePic(downloadUrl, token, new CallbackUserRequester() {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        Log.d("Changing/ProfilePic", response.body().string());
 
-                Glide.with(ProfileActivity.this)
-                        .load(downloadUrl).into(profile_picture);
+                        userdata.setPhotoUrl(downloadUrl.toString());
+
+                        ProfileActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                Glide.with(ProfileActivity.this)
+                                        .load(downloadUrl).into(profile_picture);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.d("Changing/ProfilePic", e.getMessage());
+                        Toast.makeText(ProfileActivity.this, "Image failed to load: Try again", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 
@@ -251,6 +283,8 @@ public class ProfileActivity extends BasicActivity{
                         //Bitmap bitmap = MediaStore.Images.Media.getBitmap(ProfileActivity.this.getContentResolver(), data.getData());
                     CropImage.activity(data.getData())
                             .start(ProfileActivity.this);
+
+
                         // changeProfilePicture(bitmap);
                     /*} catch (IOException e) {
                         e.printStackTrace();

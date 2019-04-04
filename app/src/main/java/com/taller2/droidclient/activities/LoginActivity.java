@@ -20,9 +20,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
+import com.google.gson.Gson;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.LoginUser;
+import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.requesters.UserRequester;
 
 import java.io.IOException;
@@ -80,13 +82,8 @@ public class LoginActivity extends BasicActivity {
                             String msg = response.body().string();
 
                             if (response.isSuccessful()) {
-                                changeActivity(LoginActivity.this, ProfileActivity.class, msg);
-
-                                LoginActivity.this.runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                //changeActivity(LoginActivity.this, ProfileActivity.class, msg);
+                                getUserDataAndChangeActivity(msg);
                             } else {
                                 LoginActivity.this.runOnUiThread(new Runnable() {
                                     public void run() {
@@ -110,6 +107,34 @@ public class LoginActivity extends BasicActivity {
                         }
                     });
                 }
+            }
+        });
+    }
+
+    private void getUserDataAndChangeActivity(final String token) {
+        userRequester.getUser(token, new CallbackUserRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String msg = response.body().string();
+
+                final User userdata = new Gson().fromJson(msg, User.class);
+
+                if (response.isSuccessful()) {
+                    LoginActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            changeActivity(LoginActivity.this, ProfileActivity.class, token, userdata);
+                            Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                Log.d("Login/Userdata", msg);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("Login/Userdata", e.getMessage());
+                call.cancel();
             }
         });
     }

@@ -70,7 +70,7 @@
         android:layout_alignBottom="@id/profile_picture"
         android:layout_centerHorizontal="true"
         android:layout_marginRight="20dp"
-        android:background="@android:drawable/ic_menu_camera" />
+        android:background="@android:drawable/ic_menu_camera"/>
 
     <TextView
         android:id="@+id/email_label"

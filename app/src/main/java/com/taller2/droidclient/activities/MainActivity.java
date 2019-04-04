@@ -101,7 +101,7 @@ public class MainActivity extends BasicActivity {
                                     String email = object.getString("email");
                                     final String imageURL = object.getJSONObject("picture").getJSONObject("data").getString("url");
 
-                                    RegisterUser user = new RegisterUser(fullname, id, email, id, true);
+                                    RegisterUser user = new RegisterUser(fullname, id, email, id, true/*, "-"*/);
 
                                     userRequester.registerUser(user, new CallbackUserRequester() {
                                         @Override

@@ -30,6 +30,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.LoginUser;
@@ -50,7 +51,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class RegisterActivity extends BasicActivity{
+public class RegisterActivity extends BasicActivity {
 
     private EditText username_v;
     private EditText email_address_v;
@@ -102,7 +103,7 @@ public class RegisterActivity extends BasicActivity{
                     Toast.makeText(RegisterActivity.this, "Password must have at least 6 characters", Toast.LENGTH_SHORT).show();
                 } else {
                     //register(username, email_address, password);
-                    RegisterUser user = new RegisterUser(fullname,username,email_address,password, false);
+                    RegisterUser user = new RegisterUser(fullname,username,email_address,password, false/*, "-"*/);
                     userRequester.registerUser(user, new CallbackUserRequester() {
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
@@ -151,7 +152,8 @@ public class RegisterActivity extends BasicActivity{
                 String msg = response.body().string();
 
                 if (response.isSuccessful()) {
-                    changeActivity(RegisterActivity.this, ProfileActivity.class, msg);
+                    //changeActivity(RegisterActivity.this, ProfileActivity.class, msg);
+                    getUserDataAndChangeActivity(msg);
 
                     RegisterActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
@@ -177,6 +179,39 @@ public class RegisterActivity extends BasicActivity{
                     }
                 });
 
+                call.cancel();
+            }
+        });
+    }
+
+    private void getUserDataAndChangeActivity(final String token) {
+        userRequester.getUser(token, new CallbackUserRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String msg = response.body().string();
+
+                final User userdata = new Gson().fromJson(msg, User.class);
+
+                if (response.isSuccessful()) {
+                    RegisterActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            changeActivity(RegisterActivity.this, ConfigRegisterActivity.class, token, userdata);
+                        }
+                    });
+                }
+
+                Log.d("Register/Userdata", msg);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                RegisterActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(RegisterActivity.this, "Can't enter into account. Try login in later", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                Log.d("Register/Userdata", e.getMessage());
                 call.cancel();
             }
         });
