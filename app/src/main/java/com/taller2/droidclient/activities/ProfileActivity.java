@@ -93,10 +93,11 @@ public class ProfileActivity extends BasicActivity{
             Glide.with(this)
                     .load(getResources()
                             .getIdentifier("default_profile_pic", "drawable", this.getPackageName()))
+                    .centerCrop()
                     .into(profile_picture);
         } else {
             Glide.with(this)
-                    .load(Uri.parse(userdata.getPhotoUrl())/*"https://i.imgur.com/D0OqHFa.jpg"*/).into(profile_picture);
+                    .load(Uri.parse(userdata.getPhotoUrl())/*"https://i.imgur.com/D0OqHFa.jpg"*/).centerCrop().into(profile_picture);
         }
 
         setListeners();
@@ -247,7 +248,7 @@ public class ProfileActivity extends BasicActivity{
                         ProfileActivity.this.runOnUiThread(new Runnable() {
                             public void run() {
                                 Glide.with(ProfileActivity.this)
-                                        .load(downloadUrl).into(profile_picture);
+                                        .load(downloadUrl).centerCrop().into(profile_picture);
                             }
                         });
                     }

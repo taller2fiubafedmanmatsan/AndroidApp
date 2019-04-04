@@ -77,6 +77,7 @@ public class ConfigRegisterActivity extends BasicActivity {
         Glide.with(this)
                 .load(getResources()
                         .getIdentifier("default_profile_pic", "drawable", this.getPackageName()))
+                .centerCrop()
                 .into(profile_picture);
 
         setListeners();
@@ -151,7 +152,7 @@ public class ConfigRegisterActivity extends BasicActivity {
                             public void run() {
                                 button_finish.setEnabled(true);
                                 Glide.with(ConfigRegisterActivity.this)
-                                        .load(downloadUrl).into(profile_picture);
+                                        .load(downloadUrl).centerCrop().into(profile_picture);
                             }
                         });
                     }
