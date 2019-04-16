@@ -6,12 +6,10 @@ import android.os.Bundle;
 import android.support.annotation.RestrictTo;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.google.gson.Gson;
-import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.User;
 
 public class BasicActivity extends AppCompatActivity {

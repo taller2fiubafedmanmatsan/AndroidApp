@@ -120,7 +120,7 @@ public class ConfigRegisterActivity extends BasicActivity {
     }
 
     private void changeProfilePicture(Bitmap bitmap) {
-        final String image_name = "profile-" + userdata.getId() + ".jpg";
+        final String image_name = "profile-" + "random" + ".jpg";
         StorageReference mountainsRef = mStorageRef.child(image_name);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -146,7 +146,7 @@ public class ConfigRegisterActivity extends BasicActivity {
                     public void onResponse(Call call, Response response) throws IOException {
                         Log.d("Changing/ProfilePic", response.body().string());
 
-                        userdata.setPhotoUrl(downloadUrl.toString());
+                        //userdata.setPhotoUrl(downloadUrl.toString());
 
                         ConfigRegisterActivity.this.runOnUiThread(new Runnable() {
                             public void run() {

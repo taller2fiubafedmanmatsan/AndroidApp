@@ -4,13 +4,9 @@ public class LoginUser {
     private String email;
     private String password;
 
-    //Temporary
-    //private Boolean facebook_log;
-
-    public LoginUser(String email, String password, Boolean facebook_log) {
+    public LoginUser(String email, String password) {
         this.email = email;
         this.password = password;
-        //this.facebook_log = facebook_log;
     }
 
     public String getEmail() {
@@ -20,10 +16,4 @@ public class LoginUser {
     public String getPassword() {
         return password;
     }
-
-    /*
-    public Boolean getFacebook_log() {
-        return facebook_log;
-    }
-    */
 }

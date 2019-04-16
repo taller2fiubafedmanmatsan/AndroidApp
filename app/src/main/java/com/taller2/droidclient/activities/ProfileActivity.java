@@ -4,7 +4,6 @@ package com.taller2.droidclient.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -24,8 +23,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.makeramen.roundedimageview.RoundedImageView;
-import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.CallbackUserRequester;
@@ -40,10 +37,6 @@ import okhttp3.Response;
 
 import com.google.gson.Gson;
 import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
-
-import org.json.JSONObject;
-
 
 public class ProfileActivity extends BasicActivity{
 
@@ -84,11 +77,55 @@ public class ProfileActivity extends BasicActivity{
 
         userRequester = new UserRequester();
 
-        userdata = this.getUserData();
+        reloadUserdata();
 
-        setUserNameProfile();
+        setListeners();
+    }
 
-        //Sacar check NULL cuando el servidor devuelva la url
+    private void reloadUserdata() {
+        userRequester.getUser(token, new CallbackUserRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String msg = response.body().string();
+
+                final User newuserdata = new Gson().fromJson(msg, User.class);
+
+                if (response.isSuccessful()) {
+                    ProfileActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            userdata = newuserdata;
+                            reloadProfile();
+                        }
+                    });
+                }
+
+                Log.d("Profile/ReloadData", msg);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                ProfileActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(ProfileActivity.this, "Failed to reload profile.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                Log.d("Profile/ReloadData", e.getMessage());
+                call.cancel();
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        changeActivity(ProfileActivity.this, MainActivity.class);
+    }
+
+    private void reloadProfile() {
+        user_profile.setText(userdata.getNickname());
+        email_profile.setText(userdata.getEmail());
+        name_profile.setText(userdata.getName());
+
         if (userdata.getPhotoUrl() == null || userdata.getPhotoUrl().equals("")) {
             Glide.with(this)
                     .load(getResources()
@@ -97,49 +134,8 @@ public class ProfileActivity extends BasicActivity{
                     .into(profile_picture);
         } else {
             Glide.with(this)
-                    .load(Uri.parse(userdata.getPhotoUrl())/*"https://i.imgur.com/D0OqHFa.jpg"*/).centerCrop().into(profile_picture);
+                    .load(Uri.parse(userdata.getPhotoUrl())).centerCrop().into(profile_picture);
         }
-
-        setListeners();
-
-    }
-
-    @Override
-    public void onBackPressed() {
-        //super.onBackPressed();
-        changeActivity(ProfileActivity.this, MainActivity.class);
-    }
-
-    private void setUserNameProfile() {
-        user_profile.setText(userdata.getNickname());
-        email_profile.setText(userdata.getEmail());
-        name_profile.setText(userdata.getName());
-        /*userRequester.getUser(token, new CallbackUserRequester() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String msg = response.body().string();
-
-                userdata = new Gson().fromJson(msg, User.class);
-
-                if (response.isSuccessful()) {
-                    ProfileActivity.this.runOnUiThread(new Runnable() {
-                        public void run() {
-                            user_profile.setText(userdata.getNickname());
-                            email_profile.setText(userdata.getEmail());
-                            name_profile.setText(userdata.getName());
-                        }
-                    });
-                }
-
-                Log.d("Profile/Username", msg);
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d("Profile/Username", e.getMessage());
-                call.cancel();
-            }
-        });*/
     }
 
     private void setListeners(){
@@ -188,7 +184,7 @@ public class ProfileActivity extends BasicActivity{
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    changeActivity(ProfileActivity.this, ProfileActivity.class, token);
+                    reloadUserdata();
 
                     ProfileActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
@@ -243,14 +239,7 @@ public class ProfileActivity extends BasicActivity{
                     public void onResponse(Call call, Response response) throws IOException {
                         Log.d("Changing/ProfilePic", response.body().string());
 
-                        userdata.setPhotoUrl(downloadUrl.toString());
-
-                        ProfileActivity.this.runOnUiThread(new Runnable() {
-                            public void run() {
-                                Glide.with(ProfileActivity.this)
-                                        .load(downloadUrl).centerCrop().into(profile_picture);
-                            }
-                        });
+                        reloadUserdata();
                     }
 
                     @Override
@@ -280,16 +269,8 @@ public class ProfileActivity extends BasicActivity{
         if (requestCode == SELECT_IMAGE) {
             if (resultCode == Activity.RESULT_OK) {
                 if (data != null) {
-                    //try {
-                        //Bitmap bitmap = MediaStore.Images.Media.getBitmap(ProfileActivity.this.getContentResolver(), data.getData());
                     CropImage.activity(data.getData())
                             .start(ProfileActivity.this);
-
-
-                        // changeProfilePicture(bitmap);
-                    /*} catch (IOException e) {
-                        e.printStackTrace();
-                    }*/
                 }
             } else if (resultCode == Activity.RESULT_CANCELED)  {
                 Toast.makeText(ProfileActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();

@@ -1,19 +1,12 @@
 package com.taller2.droidclient.activities;
 
-import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -21,23 +14,15 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.RegisterUser;
-import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.requesters.UserRequester;
 
 import org.json.JSONException;
@@ -55,6 +40,7 @@ public class MainActivity extends BasicActivity {
     private Button button_register;
     private LoginButton loginButton;
     private UserRequester userRequester;
+    private AccessToken tokenfb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,11 +72,27 @@ public class MainActivity extends BasicActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 // App code
-                final AccessToken token = loginResult.getAccessToken();
+                /*final AccessToken token*/ tokenfb = loginResult.getAccessToken();
 
-                AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+                AuthCredential credential = FacebookAuthProvider.getCredential(tokenfb.getToken());
 
-                GraphRequest request = GraphRequest.newMeRequest(
+                userRequester.facebookLogin(tokenfb.getToken(), new CallbackUserRequester() {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        if (response.isSuccessful()) {
+
+                        }
+
+                        Log.d("Facebook/Response", response.body().string());
+                    }
+
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.d("Facebook/Failure", e.getMessage());
+                    }
+                });
+
+                /*GraphRequest request = GraphRequest.newMeRequest(
                         token,
                         new GraphRequest.GraphJSONObjectCallback() {
                             @Override
@@ -101,7 +103,7 @@ public class MainActivity extends BasicActivity {
                                     String email = object.getString("email");
                                     final String imageURL = object.getJSONObject("picture").getJSONObject("data").getString("url");
 
-                                    RegisterUser user = new RegisterUser(fullname, id, email, id, true/*, "-"*/);
+                                    RegisterUser user = new RegisterUser(fullname, id, email, id);
 
                                     userRequester.registerUser(user, new CallbackUserRequester() {
                                         @Override
@@ -146,12 +148,12 @@ public class MainActivity extends BasicActivity {
                                     Toast.makeText(MainActivity.this, "Facebook authentication failed", Toast.LENGTH_SHORT).show();
                                 }
                             }
-                        });
+                        });*/
 
-                Bundle parameters = new Bundle();
+                /*Bundle parameters = new Bundle();
                 parameters.putString("fields", "id,name,email,picture{url}");
                 request.setParameters(parameters);
-                request.executeAsync();
+                request.executeAsync();*/
             }
 
             @Override
