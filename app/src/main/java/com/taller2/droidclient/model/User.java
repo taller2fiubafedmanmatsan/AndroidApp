@@ -1,5 +1,8 @@
 package com.taller2.droidclient.model;
 
+import android.net.Uri;
+import android.util.Log;
+
 public class User {
 
     private String _id;
@@ -7,17 +10,17 @@ public class User {
     private String email;
     private String nickname;
     private Boolean isAdmin;
-    private Boolean facebook_log;
-    //private String imageURL;
+    private String photo_url;
 
-    public User(String _id, String name, String email, String nickname, Boolean isAdmin, Boolean facebook_log/*String imageURL*/) {
+    public User(String _id, String name, String email, String nickname, Boolean isAdmin/*, Uri photo_url*/) {
         this._id = _id;
         this.name = name;
         this.email = email;
         this.nickname = nickname;
         this.isAdmin = isAdmin;
-        this.facebook_log = facebook_log;
-        //this.imageURL = imageURL;
+
+        //Hasta que el server devuelva la url
+        //this.photo_url = photo_url;
     }
 
     public String getId() {
@@ -40,10 +43,6 @@ public class User {
         return isAdmin;
     }
 
-    public Boolean getFacebook_log() {
-        return facebook_log;
-    }
-
     public void setId(String _id) {
         this._id = _id;
     }
@@ -64,10 +63,6 @@ public class User {
         isAdmin = admin;
     }
 
-    public void setFacebook_log(Boolean facebook_log) {
-        this.facebook_log = facebook_log;
-    }
-    /*public String getImageURL() {
-        return imageURL;
-    }*/
+    public String getPhotoUrl() { return photo_url; }
+    public void setPhotoUrl(String photo_url) { this.photo_url = photo_url; }
 }

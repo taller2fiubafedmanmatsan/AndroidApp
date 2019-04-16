@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ConfigRegisterActivity">
+
+    <ImageView
+        android:id="@+id/main_backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/login_register_background"
+        />
+
+    <TextView
+        android:id="@+id/text_choose_profile"
+        android:layout_centerHorizontal="true"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_marginTop="40dp"
+        android:gravity="center_horizontal"
+        android:textColor="#FFFFFF"
+        android:text="Choose a profile picture"
+        android:textSize="20sp"/>
+
+    <ImageView
+        android:id="@+id/background_profile_photo"
+        android:layout_centerHorizontal="true"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_marginTop="70dp"
+        android:layout_alignTop="@+id/text_choose_profile"
+        android:alpha="0.75"
+        android:scaleType="centerCrop"
+        android:src="@drawable/profile_background" />
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/profile_picture"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
+        android:layout_alignTop="@+id/background_profile_photo"
+        android:layout_marginTop="20dp"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:scaleType="fitXY"
+        app:riv_corner_radius="30dip"
+        app:riv_border_width="2dip"
+        app:riv_border_color="#333333"
+        app:riv_mutate_background="true"
+        app:riv_tile_mode="repeat"
+        app:riv_oval="true" />
+
+    <Button
+        android:id="@+id/icon_edit_image"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignBottom="@id/profile_picture"
+        android:layout_centerHorizontal="true"
+        android:background="@android:drawable/ic_menu_camera"/>
+
+    <Button
+        android:id="@+id/button_skip_profile"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignTop="@id/icon_edit_image"
+        android:layout_marginTop="50dp"
+        android:textColor="#FFFFFF"
+        android:textAllCaps="false"
+        style="?android:attr/borderlessButtonStyle"
+        android:text="Omit" />
+
+    <Button
+        android:id="@+id/button_finish_profile"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignTop="@id/button_skip_profile"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/round_border_button"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:text="Finish"  />
+
+</RelativeLayout>

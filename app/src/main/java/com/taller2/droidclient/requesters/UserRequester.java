@@ -1,5 +1,6 @@
 package com.taller2.droidclient.requesters;
 
+import android.net.Uri;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -28,6 +29,7 @@ public class UserRequester {
 
     private String postUrl = "https://app-server-t2.herokuapp.com/api/users";
     private String authUrl = "https://app-server-t2.herokuapp.com/api/auth/signin";
+    private String facebookUrl = "https://app-server-t2.herokuapp.com/api/auth/facebook";
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -49,6 +51,17 @@ public class UserRequester {
         }
     }
 
+    public void facebookLogin(String token, CallbackUserRequester callback) {
+        try {
+            /*Map<String, String> mapToken = new HashMap<String,String>();
+            mapToken.put("access_token",token);*/
+
+            postRequestFacebook(facebookUrl, token/*new JsonConverter().objectToJsonString(mapToken)*/, callback);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void changePasswordUser(PasswordUser pass, String token, CallbackUserRequester callback) {
         try{
             putRequest(postUrl + "/me",new JsonConverter().objectToJsonString(pass), token,callback);
@@ -63,6 +76,18 @@ public class UserRequester {
             nicknameMap.put("nickname",nickname);
 
             putRequest(postUrl+ "/me",new JsonConverter().mapToJsonString(nicknameMap),token,callback);
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void changeProfilePic(Uri url, String token, CallbackUserRequester callback){
+        try{
+            Map<String, String> urlMap = new HashMap<String,String>();
+            urlMap.put("photo_url",url.toString());
+
+            putRequest(postUrl+ "/me",new JsonConverter().mapToJsonString(urlMap),token,callback);
 
         } catch (IOException e){
             e.printStackTrace();
@@ -102,6 +127,34 @@ public class UserRequester {
         Request request = new Request.Builder().url(postUrl).post(body).build();
 
         Log.d("DEBUG", postBody);
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(call, e);
+                /*call.cancel();*/
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                callback.onResponse(call, response);
+            } /*throws IOException {
+                Log.d("LOG/Register",response.body().string());
+            }*/
+        });
+    }
+
+    private void postRequestFacebook(String postUrl, String postHeader, final CallbackUserRequester callback) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+
+        //RequestBody body = RequestBody.create(JSON, "");
+        RequestBody body = RequestBody.create(null, new byte[0]);
+
+        Request request = new Request.Builder().url(postUrl)
+                .method("POST", body)
+                .header("access_token", postHeader)
+                .build();
+
+        Log.d("DEBUG", postHeader);
 
         client.newCall(request).enqueue(new Callback() {
             @Override
