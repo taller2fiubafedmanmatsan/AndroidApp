@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.taller2.droidclient.model.CallbackUserRequester;
+import com.taller2.droidclient.model.EmailRecoverUser;
 import com.taller2.droidclient.model.LoginUser;
 import com.taller2.droidclient.model.PasswordUser;
 import com.taller2.droidclient.model.RegisterUser;
@@ -28,6 +29,7 @@ import okhttp3.Response;
 public class UserRequester {
 
     private String postUrl = "https://app-server-t2.herokuapp.com/api/users";
+    private String recoverPassUrl = "https://app-server-t2.herokuapp.com/api/users/restorepassword";
     private String authUrl = "https://app-server-t2.herokuapp.com/api/auth/signin";
     private String facebookUrl = "https://app-server-t2.herokuapp.com/api/auth/facebook";
 
@@ -39,6 +41,14 @@ public class UserRequester {
             postRequest(postUrl, new JsonConverter().objectToJsonString(user), callback);
 
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void recoverPassword(EmailRecoverUser email, CallbackUserRequester callback){
+        try{
+            postRequest(recoverPassUrl, new JsonConverter().objectToJsonString(email), callback);
+        }catch(IOException e){
             e.printStackTrace();
         }
     }
@@ -69,6 +79,8 @@ public class UserRequester {
             e.printStackTrace();
         }
     }
+
+
 
     public void changeNicknameUser(String nickname, String token, CallbackUserRequester callback){
         try{
