@@ -38,6 +38,7 @@ public class MainActivity extends BasicActivity {
     private CallbackManager callbackManager;
     private Button button_login;
     private Button button_register;
+    private Button button_recovery;
     private LoginButton loginButton;
     private UserRequester userRequester;
     private AccessToken tokenfb;
@@ -53,6 +54,7 @@ public class MainActivity extends BasicActivity {
 
         button_login = findViewById(R.id.button_login);
         button_register = findViewById(R.id.button_register);
+        button_recovery = findViewById(R.id.button_recovery);
         loginButton = findViewById(R.id.login_facebook);
 
         setListeners();
@@ -186,6 +188,13 @@ public class MainActivity extends BasicActivity {
             @Override
             public void onClick(View v) {
                 changeActivity(MainActivity.this, RegisterActivity.class);
+            }
+        });
+
+        button_recovery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeActivity(MainActivity.this, RecoverPasswordActivity.class);
             }
         });
     }

@@ -49,6 +49,8 @@ public class ProfileActivity extends BasicActivity{
     private ImageView profile_picture;
     private Button button_change_password;
     private Button button_change_picture;
+    private Button button_new_workspace;
+    private Button button_join_workspace;
     private User userdata;
     private String token;
     private UserRequester userRequester;
@@ -72,6 +74,8 @@ public class ProfileActivity extends BasicActivity{
         profile_picture = findViewById(R.id.profile_picture);
         button_change_password = findViewById(R.id.change_password);
         button_change_picture = findViewById(R.id.icon_edit_image);
+        button_new_workspace = findViewById(R.id.create_workspace);
+        button_join_workspace = findViewById(R.id.join_workspace);
 
         token = this.getUserToken();
 
@@ -158,6 +162,20 @@ public class ProfileActivity extends BasicActivity{
         });
 
         button_change_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeActivity(ProfileActivity.this,ChangePasswordActivity.class,token);
+            }
+        });
+
+        button_new_workspace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeActivity(ProfileActivity.this,ChangePasswordActivity.class,token);
+            }
+        });
+
+        button_join_workspace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changeActivity(ProfileActivity.this,ChangePasswordActivity.class,token);
