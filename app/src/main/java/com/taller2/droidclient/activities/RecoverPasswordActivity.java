@@ -2,6 +2,7 @@ package com.taller2.droidclient.activities;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -88,6 +89,17 @@ public class RecoverPasswordActivity extends BasicActivity {
                 call.cancel();
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                changeActivity(RecoverPasswordActivity.this, MainActivity.class);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
