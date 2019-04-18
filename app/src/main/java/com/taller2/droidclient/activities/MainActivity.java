@@ -1,6 +1,7 @@
 package com.taller2.droidclient.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -42,6 +43,7 @@ public class MainActivity extends BasicActivity {
     private LoginButton loginButton;
     private UserRequester userRequester;
     private AccessToken tokenfb;
+    SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,13 @@ public class MainActivity extends BasicActivity {
         button_register = findViewById(R.id.button_register);
         button_recovery = findViewById(R.id.button_recovery);
         loginButton = findViewById(R.id.login_facebook);
+
+        preferences = getSharedPreferences("login",MODE_PRIVATE);
+
+        if(preferences.getBoolean("logged",false)){
+            token = preferences.getString("token","");
+            changeActivity(MainActivity.this,ProfileActivity.class, token);
+        }
 
         setListeners();
         setCallbacksFacebook();
