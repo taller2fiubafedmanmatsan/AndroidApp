@@ -3,6 +3,7 @@ package com.taller2.droidclient.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -56,6 +57,7 @@ public class ProfileActivity extends BasicActivity{
     private UserRequester userRequester;
 
     private StorageReference mStorageRef;
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +68,7 @@ public class ProfileActivity extends BasicActivity{
         setContentView(R.layout.activity_profile);
 
         mStorageRef = FirebaseStorage.getInstance().getReference();
+        preferences = getSharedPreferences("login",MODE_PRIVATE);
 
         user_profile = findViewById(R.id.user_label);
         email_profile = findViewById(R.id.email_label);
@@ -276,6 +279,8 @@ public class ProfileActivity extends BasicActivity{
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
+                preferences.edit().putBoolean("logged",false).apply();
+                preferences.edit().putString("token", "").apply();
                 changeActivity(ProfileActivity.this, MainActivity.class);
                 return true;
         }
