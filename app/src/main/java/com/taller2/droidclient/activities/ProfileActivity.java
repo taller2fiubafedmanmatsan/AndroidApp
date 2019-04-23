@@ -93,20 +93,27 @@ public class ProfileActivity extends BasicActivity{
         userRequester.getUser(token, new CallbackUserRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String msg = response.body().string();
+                try{
+                    String msg = response.body().string();
 
-                final User newuserdata = new Gson().fromJson(msg, User.class);
+                    final User newuserdata = new Gson().fromJson(msg, User.class);
 
-                if (response.isSuccessful()) {
-                    ProfileActivity.this.runOnUiThread(new Runnable() {
-                        public void run() {
-                            userdata = newuserdata;
-                            reloadProfile();
-                        }
-                    });
+                    if (response.isSuccessful()) {
+                        ProfileActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                userdata = newuserdata;
+                                reloadProfile();
+                            }
+                        });
+                    }
+
+                    Log.d("Profile/ReloadData", msg);
+                }catch (Exception e){
+                    preferences.edit().putBoolean("logged",false).apply();
+                    preferences.edit().putString("token", "").apply();
+                    changeActivity(ProfileActivity.this, MainActivity.class);
                 }
 
-                Log.d("Profile/ReloadData", msg);
             }
 
             @Override

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DroidClient</string>
+    <string name="app_name">Hypechat</string>
     <string name="facebook_app_id">613082942449635</string>
     <string name="fb_login_protocol_scheme">fb613082942449635</string>
     <string name="Hypechat">Hypechat</string>
