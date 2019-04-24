@@ -68,7 +68,8 @@ public class ProfileActivity extends BasicActivity{
 
 
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
+    private ListView mDrawerChannelsList;
+    private ListView mDrawerMessagesList;
     private ActionBarDrawerToggle mDrawerToggle;
     private String[] channels;
     private String[] direct_messages;
@@ -84,15 +85,40 @@ public class ProfileActivity extends BasicActivity{
 
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.profile_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_channel_drawer);
+        mDrawerChannelsList = (ListView) findViewById(R.id.left_channel_drawer);
+        mDrawerMessagesList = (ListView) findViewById(R.id.left_messages_drawer);
 
-        String[] channel = {"canales","","","",""};
+        String[] channel = {"General",
+                "Random",
+                "Imagenes",
+                "Memes",
+                "Parciales resueltos BDD",
+                "Falopa",
+                "Necesito mas casos",
+                "Filling list?",
+                "Is it filled!?"
+        };
+
+        String[] message = {"Juan",
+                "Ignacio",
+                "Diego",
+                "Otro juan",
+                "El de resueltos",
+                "Dios",
+                "Fede",
+                "Santi",
+                "Otro Santi pero Pinto"
+        };
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.string.drawer_open, R.string.drawer_close);
 
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+        mDrawerChannelsList.setAdapter(new ArrayAdapter<String>(this,
                 R.layout.format_text_navigation, channel));
+
+        mDrawerMessagesList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.format_text_navigation, message));
+
 
         mStorageRef = FirebaseStorage.getInstance().getReference();
         preferences = getSharedPreferences("login",MODE_PRIVATE);
