@@ -20,9 +20,10 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
 
     private Context mContext;
-    private List<BaseMessage> mMessageList;
+    //private List<BaseMessage> mMessageList;
+    private List<UserMessage> mMessageList;
 
-    public MessageListAdapter(Context context, List<BaseMessage> messageList) {
+    public MessageListAdapter(Context context, List<UserMessage> messageList/*List<BaseMessage> messageList*/) {
         mContext = context;
         mMessageList = messageList;
     }

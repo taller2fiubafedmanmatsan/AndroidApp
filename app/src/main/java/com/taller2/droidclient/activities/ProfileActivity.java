@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -44,6 +45,7 @@ import okhttp3.Call;
 import okhttp3.Response;
 
 import com.google.gson.Gson;
+import com.taller2.droidclient.utils.GlideApp;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 public class ProfileActivity extends BasicActivity{
@@ -66,59 +68,13 @@ public class ProfileActivity extends BasicActivity{
     private StorageReference mStorageRef;
     private SharedPreferences preferences;
 
-
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerChannelsList;
-    private ListView mDrawerMessagesList;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private String[] channels;
-    private String[] direct_messages;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         changeTextActionBar("Profile");
 
-        setContentView(R.layout.test_activity);
-
-
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.profile_layout);
-        mDrawerChannelsList = (ListView) findViewById(R.id.left_channel_drawer);
-        mDrawerMessagesList = (ListView) findViewById(R.id.left_messages_drawer);
-
-        String[] channel = {"General",
-                "Random",
-                "Imagenes",
-                "Memes",
-                "Parciales resueltos BDD",
-                "Falopa",
-                "Necesito mas casos",
-                "Filling list?",
-                "Is it filled!?"
-        };
-
-        String[] message = {"Juan",
-                "Ignacio",
-                "Diego",
-                "Otro juan",
-                "El de resueltos",
-                "Dios",
-                "Fede",
-                "Santi",
-                "Otro Santi pero Pinto"
-        };
-
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.string.drawer_open, R.string.drawer_close);
-
-        mDrawerChannelsList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.format_text_navigation, channel));
-
-        mDrawerMessagesList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.format_text_navigation, message));
-
+        setContentView(R.layout.activity_profile);
 
         mStorageRef = FirebaseStorage.getInstance().getReference();
         preferences = getSharedPreferences("login",MODE_PRIVATE);
@@ -140,15 +96,6 @@ public class ProfileActivity extends BasicActivity{
         reloadUserdata();
 
         setListeners();
-    }
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     private void reloadUserdata() {
@@ -194,7 +141,7 @@ public class ProfileActivity extends BasicActivity{
 
     @Override
     public void onBackPressed() {
-        changeActivity(ProfileActivity.this, MainActivity.class);
+        changeActivity(ProfileActivity.this, MessageListActivity.class, token);
     }
 
     private void reloadProfile() {
@@ -203,13 +150,13 @@ public class ProfileActivity extends BasicActivity{
         name_profile.setText(userdata.getName());
 
         if (userdata.getPhotoUrl() == null || userdata.getPhotoUrl().equals("")) {
-            Glide.with(this)
+            GlideApp.with(this)
                     .load(getResources()
                             .getIdentifier("default_profile_pic", "drawable", this.getPackageName()))
                     .centerCrop()
                     .into(profile_picture);
         } else {
-            Glide.with(this)
+            GlideApp.with(this)
                     .load(Uri.parse(userdata.getPhotoUrl())).centerCrop().into(profile_picture);
         }
     }
@@ -345,15 +292,12 @@ public class ProfileActivity extends BasicActivity{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item))
-            return true;
-
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                preferences.edit().putBoolean("logged",false).apply();
-                preferences.edit().putString("token", "").apply();
-                changeActivity(ProfileActivity.this, MainActivity.class);
+                /*preferences.edit().putBoolean("logged",false).apply();
+                preferences.edit().putString("token", "").apply();*/
+                changeActivity(ProfileActivity.this, MessageListActivity.class, token);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -384,13 +328,5 @@ public class ProfileActivity extends BasicActivity{
                 Exception error = result.getError();
             }
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_message_actions, menu);
-        return super.onCreateOptionsMenu(menu);
     }
 }

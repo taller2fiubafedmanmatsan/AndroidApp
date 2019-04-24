@@ -73,7 +73,7 @@ public class LoginActivity extends BasicActivity {
                                 preferences.edit().putString("token", msg).apply();
                                 LoginActivity.this.runOnUiThread(new Runnable() {
                                     public void run() {
-                                        changeActivity(LoginActivity.this, ProfileActivity.class, msg);
+                                        changeActivity(LoginActivity.this, MessageListActivity.class, msg);
                                         Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
                                     }
                                 });
