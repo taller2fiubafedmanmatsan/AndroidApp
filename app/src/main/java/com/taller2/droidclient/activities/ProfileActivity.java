@@ -4,17 +4,24 @@ package com.taller2.droidclient.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,13 +66,33 @@ public class ProfileActivity extends BasicActivity{
     private StorageReference mStorageRef;
     private SharedPreferences preferences;
 
+
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private String[] channels;
+    private String[] direct_messages;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         changeTextActionBar("Profile");
 
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.test_activity);
+
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.profile_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_channel_drawer);
+
+        String[] channel = {"canales","","","",""};
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                R.string.drawer_open, R.string.drawer_close);
+
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.format_text_navigation, channel));
 
         mStorageRef = FirebaseStorage.getInstance().getReference();
         preferences = getSharedPreferences("login",MODE_PRIVATE);
@@ -87,6 +114,15 @@ public class ProfileActivity extends BasicActivity{
         reloadUserdata();
 
         setListeners();
+    }
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     private void reloadUserdata() {
@@ -283,6 +319,9 @@ public class ProfileActivity extends BasicActivity{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item))
+            return true;
+
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
@@ -319,5 +358,13 @@ public class ProfileActivity extends BasicActivity{
                 Exception error = result.getError();
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_message_actions, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 }
