@@ -3,17 +3,25 @@ package com.taller2.droidclient.activities;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.taller2.droidclient.R;
@@ -34,6 +42,9 @@ public class MessageListActivity extends BasicActivity {
     private ListView mDrawerMessagesList;
     private ActionBarDrawerToggle mDrawerToggle;
     private SharedPreferences preferences;
+    private Button buttonCreateChannel;
+    private PopupWindow mPopupWindow;
+    private ConstraintLayout mConstraintLayout;
     //Temporary strings
     //Change to Channel or UserChat
     private String[] channels;
@@ -74,14 +85,17 @@ public class MessageListActivity extends BasicActivity {
                         new User("0", "Juan", "admin@gmail.com", "juansoy", true),
                         4040));
 
-        mMessageRecycler = (RecyclerView) findViewById(R.id.reyclerview_message_list);
+        mMessageRecycler = findViewById(R.id.reyclerview_message_list);
         mMessageAdapter = new MessageListAdapter(this, messageList);
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
         mMessageRecycler.setAdapter(mMessageAdapter);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.profile_layout);
-        mDrawerChannelsList = (ListView) findViewById(R.id.left_channel_drawer);
-        mDrawerMessagesList = (ListView) findViewById(R.id.left_messages_drawer);
+        mConstraintLayout = findViewById(R.id.constraint_layout);
+
+        mDrawerLayout = findViewById(R.id.profile_layout);
+        mDrawerChannelsList = findViewById(R.id.left_channel_drawer);
+        mDrawerMessagesList = findViewById(R.id.left_messages_drawer);
+        buttonCreateChannel = findViewById(R.id.icon_create_channel);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.string.drawer_open, R.string.drawer_close);
@@ -93,10 +107,45 @@ public class MessageListActivity extends BasicActivity {
                 R.layout.format_text_navigation, message));
 
         setDrawersListeners();
+        setListeners();
 
         preferences = getSharedPreferences("login",MODE_PRIVATE);
         token = this.getUserToken();
     }
+
+    private void setListeners(){
+        buttonCreateChannel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+
+                View customView = inflater.inflate(R.layout.format_create_channel,null);
+
+                mPopupWindow = new PopupWindow(
+                        customView,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                );
+
+                mPopupWindow.setElevation(5.0f);
+                mPopupWindow.setFocusable(true);
+
+                Button closeButton = customView.findViewById(R.id.ib_close);
+                //EditText insertText = customView.findViewById(R.id.edit_channel_name);
+
+                closeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // Dismiss the popup window
+                        mPopupWindow.dismiss();
+                    }
+                });
+
+                mPopupWindow.showAtLocation(mConstraintLayout, Gravity.CENTER,0,0);
+            }
+        });
+    }
+
     private void setDrawersListeners() {
         mDrawerChannelsList.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
