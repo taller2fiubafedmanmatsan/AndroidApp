@@ -86,7 +86,7 @@ public class ConfigRegisterActivity extends BasicActivity {
     @Override
     public void onBackPressed() {
         //Its like omitting this step
-        changeActivity(ConfigRegisterActivity.this, MessageListActivity.class, token);
+        changeActivity(ConfigRegisterActivity.this, ChatActivity.class, token);
     }
 
     private void setListeners(){
@@ -100,14 +100,14 @@ public class ConfigRegisterActivity extends BasicActivity {
         button_omit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeActivity(ConfigRegisterActivity.this, MessageListActivity.class, token);
+                changeActivity(ConfigRegisterActivity.this, ChatActivity.class, token);
             }
         });
 
         button_finish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeActivity(ConfigRegisterActivity.this, MessageListActivity.class, token);
+                changeActivity(ConfigRegisterActivity.this, ChatActivity.class, token);
             }
         });
     }
