@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuInflater;
@@ -25,12 +26,17 @@ import android.widget.Toast;
 
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.adapters.MessageListAdapter;
+import com.taller2.droidclient.adapters.WorkspaceListAdapter;
 import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.model.UserMessage;
 import com.taller2.droidclient.model.Workspace;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import android.support.v4.app.FragmentActivity;
+
 
 public class ChatActivity extends BasicActivity
         /*implements NavigationView.OnNavigationItemSelectedListener*/ {
@@ -43,15 +49,13 @@ public class ChatActivity extends BasicActivity
     private ActionBarDrawerToggle mDrawerToggle;
     private SharedPreferences preferences;
     private Button buttonCreateChannel;
+    private Button buttonWorkspaces;
     //private PopupWindow mPopupWindow;
     //private ConstraintLayout mConstraintLayout;
     //Temporary strings
     //Change to Channel or UserChat
 
-    private Workspace[] workspaces;
-
-    private String[] channels;
-    private String[] direct_messages;
+    private ArrayList<Workspace> workspaces;
 
     private String[] channel = {"General",
             "Random",
@@ -107,6 +111,7 @@ public class ChatActivity extends BasicActivity
         mDrawerChannelsList = findViewById(R.id.left_channel_drawer);
         mDrawerMessagesList = findViewById(R.id.left_messages_drawer);
         buttonCreateChannel = findViewById(R.id.icon_create_channel);
+        buttonWorkspaces = findViewById(R.id.icon_show_workspaces);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 toolbar,R.string.drawer_open, R.string.drawer_close);
@@ -119,9 +124,9 @@ public class ChatActivity extends BasicActivity
         preferences = getSharedPreferences("login",MODE_PRIVATE);
         token = this.getUserToken();
 
+        workspaces = new ArrayList<Workspace>();
+
         retrieveWorkspaces();
-        retrieveChannels();
-        retrieveChats();
     }
 
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -162,16 +167,33 @@ public class ChatActivity extends BasicActivity
     }
 
     private void retrieveWorkspaces() {
+        //Add request and get workspaces
 
+        Workspace workspace_test1 = new Workspace("1", "Workspace test 1");
+        Workspace workspace_test2 = new Workspace("2", "Workspace test 2");
+
+        workspaces.add(workspace_test1);
+        workspaces.add(workspace_test2);
+
+        WorkspaceListAdapter adapter = new WorkspaceListAdapter(this, workspaces);
+
+        mDrawerChannelsList.setAdapter(adapter);
+
+        /*mDrawerChannelsList.setAdapter(new ArrayAdapter<Workspace>(this,
+                R.layout.format_text_navigation, workspaces));
+        //Retrieve actual workspace?
+        retrieveChannels(workspaces.get(0));
+        retrieveChats(workspaces.get(0));*/
     }
 
-    private void retrieveChannels() {
+    private void retrieveChannels(Workspace actual_workspace) {
         //Add request and get channels
+        //Request by Workspace, then
         mDrawerChannelsList.setAdapter(new ArrayAdapter<String>(this,
                 R.layout.format_text_navigation, channel));
     }
 
-    private void retrieveChats() {
+    private void retrieveChats(Workspace actual_workspace) {
         //Add request and get chats
         mDrawerMessagesList.setAdapter(new ArrayAdapter<String>(this,
                 R.layout.format_text_navigation, message));
@@ -184,15 +206,23 @@ public class ChatActivity extends BasicActivity
                 changeActivity(ChatActivity.this, ChannelCreationActivity.class, token);
             }
         });
+
+        buttonWorkspaces.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     private void setDrawersListeners() {
         mDrawerChannelsList.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+            public void onItemClick(final AdapterView<?> parent, View view, final int position, long id) {
                 ChatActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
-                        Toast.makeText(ChatActivity.this, channel[position], Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(ChatActivity.this, channel[position], Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ChatActivity.this,workspaces.get(position).getName(), Toast.LENGTH_SHORT).show();
                     }
                 });
             }
