@@ -27,6 +27,7 @@ import com.taller2.droidclient.R;
 import com.taller2.droidclient.adapters.MessageListAdapter;
 import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.model.UserMessage;
+import com.taller2.droidclient.model.Workspace;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +47,9 @@ public class ChatActivity extends BasicActivity
     //private ConstraintLayout mConstraintLayout;
     //Temporary strings
     //Change to Channel or UserChat
+
+    private Workspace[] workspaces;
+
     private String[] channels;
     private String[] direct_messages;
 
@@ -81,6 +85,11 @@ public class ChatActivity extends BasicActivity
         //List<BaseMessage> messageList = new LinkedList<BaseMessage>();
         List<UserMessage> messageList = new LinkedList<UserMessage>();
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setTitle("Workspace name");
+
         messageList.add(new UserMessage("Hola",
                 new User("0", "Juan", "admin@gmail.com", "juansoy", true),
                 4040));
@@ -99,17 +108,8 @@ public class ChatActivity extends BasicActivity
         mDrawerMessagesList = findViewById(R.id.left_messages_drawer);
         buttonCreateChannel = findViewById(R.id.icon_create_channel);
 
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
-
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                /*toolbar,*/R.string.drawer_open, R.string.drawer_close);
-
-        mDrawerChannelsList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.format_text_navigation, channel));
-
-        mDrawerMessagesList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.format_text_navigation, message));
+                toolbar,R.string.drawer_open, R.string.drawer_close);
 
         mDrawerLayout.addDrawerListener(mDrawerToggle);
 
@@ -119,17 +119,9 @@ public class ChatActivity extends BasicActivity
         preferences = getSharedPreferences("login",MODE_PRIVATE);
         token = this.getUserToken();
 
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
-
-        /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();*/
-
-        /*NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);*/
+        retrieveWorkspaces();
+        retrieveChannels();
+        retrieveChats();
     }
 
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -167,6 +159,22 @@ public class ChatActivity extends BasicActivity
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.chat_menu_actions, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private void retrieveWorkspaces() {
+
+    }
+
+    private void retrieveChannels() {
+        //Add request and get channels
+        mDrawerChannelsList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.format_text_navigation, channel));
+    }
+
+    private void retrieveChats() {
+        //Add request and get chats
+        mDrawerMessagesList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.format_text_navigation, message));
     }
 
     private void setListeners(){

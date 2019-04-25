@@ -13,6 +13,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include
+            layout="@layout/toolbar"
+            />
+    </LinearLayout>
+
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
@@ -37,7 +45,30 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp">
+                    <TextView
+                        android:id="@+id/workspaces_label"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:text="WORKSPACES"
+                        android:textColor="#b3b3b3"
+                        />
+                    <Button
+                        android:id="@+id/icon_show_workspaces"
+                        android:layout_width="20dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignBottom="@id/workspaces_label"
+                        android:layout_alignTop="@id/workspaces_label"
+                        android:background="@android:drawable/ic_dialog_dialer" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="?android:attr/actionBarSize">
                     <TextView
                         android:id="@+id/channel_label"
                         android:layout_width="150dp"
