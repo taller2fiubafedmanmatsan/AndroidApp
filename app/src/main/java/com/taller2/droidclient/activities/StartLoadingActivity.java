@@ -39,14 +39,12 @@ public class StartLoadingActivity extends BasicActivity {
         //Request workspaces that im in!
         //If it fails, well, retry or logout (?)
         //If it succeeds, check if the list of workspaces is empty
-        //If its empty, change activity to WorkspaceActivity
+        //If its empty, change activity to NoWorkspaceActivity
         //If its not empty check if actual workspace is one of those workspaces
         //If its true, change activity to ChatActivity
         //If its false, save in preference an actual workspace, choose the one you want
         //and change activity to ChatActivity
 
-        if (preference.getActualWorkspace().equals("")) {
-            changeActivity(StartLoadingActivity.this, ChatActivity.class);
-        }
+        changeActivity(StartLoadingActivity.this, NoWorkspaceActivity.class);
     }
 }

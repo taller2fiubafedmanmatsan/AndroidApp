@@ -74,6 +74,16 @@ public class BasicActivity extends AppCompatActivity {
         finish();
     }
 
+    public void changeActivityNotFinish(Context from, Class to) {
+        Intent intent = new Intent(from, to);
+
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        startActivity(intent);
+
+        //finish();
+    }
+
     public void changeActivity(Context from, Class to, String token, String data) {
         Intent intent = new Intent(from, to);
 

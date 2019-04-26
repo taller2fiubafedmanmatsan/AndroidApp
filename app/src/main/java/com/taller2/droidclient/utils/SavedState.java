@@ -36,11 +36,15 @@ public class SavedState {
         preferences.edit().putString("workspace", "").apply();
     }
 
-    public String getActualWorkspace() {
-        return preferences.getString("workspace", "");
+    public Workspace getActualWorkspace() {
+        return new Workspace(
+                preferences.getString("workspace_id", ""),
+                preferences.getString("workspace_name", "")
+        );
     }
 
     public void saveActualWorkspace(Workspace workspace) {
-        preferences.edit().putString("workspace", workspace.getName()).apply();
+        preferences.edit().putString("workspace_id", workspace.getId()).apply();
+        preferences.edit().putString("workspace_name", workspace.getName()).apply();
     }
 }

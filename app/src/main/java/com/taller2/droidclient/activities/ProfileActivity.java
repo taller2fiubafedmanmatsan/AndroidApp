@@ -141,7 +141,8 @@ public class ProfileActivity extends BasicActivity{
 
     @Override
     public void onBackPressed() {
-        changeActivity(ProfileActivity.this, ChatActivity.class, token);
+        finish();
+        //changeActivity(ProfileActivity.this, ChatActivity.class, token);
     }
 
     private void reloadProfile() {
@@ -297,7 +298,8 @@ public class ProfileActivity extends BasicActivity{
             case android.R.id.home:
                 /*preferences.edit().putBoolean("logged",false).apply();
                 preferences.edit().putString("token", "").apply();*/
-                changeActivity(ProfileActivity.this, ChatActivity.class, token);
+                //changeActivity(ProfileActivity.this, ChatActivity.class, token);
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);

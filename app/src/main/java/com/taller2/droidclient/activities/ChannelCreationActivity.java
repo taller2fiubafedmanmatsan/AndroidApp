@@ -61,6 +61,8 @@ public class ChannelCreationActivity extends BasicActivity {
                 String channel = channelName.getText().toString();
 
                 if (!channel.isEmpty()) {
+                    //**DO REQUEST**
+                    //Request for creating a channel and then change to ChatActivity
                     ChannelCreationActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
                             Toast.makeText(ChannelCreationActivity.this, "Not implemented yet", Toast.LENGTH_SHORT).show();
