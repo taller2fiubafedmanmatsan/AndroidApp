@@ -75,7 +75,7 @@ public class LoginActivity extends BasicActivity {
                                 LoginActivity.this.runOnUiThread(new Runnable() {
                                     public void run() {
                                         preference.saveLogin(msg);
-                                        changeActivity(LoginActivity.this, ChatActivity.class, msg);
+                                        changeActivity(LoginActivity.this, StartLoadingActivity.class, msg);
                                         Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
                                     }
                                 });
