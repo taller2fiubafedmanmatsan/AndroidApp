@@ -13,9 +13,6 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.firebase.auth.AuthCredential;
@@ -23,11 +20,8 @@ import com.google.firebase.auth.FacebookAuthProvider;
 
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.CallbackUserRequester;
-import com.taller2.droidclient.model.RegisterUser;
 import com.taller2.droidclient.requesters.UserRequester;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.taller2.droidclient.utils.SavedState;
 
 import java.io.IOException;
 
@@ -43,7 +37,7 @@ public class MainActivity extends BasicActivity {
     private LoginButton loginButton;
     private UserRequester userRequester;
     private AccessToken tokenfb;
-    SharedPreferences preferences;
+    //SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,12 +53,16 @@ public class MainActivity extends BasicActivity {
         button_recovery = findViewById(R.id.button_recovery);
         loginButton = findViewById(R.id.login_facebook);
 
-        preferences = getSharedPreferences("login",MODE_PRIVATE);
+        /*preferences = getSharedPreferences("login",MODE_PRIVATE);
 
         if(preferences.getBoolean("logged",false)){
             token = preferences.getString("token","");
             //changeActivity(MainActivity.this,ChatActivity.class, token);
             changeActivity(MainActivity.this,StartLoadingActivity.class, token);
+        }*/
+
+        if (preference.isLogged()) {
+            changeActivity(MainActivity.this,StartLoadingActivity.class);
         }
 
         setListeners();

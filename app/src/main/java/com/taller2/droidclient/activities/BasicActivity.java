@@ -11,11 +11,13 @@ import android.view.WindowManager;
 
 import com.google.gson.Gson;
 import com.taller2.droidclient.model.User;
+import com.taller2.droidclient.utils.SavedState;
 
 public class BasicActivity extends AppCompatActivity {
 
     public String token;
     private ActionBar top_bar;
+    protected SavedState preference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +25,8 @@ public class BasicActivity extends AppCompatActivity {
 
         top_bar = getSupportActionBar();
         setGoBackActionBar();
+
+        preference = new SavedState(this);
     }
 
     public void deleteTitleBar() {

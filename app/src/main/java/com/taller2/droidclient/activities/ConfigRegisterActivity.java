@@ -68,7 +68,7 @@ public class ConfigRegisterActivity extends BasicActivity {
 
         button_finish.setEnabled(false);
 
-        token = this.getUserToken();
+        token = preference.getToken();//this.getUserToken();
 
         userRequester = new UserRequester();
 

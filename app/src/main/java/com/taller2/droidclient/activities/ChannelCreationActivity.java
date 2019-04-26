@@ -29,7 +29,7 @@ public class ChannelCreationActivity extends BasicActivity {
         channelName = findViewById(R.id.channel_name);
         buttonCreateChannel = findViewById(R.id.button_create_channel);
 
-        token = this.getUserToken();
+        token = preference.getToken();//this.getUserToken();
 
         userRequester = new UserRequester();
 

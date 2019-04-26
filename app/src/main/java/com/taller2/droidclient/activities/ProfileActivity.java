@@ -89,7 +89,7 @@ public class ProfileActivity extends BasicActivity{
         button_new_workspace = findViewById(R.id.create_workspace);
         button_join_workspace = findViewById(R.id.join_workspace);
 
-        token = this.getUserToken();
+        token = preference.getToken();//this.getUserToken();
 
         userRequester = new UserRequester();
 

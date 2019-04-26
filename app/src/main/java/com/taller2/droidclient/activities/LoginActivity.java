@@ -27,14 +27,14 @@ public class LoginActivity extends BasicActivity {
     private Button button_login;
     private UserRequester userRequester;
 
-    private SharedPreferences preferences;
+    //private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         changeTextActionBar("Sign in");
-        preferences = getSharedPreferences("login",MODE_PRIVATE);
+        //preferences = getSharedPreferences("login",MODE_PRIVATE);
 
         setContentView(R.layout.activity_login);
 
@@ -69,10 +69,12 @@ public class LoginActivity extends BasicActivity {
                             final String msg = response.body().string();
 
                             if (response.isSuccessful()) {
-                                preferences.edit().putBoolean("logged",true).apply();
-                                preferences.edit().putString("token", msg).apply();
+                                //preferences.edit().putBoolean("logged",true).apply();
+                                //preferences.edit().putString("token", msg).apply();
+
                                 LoginActivity.this.runOnUiThread(new Runnable() {
                                     public void run() {
+                                        preference.saveLogin(msg);
                                         changeActivity(LoginActivity.this, ChatActivity.class, msg);
                                         Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
                                     }

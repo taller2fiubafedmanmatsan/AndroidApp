@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.WorkspaceActivity">
+
+    <ImageView
+        android:id="@+id/main_backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/login_register_background"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="80dp"
+            android:text="You don't belong to\nany workspace, try\njoining or creating one"
+            android:textSize="20sp"
+            android:textColor="#FFFFFF" />
+        <Button
+            android:id="@+id/button_create_workspace"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="100dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/round_border_button"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:text="Create a workspace" />
+
+        <Button
+            android:id="@+id/button_join_workspace"
+            android:layout_width="225dp"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textAllCaps="false"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/round_border_button"
+            android:text="Join a workspace" />
+
+    </LinearLayout>
+</RelativeLayout>

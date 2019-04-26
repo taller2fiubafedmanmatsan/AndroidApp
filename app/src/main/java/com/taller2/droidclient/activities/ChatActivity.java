@@ -122,7 +122,7 @@ public class ChatActivity extends BasicActivity
         setListeners();
 
         preferences = getSharedPreferences("login",MODE_PRIVATE);
-        token = this.getUserToken();
+        token = preference.getToken();//this.getUserToken();
 
         workspaces = new ArrayList<Workspace>();
 
