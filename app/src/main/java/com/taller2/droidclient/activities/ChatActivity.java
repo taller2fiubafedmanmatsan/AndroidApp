@@ -57,15 +57,15 @@ public class ChatActivity extends BasicActivity
 
     private ArrayList<Workspace> workspaces;
 
-    private String[] channel = {"General",
-            "Random",
-            "Imagenes",
-            "Memes",
-            "Parciales resueltos BDD",
-            "Falopa",
-            "Necesito mas casos",
-            "Filling list?",
-            "Is it filled!?"
+    private String[] channel = {"# General",
+            "# Random",
+            "# Imagenes",
+            "# Memes",
+            "# Parciales resueltos BDD",
+            "# Falopa",
+            "# Necesito mas casos",
+            "# Filling list?",
+            "# Is it filled!?"
     };
 
     private String[] message = {"Juan",

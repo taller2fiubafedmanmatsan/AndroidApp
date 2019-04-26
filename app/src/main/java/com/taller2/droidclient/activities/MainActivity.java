@@ -63,7 +63,8 @@ public class MainActivity extends BasicActivity {
 
         if(preferences.getBoolean("logged",false)){
             token = preferences.getString("token","");
-            changeActivity(MainActivity.this,ChatActivity.class, token);
+            //changeActivity(MainActivity.this,ChatActivity.class, token);
+            changeActivity(MainActivity.this,StartLoadingActivity.class, token);
         }
 
         setListeners();

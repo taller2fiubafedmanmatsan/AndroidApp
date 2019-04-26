@@ -25,17 +25,11 @@ public class WorkspaceListAdapter extends ArrayAdapter<Workspace> {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.format_text_navigation, parent, false);
         }
-        // Lookup view for data population
-        /*TextView tvName = (TextView) convertView.findViewById(R.id.tvName);
-        TextView tvHome = (TextView) convertView.findViewById(R.id.tvHome);
-        // Populate the data into the template view using the data object
-        tvName.setText(user.name);
-        tvHome.setText(user.hometown);*/
 
         TextView name = convertView.findViewById(android.R.id.text1);
 
         name.setText(workspace.getName());
-        // Return the completed view to render on screen
+
         return convertView;
     }
 }
