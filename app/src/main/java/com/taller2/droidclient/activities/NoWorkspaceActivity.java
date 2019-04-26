@@ -40,7 +40,11 @@ public class NoWorkspaceActivity extends BasicActivity {
         button_join_workspace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                NoWorkspaceActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(NoWorkspaceActivity.this, "Not implemented yet", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
     }

@@ -200,15 +200,6 @@ public class ChatActivity extends BasicActivity
         }
 
         retrieveChannels(workspaces.get(workspaces.indexOf(actual_workspace)));
-        /*WorkspaceListAdapter adapter = new WorkspaceListAdapter(this, workspaces);
-
-        mDrawerChannelsList.setAdapter(adapter);*/
-
-        /*mDrawerChannelsList.setAdapter(new ArrayAdapter<Workspace>(this,
-                R.layout.format_text_navigation, workspaces));
-        //Retrieve actual workspace?
-        retrieveChannels(workspaces.get(0));
-        retrieveChats(workspaces.get(0));*/
     }
 
     private void retrieveChannels(Workspace actual_workspace) {
@@ -284,44 +275,4 @@ public class ChatActivity extends BasicActivity
             super.onBackPressed();
         }
     }
-
-    /*@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
-
-    /*@SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }*/
 }

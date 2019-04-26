@@ -33,7 +33,8 @@ public class SavedState {
     public void logout() {
         preferences.edit().putBoolean("logged", false).apply();
         preferences.edit().putString("token", "").apply();
-        preferences.edit().putString("workspace", "").apply();
+        preferences.edit().putString("workspace_id", "").apply();
+        preferences.edit().putString("workspace_name", "").apply();
     }
 
     public Workspace getActualWorkspace() {
