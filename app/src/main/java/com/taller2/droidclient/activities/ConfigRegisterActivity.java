@@ -74,12 +74,13 @@ public class ConfigRegisterActivity extends BasicActivity {
 
         userdata = this.getUserData();
 
-        Glide.with(this)
-                .load(getResources()
-                        .getIdentifier("default_profile_pic", "drawable", this.getPackageName()))
-                .centerCrop()
-                .into(profile_picture);
-
+        if (!this.isDestroyed()) {
+            Glide.with(this)
+                    .load(getResources()
+                            .getIdentifier("default_profile_pic", "drawable", this.getPackageName()))
+                    .centerCrop()
+                    .into(profile_picture);
+        }
         setListeners();
     }
 
@@ -151,8 +152,10 @@ public class ConfigRegisterActivity extends BasicActivity {
                         ConfigRegisterActivity.this.runOnUiThread(new Runnable() {
                             public void run() {
                                 button_finish.setEnabled(true);
-                                Glide.with(ConfigRegisterActivity.this)
-                                        .load(downloadUrl).centerCrop().into(profile_picture);
+                                if (!ConfigRegisterActivity.this.isDestroyed()) {
+                                    Glide.with(ConfigRegisterActivity.this)
+                                            .load(downloadUrl).centerCrop().into(profile_picture);
+                                }
                             }
                         });
                     }
