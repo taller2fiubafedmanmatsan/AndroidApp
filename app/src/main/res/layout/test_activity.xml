@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/profile_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ProfileActivity">
+    <!-- The main content view -->
+    <FrameLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/background_profile_photo"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:alpha="0.75"
+                android:layout_alignParentTop="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/profile_background" />
+
+            <EditText
+                android:id="@+id/user_label"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/profile_picture"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                tools:fontFamily="sans-serif-light" />
+
+            <Button
+                android:id="@+id/icon_edit_name"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/profile_picture"
+                android:layout_toEndOf="@id/user_label"
+                android:layout_alignTop="@id/user_label"
+                android:layout_alignBottom="@id/user_label"
+                android:background="@android:drawable/ic_menu_edit" />
+
+            <ImageView
+                android:id="@+id/icon_email"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_below="@+id/user_label"
+                android:layout_alignTop="@+id/email_label"
+                android:layout_alignBottom="@+id/email_label"
+                android:tint="#000000"
+                android:background="@android:drawable/sym_action_email" />
+
+            <com.makeramen.roundedimageview.RoundedImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/profile_picture"
+                android:layout_centerHorizontal="true"
+                android:adjustViewBounds="true"
+                android:layout_marginTop="30dp"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:scaleType="fitXY"
+                app:riv_corner_radius="30dip"
+                app:riv_border_width="2dip"
+                app:riv_border_color="#333333"
+                app:riv_mutate_background="true"
+                app:riv_tile_mode="repeat"
+                app:riv_oval="true" />
+
+            <Button
+                android:id="@+id/icon_edit_image"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignBottom="@id/profile_picture"
+                android:layout_centerHorizontal="true"
+                android:layout_marginRight="20dp"
+                android:background="@android:drawable/ic_menu_camera"/>
+
+            <TextView
+                android:id="@+id/email_label"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/background_profile_photo"
+                android:layout_toEndOf="@id/icon_email"
+                android:layout_marginTop="20dp"
+                android:textSize="18sp"
+                tools:fontFamily="sans-serif-light" />
+
+            <ImageView
+                android:id="@+id/icon_name"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/user_label"
+                android:layout_alignTop="@+id/name_label"
+                android:layout_alignBottom="@+id/name_label"
+                android:layout_marginStart="20dp"
+                android:background="@drawable/com_facebook_profile_picture_blank_square"
+                android:tint="#000000" />
+            <TextView
+                android:id="@+id/name_label"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/background_profile_photo"
+                android:layout_toEndOf="@id/icon_email"
+                android:layout_marginTop="60dp"
+                android:textSize="18sp"
+                tools:fontFamily="sans-serif-light" />
+
+            <Button
+                android:id="@+id/change_password"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="50dp"
+                android:background="@android:color/holo_red_dark"
+                android:text="Change Password"
+                android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                android:textColor="@color/com_facebook_button_login_silver_background_color" />
+
+            <Button
+                android:id="@+id/create_workspace"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="150dp"
+                android:background="@color/design_default_color_primary"
+                android:text="new Wokspace"
+                android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                android:textColor="@color/com_facebook_button_login_silver_background_color" />
+
+            <Button
+                android:id="@+id/join_workspace"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="100dp"
+                android:background="@android:color/holo_green_dark"
+                android:text="join Wokspace"
+                android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                android:textColor="@color/com_facebook_button_login_silver_background_color" />
+        </RelativeLayout>
+    </FrameLayout>
+
+    <!-- The navigation drawer -->
+    <LinearLayout android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:background="#111">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="240dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/channel_label"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="CHANNELS"
+                android:textColor="#b3b3b3"
+                />
+            <Button
+                android:id="@+id/icon_create_channel"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignBottom="@id/channel_label"
+                android:layout_alignTop="@id/channel_label"
+                android:background="@android:drawable/ic_menu_add" />
+        </RelativeLayout>
+
+        <ListView android:id="@+id/left_channel_drawer"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:choiceMode="singleChoice"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"
+            android:background="#111"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="240dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/direct_messages_label"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="DIRECT MESSAGES"
+                android:textColor="#b3b3b3"
+                />
+            <Button
+                android:id="@+id/icon_create_chat"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignBottom="@id/direct_messages_label"
+                android:layout_alignTop="@id/direct_messages_label"
+                android:background="@android:drawable/ic_menu_add" />
+        </RelativeLayout>
+
+        <ListView android:id="@+id/left_messages_drawer"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:choiceMode="singleChoice"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"
+            android:background="#111"/>
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v4.widget.DrawerLayout>

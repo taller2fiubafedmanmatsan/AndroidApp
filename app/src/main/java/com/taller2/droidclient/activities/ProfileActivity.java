@@ -4,17 +4,31 @@ package com.taller2.droidclient.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +51,8 @@ import okhttp3.Call;
 import okhttp3.Response;
 
 import com.google.gson.Gson;
+import com.taller2.droidclient.utils.GlideApp;
+import com.taller2.droidclient.utils.LoadingSpin;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 public class ProfileActivity extends BasicActivity{
@@ -50,11 +66,10 @@ public class ProfileActivity extends BasicActivity{
     private ImageView profile_picture;
     private Button button_change_password;
     private Button button_change_picture;
-    private Button button_new_workspace;
-    private Button button_join_workspace;
     private User userdata;
     private String token;
     private UserRequester userRequester;
+    private LinearLayout layoutLoadingBar;
 
     private StorageReference mStorageRef;
     private SharedPreferences preferences;
@@ -77,10 +92,9 @@ public class ProfileActivity extends BasicActivity{
         profile_picture = findViewById(R.id.profile_picture);
         button_change_password = findViewById(R.id.change_password);
         button_change_picture = findViewById(R.id.icon_edit_image);
-        button_new_workspace = findViewById(R.id.create_workspace);
-        button_join_workspace = findViewById(R.id.join_workspace);
+        layoutLoadingBar = findViewById(R.id.layout_progress_bar);
 
-        token = this.getUserToken();
+        token = preference.getToken();//this.getUserToken();
 
         userRequester = new UserRequester();
 
@@ -90,10 +104,22 @@ public class ProfileActivity extends BasicActivity{
     }
 
     private void reloadUserdata() {
+        /*layoutLoadingBar.setVisibility(View.VISIBLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);*/
+
+        loadingSpin.showDialog(this);
+
         userRequester.getUser(token, new CallbackUserRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 try{
+                   /* ProfileActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            layoutLoadingBar.setVisibility(View.GONE);
+                            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                        }
+                    });*/
                     String msg = response.body().string();
 
                     final User newuserdata = new Gson().fromJson(msg, User.class);
@@ -109,9 +135,13 @@ public class ProfileActivity extends BasicActivity{
 
                     Log.d("Profile/ReloadData", msg);
                 }catch (Exception e){
-                    preferences.edit().putBoolean("logged",false).apply();
-                    preferences.edit().putString("token", "").apply();
-                    changeActivity(ProfileActivity.this, MainActivity.class);
+                    /*preferences.edit().putBoolean("logged",false).apply();
+                    preferences.edit().putString("token", "").apply();*/
+                    loadingSpin.hideDialog();
+                    //changeActivity(ProfileActivity.this, MainActivity.class);
+
+                    //Kill the activity
+                    finish();
                 }
 
             }
@@ -123,7 +153,7 @@ public class ProfileActivity extends BasicActivity{
                         Toast.makeText(ProfileActivity.this, "Failed to reload profile.", Toast.LENGTH_SHORT).show();
                     }
                 });
-
+                loadingSpin.hideDialog();
                 Log.d("Profile/ReloadData", e.getMessage());
                 call.cancel();
             }
@@ -132,7 +162,8 @@ public class ProfileActivity extends BasicActivity{
 
     @Override
     public void onBackPressed() {
-        changeActivity(ProfileActivity.this, MainActivity.class);
+        finish();
+        //changeActivity(ProfileActivity.this, ChatActivity.class, token);
     }
 
     private void reloadProfile() {
@@ -141,15 +172,20 @@ public class ProfileActivity extends BasicActivity{
         name_profile.setText(userdata.getName());
 
         if (userdata.getPhotoUrl() == null || userdata.getPhotoUrl().equals("")) {
-            Glide.with(this)
-                    .load(getResources()
-                            .getIdentifier("default_profile_pic", "drawable", this.getPackageName()))
-                    .centerCrop()
-                    .into(profile_picture);
+            if (!this.isDestroyed()) {
+                GlideApp.with(this)
+                        .load(getResources()
+                                .getIdentifier("default_profile_pic", "drawable", this.getPackageName()))
+                        .centerCrop()
+                        .into(profile_picture);
+            }
         } else {
-            Glide.with(this)
-                    .load(Uri.parse(userdata.getPhotoUrl())).centerCrop().into(profile_picture);
+            if (!this.isDestroyed()) {
+                GlideApp.with(this)
+                        .load(Uri.parse(userdata.getPhotoUrl())).centerCrop().into(profile_picture);
+            }
         }
+        loadingSpin.hideDialog();
     }
 
     private void setListeners(){
@@ -172,20 +208,6 @@ public class ProfileActivity extends BasicActivity{
         });
 
         button_change_password.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeActivity(ProfileActivity.this,ChangePasswordActivity.class,token);
-            }
-        });
-
-        button_new_workspace.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeActivity(ProfileActivity.this,ChangePasswordActivity.class,token);
-            }
-        });
-
-        button_join_workspace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changeActivity(ProfileActivity.this,ChangePasswordActivity.class,token);
@@ -286,9 +308,10 @@ public class ProfileActivity extends BasicActivity{
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                preferences.edit().putBoolean("logged",false).apply();
-                preferences.edit().putString("token", "").apply();
-                changeActivity(ProfileActivity.this, MainActivity.class);
+                /*preferences.edit().putBoolean("logged",false).apply();
+                preferences.edit().putString("token", "").apply();*/
+                //changeActivity(ProfileActivity.this, ChatActivity.class, token);
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);

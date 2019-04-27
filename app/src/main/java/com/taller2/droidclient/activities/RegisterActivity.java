@@ -115,6 +115,7 @@ public class RegisterActivity extends BasicActivity {
                 if (response.isSuccessful()) {
                     RegisterActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
+                            preference.saveLogin(msg);
                             changeActivity(RegisterActivity.this, ConfigRegisterActivity.class, msg);
                             Toast.makeText(RegisterActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
                         }

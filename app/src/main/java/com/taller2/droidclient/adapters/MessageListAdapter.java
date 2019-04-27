@@ -15,16 +15,61 @@ import com.taller2.droidclient.model.UserMessage;
 
 import java.util.List;
 
-public class MessageListAdapter extends RecyclerView.Adapter {
+public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.MyViewHolder> {
     private static final int VIEW_TYPE_MESSAGE_SENT = 1;
     private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
 
     private Context mContext;
-    private List<BaseMessage> mMessageList;
+    //private List<BaseMessage> mMessageList;
+    private List<UserMessage> mMessageList;
 
-    public MessageListAdapter(Context context, List<BaseMessage> messageList) {
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
+        TextView messageText, timeText, nameText;
+        ImageView profileImage;
+
+        MyViewHolder(View itemView) {
+            super(itemView);
+
+            messageText = (TextView) itemView.findViewById(R.id.text_message_body);
+            timeText = (TextView) itemView.findViewById(R.id.text_message_time);
+            nameText = (TextView) itemView.findViewById(R.id.text_message_name);
+            profileImage = (ImageView) itemView.findViewById(R.id.image_message_profile);
+        }
+    }
+
+    public MessageListAdapter(Context context, List<UserMessage> messageList/*List<BaseMessage> messageList*/) {
         mContext = context;
         mMessageList = messageList;
+    }
+
+    @Override
+    public MessageListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view;
+
+        if (viewType == VIEW_TYPE_MESSAGE_SENT) {
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_sent, parent, false);
+            return new SendMessageHolder(view);
+        } else if (viewType == VIEW_TYPE_MESSAGE_RECEIVED) {
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_received, parent, false);
+            return new ReceivedMessageHolder(view);
+        }
+
+        return null;
+    }
+    // Replace the contents of a view (invoked by the layout manager)
+    @Override
+    public void onBindViewHolder(MyViewHolder holder, int position) {
+        UserMessage message = (UserMessage) mMessageList.get(position);
+
+        switch (holder.getItemViewType()) {
+            case VIEW_TYPE_MESSAGE_SENT:
+                ((SendMessageHolder) holder).bind(message);
+                break;
+            case VIEW_TYPE_MESSAGE_RECEIVED:
+                ((ReceivedMessageHolder) holder).bind(message);
+        }
     }
 
     @Override
@@ -47,7 +92,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     }
 
     // Inflates the appropriate layout according to the ViewType.
-    @Override
+    /*@Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
 
@@ -120,7 +165,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
             // Insert the profile image from the URL into the ImageView.
             //Utils.displayRoundImageFromUrl(mContext, message.getSender().getProfileUrl(), profileImage);
         }
-    }
+    }*/
 
 
 }

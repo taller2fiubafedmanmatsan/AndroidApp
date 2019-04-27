@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ChatActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="?android:attr/actionBarSize"
+        android:layout_above="@+id/layout_chatbox">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/reyclerview_message_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/view_bar_id">
+        </android.support.v7.widget.RecyclerView>
+
+        <View
+            android:id="@+id/view_bar_id"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_alignParentBottom="true"
+            android:background="#dfdfdf" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_chatbox"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:minHeight="48dp"
+        android:background="#ffffff"
+        android:layout_alignParentBottom="true">
+
+        <EditText
+            android:id="@+id/edittext_chatbox"
+            android:hint="Enter message"
+            android:background="@android:color/transparent"
+            android:layout_gravity="center"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:maxLines="6"/>
+
+        <Button
+            android:id="@+id/button_chatbox_send"
+
+            android:background="@drawable/ic_menu_send"
+            android:scaleX="0.5"
+            android:scaleY="0.7"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_gravity="bottom" />
+
+    </LinearLayout>
+
+</RelativeLayout>

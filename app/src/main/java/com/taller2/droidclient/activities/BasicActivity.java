@@ -11,11 +11,15 @@ import android.view.WindowManager;
 
 import com.google.gson.Gson;
 import com.taller2.droidclient.model.User;
+import com.taller2.droidclient.utils.LoadingSpin;
+import com.taller2.droidclient.utils.SavedState;
 
 public class BasicActivity extends AppCompatActivity {
 
     public String token;
     private ActionBar top_bar;
+    protected SavedState preference;
+    protected LoadingSpin loadingSpin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +27,9 @@ public class BasicActivity extends AppCompatActivity {
 
         top_bar = getSupportActionBar();
         setGoBackActionBar();
+
+        preference = new SavedState(this);
+        loadingSpin = new LoadingSpin();
     }
 
     public void deleteTitleBar() {
@@ -68,6 +75,16 @@ public class BasicActivity extends AppCompatActivity {
         startActivity(intent);
 
         finish();
+    }
+
+    public void changeActivityNotFinish(Context from, Class to) {
+        Intent intent = new Intent(from, to);
+
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        startActivity(intent);
+
+        //finish();
     }
 
     public void changeActivity(Context from, Class to, String token, String data) {

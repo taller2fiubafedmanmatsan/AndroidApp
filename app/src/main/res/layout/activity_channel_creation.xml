@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.LoginActivity">
+    tools:context=".activities.ChannelCreationActivity">
 
     <ImageView
         android:id="@+id/main_backgroundImage"
@@ -16,21 +16,7 @@
         />
 
     <EditText
-        android:id="@+id/email_address"
-        android:layout_centerHorizontal="true"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_marginTop="50dp"
-        android:gravity="center_horizontal"
-        android:textColorHint="#FFFFFF"
-        android:textColor="#FFFFFF"
-        android:hint="Email"
-        android:backgroundTint="#FFFFFF"
-        android:inputType="textWebEditText|textEmailAddress" />
-
-    <EditText
-        android:id="@+id/password"
+        android:id="@+id/channel_name"
         android:layout_centerHorizontal="true"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
@@ -39,12 +25,12 @@
         android:gravity="center_horizontal"
         android:textColorHint="#FFFFFF"
         android:textColor="#FFFFFF"
-        android:hint="Password"
+        android:hint="Channel name"
         android:backgroundTint="#FFFFFF"
-        android:inputType="textPassword" />
+        android:inputType="textWebEditText" />
 
     <Button
-        android:id="@+id/button_login"
+        android:id="@+id/button_create_channel"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -52,5 +38,5 @@
         android:background="@drawable/round_border_button"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
-        android:text="Login" />
+        android:text="Create channel" />
 </RelativeLayout>

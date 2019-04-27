@@ -41,7 +41,7 @@ public class ChangePasswordActivity extends BasicActivity {
         button_change_password = findViewById(R.id.button_send_password);
         button_cancel = findViewById(R.id.button_cancel);
 
-        token = this.getUserToken();
+        token = preference.getToken();//this.getUserToken();
 
         userRequester = new UserRequester();
 

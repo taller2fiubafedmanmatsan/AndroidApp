@@ -68,25 +68,26 @@ public class ConfigRegisterActivity extends BasicActivity {
 
         button_finish.setEnabled(false);
 
-        token = this.getUserToken();
+        token = preference.getToken();//this.getUserToken();
 
         userRequester = new UserRequester();
 
         userdata = this.getUserData();
 
-        Glide.with(this)
-                .load(getResources()
-                        .getIdentifier("default_profile_pic", "drawable", this.getPackageName()))
-                .centerCrop()
-                .into(profile_picture);
-
+        if (!this.isDestroyed()) {
+            Glide.with(this)
+                    .load(getResources()
+                            .getIdentifier("default_profile_pic", "drawable", this.getPackageName()))
+                    .centerCrop()
+                    .into(profile_picture);
+        }
         setListeners();
     }
 
     @Override
     public void onBackPressed() {
         //Its like omitting this step
-        changeActivity(ConfigRegisterActivity.this, ProfileActivity.class, token, userdata);
+        changeActivity(ConfigRegisterActivity.this, StartLoadingActivity.class, token);
     }
 
     private void setListeners(){
@@ -100,14 +101,14 @@ public class ConfigRegisterActivity extends BasicActivity {
         button_omit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeActivity(ConfigRegisterActivity.this, ProfileActivity.class, token, userdata);
+                changeActivity(ConfigRegisterActivity.this, StartLoadingActivity.class, token);
             }
         });
 
         button_finish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeActivity(ConfigRegisterActivity.this, ProfileActivity.class, token, userdata);
+                changeActivity(ConfigRegisterActivity.this, StartLoadingActivity.class, token);
             }
         });
     }
@@ -151,8 +152,10 @@ public class ConfigRegisterActivity extends BasicActivity {
                         ConfigRegisterActivity.this.runOnUiThread(new Runnable() {
                             public void run() {
                                 button_finish.setEnabled(true);
-                                Glide.with(ConfigRegisterActivity.this)
-                                        .load(downloadUrl).centerCrop().into(profile_picture);
+                                if (!ConfigRegisterActivity.this.isDestroyed()) {
+                                    Glide.with(ConfigRegisterActivity.this)
+                                            .load(downloadUrl).centerCrop().into(profile_picture);
+                                }
                             }
                         });
                     }

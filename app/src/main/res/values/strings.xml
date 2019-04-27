@@ -3,4 +3,6 @@
     <string name="facebook_app_id">613082942449635</string>
     <string name="fb_login_protocol_scheme">fb613082942449635</string>
     <string name="Hypechat">Hypechat</string>
+    <string name="drawer_open">drawer_open</string>
+    <string name="drawer_close">drawer_close</string>
 </resources>
