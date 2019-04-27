@@ -3,7 +3,7 @@ package com.taller2.droidclient.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Workspace {
+public class NewWorkspace {
 
     private String name;
     private String imageUrl;
@@ -15,16 +15,12 @@ public class Workspace {
     private List<String> users;
     private List<String> admins;
 
-    public Workspace(String name) {
-        this.name = name;
-    }
-
-    public Workspace(String name, String creator) {
+    public NewWorkspace(String name, String creator) {
         this.name = name;
         this.creator = creator;
 
-        //this.imageUrl = "https://upload.wikimedia.org/wikipedia/commons/9/93/Logo-fiuba.gif";
-        //this.location = "";
+        this.imageUrl = "";
+        this.location = "";
         this.description = "Workspace " + name;
         this.welcomeMessage = "Welcome to " + name;
         this.channels = new ArrayList<String>();
@@ -33,20 +29,6 @@ public class Workspace {
         this.users.add(creator);
         this.admins.add(creator);
     }
-
-    public Workspace(String name, String imageUrl, String location, String creator, String description, String welcomeMessage, List<String> channels, List<String> users, List<String> admins) {
-        this.name = name;
-        this.imageUrl = imageUrl;
-        this.location = location;
-        this.creator = creator;
-        this.description = description;
-        this.welcomeMessage = welcomeMessage;
-        this.channels = channels;
-        this.users = users;
-        this.admins = admins;
-    }
-
-
 
     public String getName() {
         return name;
@@ -118,14 +100,5 @@ public class Workspace {
 
     public void setAdmins(List<String> admins) {
         this.admins = admins;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        //My eyes are bleeding...
-        if (!(obj instanceof Workspace))
-            return false;
-
-        return ((Workspace) obj).getName().equals(this.name);
     }
 }

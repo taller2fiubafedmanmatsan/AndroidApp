@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.view.View;
 
 import com.taller2.droidclient.model.Workspace;
+import com.taller2.droidclient.model.WorkspaceResponse;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -33,19 +34,16 @@ public class SavedState {
     public void logout() {
         preferences.edit().putBoolean("logged", false).apply();
         preferences.edit().putString("token", "").apply();
-        preferences.edit().putString("workspace_id", "").apply();
         preferences.edit().putString("workspace_name", "").apply();
     }
 
     public Workspace getActualWorkspace() {
         return new Workspace(
-                preferences.getString("workspace_id", ""),
                 preferences.getString("workspace_name", "")
         );
     }
 
-    public void saveActualWorkspace(Workspace workspace) {
-        preferences.edit().putString("workspace_id", workspace.getId()).apply();
+    public void saveActualWorkspace(WorkspaceResponse workspace) {
         preferences.edit().putString("workspace_name", workspace.getName()).apply();
     }
 }

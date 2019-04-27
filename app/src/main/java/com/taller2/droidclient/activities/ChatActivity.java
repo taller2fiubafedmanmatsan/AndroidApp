@@ -215,10 +215,12 @@ public class ChatActivity extends BasicActivity
 
         Workspace actual_workspace = preference.getActualWorkspace();
 
+
         if (!workspaces.contains(actual_workspace)) {
             //Well, set one (?
             //For now it finishes for testing purpose
-            finish();
+            workspaces.add(actual_workspace);
+            //finish();
         }
 
         WorkspaceListAdapter adapter = new WorkspaceListAdapter(this, workspaces);

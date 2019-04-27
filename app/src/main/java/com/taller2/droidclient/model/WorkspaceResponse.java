@@ -3,23 +3,23 @@ package com.taller2.droidclient.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Workspace {
+public class WorkspaceResponse {
 
     private String name;
     private String imageUrl;
     private String location;
-    private String creator;
+    private User creator;
     private String description;
     private String welcomeMessage;
     private List<String> channels;
-    private List<String> users;
-    private List<String> admins;
+    private List<User> users;
+    private List<User> admins;
 
-    public Workspace(String name) {
+    public WorkspaceResponse(String name) {
         this.name = name;
     }
 
-    public Workspace(String name, String creator) {
+    public WorkspaceResponse(String name, User creator) {
         this.name = name;
         this.creator = creator;
 
@@ -28,13 +28,13 @@ public class Workspace {
         this.description = "Workspace " + name;
         this.welcomeMessage = "Welcome to " + name;
         this.channels = new ArrayList<String>();
-        this.users = new ArrayList<String>();
-        this.admins = new ArrayList<String>();
+        this.users = new ArrayList<User>();
+        this.admins = new ArrayList<User>();
         this.users.add(creator);
         this.admins.add(creator);
     }
 
-    public Workspace(String name, String imageUrl, String location, String creator, String description, String welcomeMessage, List<String> channels, List<String> users, List<String> admins) {
+    public WorkspaceResponse(String name, String imageUrl, String location, User creator, String description, String welcomeMessage, List<String> channels, List<User> users, List<User> admins) {
         this.name = name;
         this.imageUrl = imageUrl;
         this.location = location;
@@ -72,14 +72,6 @@ public class Workspace {
         this.location = location;
     }
 
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -104,28 +96,36 @@ public class Workspace {
         this.channels = channels;
     }
 
-    public List<String> getUsers() {
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
+
+    public List<User> getUsers() {
         return users;
     }
 
-    public void setUsers(List<String> users) {
+    public void setUsers(List<User> users) {
         this.users = users;
     }
 
-    public List<String> getAdmins() {
+    public List<User> getAdmins() {
         return admins;
     }
 
-    public void setAdmins(List<String> admins) {
+    public void setAdmins(List<User> admins) {
         this.admins = admins;
     }
 
     @Override
     public boolean equals(Object obj) {
         //My eyes are bleeding...
-        if (!(obj instanceof Workspace))
+        if (!(obj instanceof WorkspaceResponse))
             return false;
 
-        return ((Workspace) obj).getName().equals(this.name);
+        return ((WorkspaceResponse) obj).getName().equals(this.name);
     }
 }
