@@ -7,7 +7,7 @@ import android.widget.TextView;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.UserMessage;
 
-public class SendMessageHolder extends RecyclerView.ViewHolder {
+public class SendMessageHolder extends MessageListAdapter.MyViewHolder {
 
     TextView messageText, timeText;
 

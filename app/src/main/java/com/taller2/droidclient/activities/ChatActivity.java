@@ -31,6 +31,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -62,11 +63,13 @@ public class ChatActivity extends BasicActivity
     private ListView mDrawerWorkspaceList;
     private ActionBarDrawerToggle mDrawerToggle;
     //private SharedPreferences preferences;
+    private EditText textMessage;
     private Button buttonCreateChannel;
     private Button buttonWorkspaces;
     private Button buttonBackWorkspaces;
     private Button buttonCreateWorkspace;
     private Button buttonJoinWorkspace;
+    private Button buttonSendText;
     private LinearLayout layoutChannelAndMessages;
     private LinearLayout layoutWorkspace;
 
@@ -76,7 +79,8 @@ public class ChatActivity extends BasicActivity
     //Change to Channel or UserChat
 
     private ArrayList<Workspace> workspaces;
-    private ArrayList<Channel> actual_channels;
+    private ArrayList<Channel> actualChannels;
+    private List<UserMessage> messageList;
 
     private String[] channel = {"# General",
             "# Random",
@@ -106,25 +110,19 @@ public class ChatActivity extends BasicActivity
         setContentView(R.layout.activity_chat);
 
         //Lista de mensajes
-
-        //List<BaseMessage> messageList = new LinkedList<BaseMessage>();
-        List<UserMessage> messageList = new LinkedList<UserMessage>();
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null)
-            getSupportActionBar().setTitle("Workspace name");
+            getSupportActionBar().setTitle(preference.getActualWorkspace().getName());
 
-        messageList.add(new UserMessage("Hola",
-                new User("0", "Juan", "admin@gmail.com", "juansoy", true),
-                4040));
+        messageList = new LinkedList<UserMessage>();
 
         mMessageRecycler = findViewById(R.id.reyclerview_message_list);
         mMessageAdapter = new MessageListAdapter(this, messageList);
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
         mMessageRecycler.setAdapter(mMessageAdapter);
 
-        mMessageAdapter.notifyDataSetChanged();
+        //mMessageAdapter.notifyDataSetChanged();
 
         //mConstraintLayout = findViewById(R.id.constraint_layout);
 
@@ -132,9 +130,10 @@ public class ChatActivity extends BasicActivity
         mDrawerChannelsList = findViewById(R.id.left_channel_drawer);
         mDrawerMessagesList = findViewById(R.id.left_messages_drawer);
         mDrawerWorkspaceList = findViewById(R.id.left_workspaces_drawer);
+        textMessage = findViewById(R.id.edittext_chatbox);
         buttonCreateChannel = findViewById(R.id.icon_create_channel);
         buttonWorkspaces = findViewById(R.id.icon_show_workspaces);
-
+        buttonSendText = findViewById(R.id.button_chatbox_send);
         buttonBackWorkspaces = findViewById(R.id.icon_back_workspaces);
         buttonCreateWorkspace = findViewById(R.id.button_create_workspace);
         buttonJoinWorkspace = findViewById(R.id.button_join_workspace);
@@ -153,7 +152,7 @@ public class ChatActivity extends BasicActivity
         token = preference.getToken();//this.getUserToken();
 
         workspaces = new ArrayList<Workspace>();
-        actual_channels = new ArrayList<Channel>();
+        actualChannels = new ArrayList<Channel>();
 
         retrieveWorkspaces();
     }
@@ -205,7 +204,7 @@ public class ChatActivity extends BasicActivity
         //If user doesn't have any workspace, well, that's weird, change activity to
         //NoWorkspaceActivity
         //If it has, store them in workspaces
-        //After it finishes (and succeeds) call retrieveChannels with actual workspace
+        //After it finishes (and succeeds) call retrieveChannels/retrieveChats with actual workspace
         //Again, if it doesn't have an actual workspace, set one please (?
 
         Workspace workspace_test1 = new Workspace("1", "Taller de programacion II");
@@ -227,20 +226,21 @@ public class ChatActivity extends BasicActivity
         mDrawerWorkspaceList.setAdapter(adapter);
 
         retrieveChannels(workspaces.get(workspaces.indexOf(actual_workspace)));
+        retrieveChats(workspaces.get(workspaces.indexOf(actual_workspace)));
     }
 
     private void retrieveChannels(Workspace actual_workspace) {
         //**DO REQUEST**
         //Get all the channels that I AM INTO in the actual workspace
-        //After that, add channels to the actual workspace using actual_workspace.addChannel(channel)
+        //After that, add channels to the actual workspace using actual_workspace.addChannel(channel)->Deprecated temporarily
         //then set de Adapter as below
 
-        actual_channels.add(new Channel("1", "# General"));
-        actual_channels.add(new Channel("2", "# Alumnos"));
+        actualChannels.add(new Channel("1", "# General"));
+        actualChannels.add(new Channel("2", "# Alumnos"));
         /*actual_workspace.addChannel(new Channel("1", "# General"));
         actual_workspace.addChannel(new Channel("2", "# Alumnos"));*/
 
-        ChannelListAdapter adapter = new ChannelListAdapter(this, actual_channels);
+        ChannelListAdapter adapter = new ChannelListAdapter(this, actualChannels);
 
         mDrawerChannelsList.setAdapter(adapter);
     }
@@ -285,6 +285,47 @@ public class ChatActivity extends BasicActivity
                 changeLayoutChannelAndMessageState(true);
             }
         });
+
+        buttonCreateWorkspace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeActivityNotFinish(ChatActivity.this, WorkspaceCreationActivity.class);
+            }
+        });
+
+        buttonJoinWorkspace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(ChatActivity.this, "Not implemented yet", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        buttonSendText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String msg = textMessage.getText().toString();
+
+                if (!msg.isEmpty()) {
+                    textMessage.setText("");
+                    sendTextMessage(msg);
+                }
+            }
+        });
+    }
+
+    private void sendTextMessage(String msg) {
+        //**DO REQUEST**
+        //Send message to the server and that's it
+        //Comment the next line after it's implemented
+        //Im hoping  thatthe server sends our user data or we need to do a get to retrieve
+        //that info (Contact Fede if we need to do a get)
+
+        messageList.add(new UserMessage(msg,
+                new User("0", "Juan", "admin@gmail.com", "soy_juan", true),
+                4040));
+
+        mMessageAdapter.notifyDataSetChanged();
+        mMessageRecycler.smoothScrollToPosition(mMessageAdapter.getItemCount());
     }
 
     private void changeLayoutChannelAndMessageState(boolean enable) {
@@ -300,7 +341,7 @@ public class ChatActivity extends BasicActivity
             public void onItemClick(final AdapterView<?> parent, View view, final int position, long id) {
                 ChatActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
-                        Channel channel = actual_channels.get(position);
+                        Channel channel = actualChannels.get(position);
                         //Channel channel = workspaces.get(workspaces.indexOf(preference.getActualWorkspace())).getChannels().get(position);
                         Toast.makeText(ChatActivity.this, channel.getName(), Toast.LENGTH_SHORT).show();
                     }

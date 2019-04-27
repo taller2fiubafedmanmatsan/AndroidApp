@@ -8,7 +8,7 @@ import android.widget.TextView;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.UserMessage;
 
-public class ReceivedMessageHolder extends RecyclerView.ViewHolder {
+public class ReceivedMessageHolder extends MessageListAdapter.MyViewHolder {
 
     TextView messageText, timeText, nameText;
     ImageView profileImage;

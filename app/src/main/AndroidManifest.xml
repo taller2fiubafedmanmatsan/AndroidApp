@@ -12,8 +12,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:windowSoftInputMode="adjustResize"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.WorkspaceCreationActivity"></activity>
+        <activity android:name=".activities.WorkspaceCreationActivity"/>
         <activity android:name=".activities.NoWorkspaceActivity" />
         <activity android:name=".activities.StartLoadingActivity" />
         <activity
