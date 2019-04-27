@@ -1,5 +1,7 @@
 package com.taller2.droidclient.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -9,7 +11,11 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Slide;
+import android.transition.Transition;
+import android.transition.TransitionManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -20,9 +26,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -50,10 +59,17 @@ public class ChatActivity extends BasicActivity
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerChannelsList;
     private ListView mDrawerMessagesList;
+    private ListView mDrawerWorkspaceList;
     private ActionBarDrawerToggle mDrawerToggle;
     //private SharedPreferences preferences;
     private Button buttonCreateChannel;
     private Button buttonWorkspaces;
+    private Button buttonBackWorkspaces;
+    private Button buttonCreateWorkspace;
+    private Button buttonJoinWorkspace;
+    private LinearLayout layoutChannelAndMessages;
+    private LinearLayout layoutWorkspace;
+
     //private PopupWindow mPopupWindow;
     //private ConstraintLayout mConstraintLayout;
     //Temporary strings
@@ -115,8 +131,15 @@ public class ChatActivity extends BasicActivity
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerChannelsList = findViewById(R.id.left_channel_drawer);
         mDrawerMessagesList = findViewById(R.id.left_messages_drawer);
+        mDrawerWorkspaceList = findViewById(R.id.left_workspaces_drawer);
         buttonCreateChannel = findViewById(R.id.icon_create_channel);
         buttonWorkspaces = findViewById(R.id.icon_show_workspaces);
+
+        buttonBackWorkspaces = findViewById(R.id.icon_back_workspaces);
+        buttonCreateWorkspace = findViewById(R.id.button_create_workspace);
+        buttonJoinWorkspace = findViewById(R.id.button_join_workspace);
+        layoutChannelAndMessages = findViewById(R.id.channel_nav);
+        layoutWorkspace = findViewById(R.id.workspace_nav);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 toolbar,R.string.drawer_open, R.string.drawer_close);
@@ -199,6 +222,10 @@ public class ChatActivity extends BasicActivity
             finish();
         }
 
+        WorkspaceListAdapter adapter = new WorkspaceListAdapter(this, workspaces);
+
+        mDrawerWorkspaceList.setAdapter(adapter);
+
         retrieveChannels(workspaces.get(workspaces.indexOf(actual_workspace)));
     }
 
@@ -235,9 +262,36 @@ public class ChatActivity extends BasicActivity
         buttonWorkspaces.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Transition transition = new Slide(Gravity.RIGHT);
+                transition.setDuration(300);
+                transition.addTarget(layoutWorkspace);
 
+                TransitionManager.beginDelayedTransition((ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content), transition);
+                layoutWorkspace.setVisibility(View.VISIBLE);
+                changeLayoutChannelAndMessageState(false);
             }
         });
+
+        buttonBackWorkspaces.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Transition transition = new Slide(Gravity.RIGHT);
+                transition.setDuration(500);
+                transition.addTarget(layoutWorkspace);
+
+                TransitionManager.beginDelayedTransition((ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content), transition);
+                layoutWorkspace.setVisibility(View.GONE);
+                layoutChannelAndMessages.setVisibility(View.VISIBLE);
+                changeLayoutChannelAndMessageState(true);
+            }
+        });
+    }
+
+    private void changeLayoutChannelAndMessageState(boolean enable) {
+        buttonCreateChannel.setEnabled(enable);
+        mDrawerChannelsList.setEnabled(enable);
+        mDrawerMessagesList.setEnabled(enable);
+        buttonWorkspaces.setEnabled(enable);
     }
 
     private void setDrawersListeners() {
