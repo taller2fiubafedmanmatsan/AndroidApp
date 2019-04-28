@@ -37,8 +37,8 @@ public class SavedState {
         preferences.edit().putString("workspace_name", "").apply();
     }
 
-    public Workspace getActualWorkspace() {
-        return new Workspace(
+    public WorkspaceResponse getActualWorkspace() {
+        return new WorkspaceResponse(
                 preferences.getString("workspace_name", "")
         );
     }
