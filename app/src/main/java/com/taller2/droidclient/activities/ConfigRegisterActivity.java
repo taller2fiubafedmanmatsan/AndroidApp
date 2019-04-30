@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -138,7 +139,12 @@ public class ConfigRegisterActivity extends BasicActivity {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                final Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
+
+                while (!urlTask.isSuccessful());
+
+                final Uri downloadUrl = urlTask.getResult();
+                //final Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
                 //Tener en cuenta que pasaría si al cambiar la imagen nunca se envía al server el
                 //link (tecnicamente la sube pero nunca actualiza asi que el servidor nunca se entera)

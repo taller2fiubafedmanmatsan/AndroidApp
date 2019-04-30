@@ -80,8 +80,6 @@ public class UserRequester {
         }
     }
 
-
-
     public void changeNicknameUser(String nickname, String token, CallbackUserRequester callback){
         try{
             Map<String, String> nicknameMap = new HashMap<String,String>();

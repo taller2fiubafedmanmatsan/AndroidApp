@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -108,8 +109,11 @@ public class ProfileActivity extends BasicActivity{
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);*/
 
-        loadingSpin.showDialog(this);
-
+        ProfileActivity.this.runOnUiThread(new Runnable() {
+            public void run() {
+                loadingSpin.showDialog(ProfileActivity.this);
+            }
+        });
         userRequester.getUser(token, new CallbackUserRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -137,7 +141,11 @@ public class ProfileActivity extends BasicActivity{
                 }catch (Exception e){
                     /*preferences.edit().putBoolean("logged",false).apply();
                     preferences.edit().putString("token", "").apply();*/
-                    loadingSpin.hideDialog();
+                    ProfileActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            loadingSpin.hideDialog();
+                        }
+                    });
                     //changeActivity(ProfileActivity.this, MainActivity.class);
 
                     //Kill the activity
@@ -151,9 +159,10 @@ public class ProfileActivity extends BasicActivity{
                 ProfileActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
                         Toast.makeText(ProfileActivity.this, "Failed to reload profile.", Toast.LENGTH_SHORT).show();
+                        loadingSpin.hideDialog();
                     }
                 });
-                loadingSpin.hideDialog();
+
                 Log.d("Profile/ReloadData", e.getMessage());
                 call.cancel();
             }
@@ -266,7 +275,7 @@ public class ProfileActivity extends BasicActivity{
         //Mejor generar un string aleatorio sino puede ocurrir que se sobreescriba la foto en firebase
         //Pero el put fracase hacia el servidor.
         String image_name = "profile-" + userdata.getId() + ".jpg";
-        StorageReference mountainsRef = mStorageRef.child(image_name);
+        final StorageReference mountainsRef = mStorageRef.child(image_name);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -282,7 +291,13 @@ public class ProfileActivity extends BasicActivity{
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                final Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
+
+                while (!urlTask.isSuccessful());
+
+                final Uri downloadUrl = urlTask.getResult();
+
+                //final Uri downloadUrl = //taskSnapshot.getDownloadUrl();
 
                 userRequester.changeProfilePic(downloadUrl, token, new CallbackUserRequester() {
                     @Override

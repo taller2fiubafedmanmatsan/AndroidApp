@@ -2,13 +2,19 @@ package com.taller2.droidclient.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.Slide;
@@ -36,6 +42,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.adapters.ChannelListAdapter;
@@ -48,6 +59,7 @@ import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.model.UserMessage;
 import com.taller2.droidclient.model.Workspace;
 import com.taller2.droidclient.model.WorkspaceResponse;
+import com.taller2.droidclient.requesters.MessageRequester;
 import com.taller2.droidclient.requesters.UserRequester;
 import com.taller2.droidclient.requesters.WorkspaceRequester;
 
@@ -93,6 +105,7 @@ public class ChatActivity extends BasicActivity
     private List<UserMessage> messageList;
     private UserRequester userRequester;
     private WorkspaceRequester workspaceRequester;
+    private MessageRequester messageRequester;
 
     private String[] channel = {"# General",
             "# Random",
@@ -116,6 +129,24 @@ public class ChatActivity extends BasicActivity
             "Otro Santi pero Pinto"
     };
 
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            messageList.add(new UserMessage(intent.getExtras().getString("msg"),
+                    new User("0", "Juan", "admin@gmail.com", "soy_juan", true),
+                    4040));
+
+            /*User user_sender = new Gson().fromJson(intent.getExtras().getString("sender"), User.class);
+            String msg = intent.getExtras().getString("msg");
+            long createdAt = intent.getExtras().getLong("createdAt");
+
+            messageList.add(new UserMessage(msg, user_sender, createdAt));*/
+
+            mMessageAdapter.notifyDataSetChanged();
+            mMessageRecycler.smoothScrollToPosition(mMessageAdapter.getItemCount());
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,6 +161,7 @@ public class ChatActivity extends BasicActivity
         messageList = new LinkedList<UserMessage>();
         userRequester = new UserRequester();
         workspaceRequester = new WorkspaceRequester();
+        messageRequester = new MessageRequester();
 
         mMessageRecycler = findViewById(R.id.reyclerview_message_list);
         mMessageAdapter = new MessageListAdapter(this, messageList);
@@ -171,6 +203,51 @@ public class ChatActivity extends BasicActivity
         retrieveWorkspaces();
 
 
+        /*FirebaseMessaging.getInstance().subscribeToTopic("channel-topic")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = "Suscripto";
+                        if (!task.isSuccessful()) {
+                            msg = "No suscripto";
+                        }
+                        Log.d("MESSAGING/FIREBASE", msg);
+                        Toast.makeText(ChatActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });*/
+
+        /*FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("MESSAGING/FIREBASE2", "getInstanceId failed", task.getException());
+                            return;
+                        }
+
+                        // Get new Instance ID token
+                        String token = task.getResult().getToken();
+
+                        // Log and toast
+                        String msg = token.toString();
+                        Log.d("MESSAGING/FIREBASE2", msg);
+                        Toast.makeText(ChatActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });*/
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
+                new IntentFilter("Messages")
+        );
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
     }
 
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -396,12 +473,33 @@ public class ChatActivity extends BasicActivity
         //Im hoping  thatthe server sends our user data or we need to do a get to retrieve
         //that info (Contact Fede if we need to do a get)
 
-        messageList.add(new UserMessage(msg,
+
+
+        /*messageList.add(new UserMessage(msg,
                 new User("0", "Juan", "admin@gmail.com", "soy_juan", true),
                 4040));
 
         mMessageAdapter.notifyDataSetChanged();
-        mMessageRecycler.smoothScrollToPosition(mMessageAdapter.getItemCount());
+        mMessageRecycler.smoothScrollToPosition(mMessageAdapter.getItemCount());*/
+
+        messageRequester.sendMessage(msg,
+                preference.getActualWorkspace(),
+                preference.getActualChannel(),
+                preference.getToken(),
+                new CallbackUserRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful())
+                    Log.d("SENDING/MSG", "Sucessful");
+                else
+                    Log.d("SENDING/MSG", response.body().string());
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("SENDING/MSG", "Failure");
+            }
+        });
     }
 
     private void changeLayoutChannelAndMessageState(boolean enable) {
