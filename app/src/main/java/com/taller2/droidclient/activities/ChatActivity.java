@@ -165,6 +165,8 @@ public class ChatActivity extends BasicActivity
         actualChannels = new ArrayList<Channel>();
 
         retrieveWorkspaces();
+
+
     }
 
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -235,6 +237,7 @@ public class ChatActivity extends BasicActivity
                                 mDrawerWorkspaceList.setAdapter(adapter);
                                 retrieveChannels(workspaces.get(workspaces.indexOf(actual_workspace)));
                                 retrieveChats(workspaces.get(workspaces.indexOf(actual_workspace)));
+                                setListenersList();
                             }
                         });
                     }
@@ -335,6 +338,27 @@ public class ChatActivity extends BasicActivity
                 }
             }
         });
+
+    }
+
+
+    private void setListenersList(){
+        mDrawerWorkspaceList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected item text from ListView
+                try {
+                    WorkspaceResponse selectedItem = (WorkspaceResponse) parent.getItemAtPosition(position);
+                    String workName = selectedItem.getName();
+                    preference.saveActualWorkspace(new WorkspaceResponse(workName));
+                    changeActivity(ChatActivity.this, StartLoadingActivity.class);
+                }catch (Exception e){
+                    Log.d("ERROR", e.getMessage());
+                }
+
+            }
+        });
+
     }
 
     private void sendTextMessage(String msg) {

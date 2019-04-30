@@ -90,6 +90,9 @@ public class StartLoadingActivity extends BasicActivity {
                     Log.d("CreateWork/loadData", msg);
 
                 }catch (Exception e){
+                    Log.d("ERROR", e.getMessage());
+                    preference.logout();
+                    changeActivity(StartLoadingActivity.this,LoginActivity.class);
                     finish();
                 }
 

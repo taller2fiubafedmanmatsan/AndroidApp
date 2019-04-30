@@ -33,4 +33,5 @@ public class WorkspaceListAdapter extends ArrayAdapter<WorkspaceResponse> {
 
         return convertView;
     }
+
 }

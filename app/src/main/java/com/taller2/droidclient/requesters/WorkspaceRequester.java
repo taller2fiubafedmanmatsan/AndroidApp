@@ -36,7 +36,7 @@ public class WorkspaceRequester {
     public void getWorkspace(String name,String token, CallbackWorkspaceRequester callback) {
         try {
             String url = postUrl +"/"+ name;
-            getRequest(postUrl + "/me", token, callback);
+            getRequest(url, token, callback);
         } catch (IOException e) {
             e.printStackTrace();
         }
