@@ -12,7 +12,7 @@ public class User {
     private String email;
     private String nickname;
     private Boolean isAdmin;
-    private String photo_url;
+    private String photoUrl;
     private List<WorkspaceResponse> workspaces;
 
     public User(String _id, String name, String email, String nickname, Boolean isAdmin/*, Uri photo_url*/) {
@@ -67,8 +67,13 @@ public class User {
         isAdmin = admin;
     }
 
-    public String getPhotoUrl() { return photo_url; }
-    public void setPhotoUrl(String photo_url) { this.photo_url = photo_url; }
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
 
     public List<WorkspaceResponse> getWorkspaces() {
         return workspaces;
