@@ -42,12 +42,14 @@ import com.taller2.droidclient.adapters.ChannelListAdapter;
 import com.taller2.droidclient.adapters.MessageListAdapter;
 import com.taller2.droidclient.adapters.WorkspaceListAdapter;
 import com.taller2.droidclient.model.CallbackUserRequester;
+import com.taller2.droidclient.model.CallbackWorkspaceRequester;
 import com.taller2.droidclient.model.Channel;
 import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.model.UserMessage;
 import com.taller2.droidclient.model.Workspace;
 import com.taller2.droidclient.model.WorkspaceResponse;
 import com.taller2.droidclient.requesters.UserRequester;
+import com.taller2.droidclient.requesters.WorkspaceRequester;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -90,6 +92,7 @@ public class ChatActivity extends BasicActivity
     private ArrayList<Channel> actualChannels;
     private List<UserMessage> messageList;
     private UserRequester userRequester;
+    private WorkspaceRequester workspaceRequester;
 
     private String[] channel = {"# General",
             "# Random",
@@ -126,6 +129,7 @@ public class ChatActivity extends BasicActivity
 
         messageList = new LinkedList<UserMessage>();
         userRequester = new UserRequester();
+        workspaceRequester = new WorkspaceRequester();
 
         mMessageRecycler = findViewById(R.id.reyclerview_message_list);
         mMessageAdapter = new MessageListAdapter(this, messageList);
@@ -257,19 +261,39 @@ public class ChatActivity extends BasicActivity
     }
 
     private void retrieveChannels(WorkspaceResponse actual_workspace) {
-        //**DO REQUEST**
-        //Get all the channels that I AM INTO in the actual workspace
-        //After that, add channels to the actual workspace using actual_workspace.addChannel(channel)->Deprecated temporarily
-        //then set de Adapter as below
+        workspaceRequester.getWorkspace(actual_workspace.getName(), preference.getToken(), new CallbackWorkspaceRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try{
+                    String msg = response.body().string();
+                    final WorkspaceResponse work = new Gson().fromJson(msg, WorkspaceResponse.class);
+                    if (response.isSuccessful()) {
+                        actualChannels = (ArrayList<Channel>) work.getChannels();
 
-        actualChannels.add(new Channel("1", "# General"));
-        actualChannels.add(new Channel("2", "# Alumnos"));
-        /*actual_workspace.addChannel(new Channel("1", "# General"));
-        actual_workspace.addChannel(new Channel("2", "# Alumnos"));*/
-
-        ChannelListAdapter adapter = new ChannelListAdapter(this, actualChannels);
-
-        mDrawerChannelsList.setAdapter(adapter);
+                        ChatActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Channel actual_channel = preference.getActualChannel();
+                                if (!actualChannels.contains(actual_channel)) {
+                                    actualChannels.add(actual_channel);
+                                }
+                                ChannelListAdapter adapter = new ChannelListAdapter(ChatActivity.this, actualChannels);
+                                mDrawerChannelsList.setAdapter(adapter);
+                            }
+                        });
+                    }
+                    Log.d("LOAD/CHANNEL", msg);
+                }catch (Exception e){
+                    finish();
+                }
+            }
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("LOAD/CHANNEL", e.getMessage());
+                call.cancel();
+                finish();
+            }
+        });
     }
 
     private void retrieveChats(WorkspaceResponse actual_workspace) {

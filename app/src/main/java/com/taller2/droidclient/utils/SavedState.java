@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.View;
 
+import com.taller2.droidclient.model.Channel;
 import com.taller2.droidclient.model.Workspace;
 import com.taller2.droidclient.model.WorkspaceResponse;
 
@@ -45,5 +46,13 @@ public class SavedState {
 
     public void saveActualWorkspace(WorkspaceResponse workspace) {
         preferences.edit().putString("workspace_name", workspace.getName()).apply();
+    }
+
+    public void saveActualChannel(Channel channel){
+        preferences.edit().putString("channel_name", channel.getName()).apply();
+    }
+
+    public Channel getActualChannel(){
+        return new Channel(preferences.getString("channel_name",""));
     }
 }

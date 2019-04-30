@@ -13,8 +13,7 @@ public class Channel {
         this.welcomeMessage = welcomeMessage;
     }
 
-    public Channel(String id, String name) {
-        this.id = id;
+    public Channel(String name) {
         this.name = name;
     }
 

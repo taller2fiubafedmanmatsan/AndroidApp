@@ -54,15 +54,6 @@ public class StartLoadingActivity extends BasicActivity {
         //SavedState preference = new SavedState(this);
         loading_text.setText("Loading workspaces");
         loadingSpin.showDialog(this);
-        //**DO REQUEST**
-        //Request workspaces that im in!
-        //If it fails, well, retry or logout (?)
-        //If it succeeds, check if the list of workspaces is empty
-        //If its empty, change activity to NoWorkspaceActivity
-        //If its not empty check if actual workspace is one of those workspaces
-        //If its true, change activity to ChatActivity
-        //If its false, save in preference an actual workspace, choose the one you want
-        //and change activity to ChatActivity
 
         loadWorkspaces();
         loadingSpin.hideDialog();
@@ -82,6 +73,7 @@ public class StartLoadingActivity extends BasicActivity {
 
                     if (response.isSuccessful()) {
                         workspaces = userdata.getWorkspaces();
+
                         choosePath();
                         loadingSpin.hideDialog();
 
@@ -108,16 +100,16 @@ public class StartLoadingActivity extends BasicActivity {
     }
 
     private void choosePath(){
+        WorkspaceResponse work = preference.getActualWorkspace();
         if(workspaces.isEmpty()){
             changeActivity(StartLoadingActivity.this, NoWorkspaceActivity.class);
         }
-        else if (workspaces.contains(preference.getActualWorkspace())) {
+        else if (workspaces.contains(work)) {
             changeActivity(StartLoadingActivity.this, ChatActivity.class);
         }else{
             preference.saveActualWorkspace(workspaces.get(0));
             changeActivity(StartLoadingActivity.this, ChatActivity.class);
         }
     }
-
 
 }
