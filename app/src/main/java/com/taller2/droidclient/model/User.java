@@ -3,6 +3,8 @@ package com.taller2.droidclient.model;
 import android.net.Uri;
 import android.util.Log;
 
+import java.util.List;
+
 public class User {
 
     private String _id;
@@ -11,6 +13,7 @@ public class User {
     private String nickname;
     private Boolean isAdmin;
     private String photo_url;
+    private List<WorkspaceResponse> workspaces;
 
     public User(String _id, String name, String email, String nickname, Boolean isAdmin/*, Uri photo_url*/) {
         this._id = _id;
@@ -22,6 +25,7 @@ public class User {
         //Hasta que el server devuelva la url
         //this.photo_url = photo_url;
     }
+
 
     public String getId() {
         return _id;
@@ -65,4 +69,13 @@ public class User {
 
     public String getPhotoUrl() { return photo_url; }
     public void setPhotoUrl(String photo_url) { this.photo_url = photo_url; }
+
+    public List<WorkspaceResponse> getWorkspaces() {
+        return workspaces;
+    }
+
+    public void setWorkspaces(List<WorkspaceResponse> workspaces) {
+        this.workspaces = workspaces;
+    }
 }
+

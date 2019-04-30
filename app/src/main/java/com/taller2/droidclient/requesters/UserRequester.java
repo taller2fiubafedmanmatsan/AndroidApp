@@ -28,10 +28,10 @@ import okhttp3.Response;
 
 public class UserRequester {
 
-    private String postUrl = "https://app-server-t2.herokuapp.com/api/users";
-    private String recoverPassUrl = "https://app-server-t2.herokuapp.com/api/users/restorepassword";
-    private String authUrl = "https://app-server-t2.herokuapp.com/api/auth/signin";
-    private String facebookUrl = "https://app-server-t2.herokuapp.com/api/auth/facebook";
+    private String postUrl = "https://hypechat-t2.herokuapp.com/api/users";
+    private String recoverPassUrl = "https://hypechat-t2.herokuapp.com/api/users/restorepassword";
+    private String authUrl = "https://hypechat-t2.herokuapp.com/api/auth/signin";
+    private String facebookUrl = "https://hypechat-t2.herokuapp.com/api/auth/facebook";
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
