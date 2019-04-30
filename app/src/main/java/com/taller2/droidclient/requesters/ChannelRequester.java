@@ -20,13 +20,14 @@ import okhttp3.Response;
 
 public class ChannelRequester {
 
-    private String postUrl = "https://hypechat-t2.herokuapp.com/api/workspaces/channels";
+    private String postUrl = "https://hypechat-t2.herokuapp.com/api/channels/workspace";
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    public void createChannel(NewChannel channel, String token, CallbackWorkspaceRequester callback){
+    public void createChannel(NewChannel channel,String workName, String token, CallbackWorkspaceRequester callback){
         try {
-            postRequest(postUrl, new JsonConverter().objectToJsonString(channel),token, callback);
+            String url = postUrl +"/"+workName;
+            postRequest(url, new JsonConverter().objectToJsonString(channel),token, callback);
 
         } catch (IOException e) {
             e.printStackTrace();

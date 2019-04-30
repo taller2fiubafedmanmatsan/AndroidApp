@@ -9,14 +9,16 @@ public class NewChannel {
     private boolean isPrivate;
     private String description;
     private String welcomeMessage;
+    private String creator;
 
 
     public NewChannel(String workspaceName, String name, List<String> users) {
         this.workspaceName = workspaceName;
         this.name = name;
         this.users = users;
+        this.creator = users.get(0);
         this.isPrivate = false;
-        this.description = "Channel" + name;
+        this.description = "Channel " + name;
         this.welcomeMessage = "Welcome to " + name;
     }
 
@@ -66,5 +68,13 @@ public class NewChannel {
 
     public void setWelcomeMessage(String welcomeMessage) {
         this.welcomeMessage = welcomeMessage;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 }

@@ -89,7 +89,7 @@ public class ChatActivity extends BasicActivity
     //Change to Channel or UserChat
 
     private ArrayList<WorkspaceResponse> workspaces;
-    private ArrayList<Channel> actualChannels;
+    private ArrayList<String> actualChannels;
     private List<UserMessage> messageList;
     private UserRequester userRequester;
     private WorkspaceRequester workspaceRequester;
@@ -166,7 +166,7 @@ public class ChatActivity extends BasicActivity
         token = preference.getToken();//this.getUserToken();
 
         workspaces = new ArrayList<WorkspaceResponse>();
-        actualChannels = new ArrayList<Channel>();
+        actualChannels = new ArrayList<String>();
 
         retrieveWorkspaces();
 
@@ -268,16 +268,20 @@ public class ChatActivity extends BasicActivity
                     String msg = response.body().string();
                     final WorkspaceResponse work = new Gson().fromJson(msg, WorkspaceResponse.class);
                     if (response.isSuccessful()) {
-                        actualChannels = (ArrayList<Channel>) work.getChannels();
+                        actualChannels = (ArrayList<String>) work.getChannels();
 
                         ChatActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 Channel actual_channel = preference.getActualChannel();
-                                if (!actualChannels.contains(actual_channel)) {
-                                    actualChannels.add(actual_channel);
+                                if (!actualChannels.contains(actual_channel.getName())) {
+                                    actualChannels.add(actual_channel.getName());
                                 }
-                                ChannelListAdapter adapter = new ChannelListAdapter(ChatActivity.this, actualChannels);
+                                ArrayList<Channel> channels = new ArrayList<>();
+                                for (String channel:actualChannels) {
+                                    channels.add(new Channel(channel));
+                                }
+                                ChannelListAdapter adapter = new ChannelListAdapter(ChatActivity.this, channels);
                                 mDrawerChannelsList.setAdapter(adapter);
                             }
                         });
@@ -413,7 +417,8 @@ public class ChatActivity extends BasicActivity
             public void onItemClick(final AdapterView<?> parent, View view, final int position, long id) {
                 ChatActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
-                        Channel channel = actualChannels.get(position);
+                        String channelName = actualChannels.get(position);
+                        Channel channel = new Channel(channelName);
                         //Channel channel = workspaces.get(workspaces.indexOf(preference.getActualWorkspace())).getChannels().get(position);
                         Toast.makeText(ChatActivity.this, channel.getName(), Toast.LENGTH_SHORT).show();
                     }

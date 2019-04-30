@@ -106,7 +106,8 @@ public class ChannelCreationActivity extends BasicActivity {
     }
 
     private void createChannel(NewChannel channel, String token){
-        channelRequester.createChannel(channel,token, new CallbackWorkspaceRequester() {
+        String workName = preference.getActualWorkspace().getName();
+        channelRequester.createChannel(channel,workName,token, new CallbackWorkspaceRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 try{
@@ -117,7 +118,7 @@ public class ChannelCreationActivity extends BasicActivity {
 
                         ChannelCreationActivity.this.runOnUiThread(new Runnable() {
                             public void run() {
-                                changeActivity(ChannelCreationActivity.this, ChatActivity.class);
+                                changeActivity(ChannelCreationActivity.this, StartLoadingActivity.class);
                             }
                         });
                     }
