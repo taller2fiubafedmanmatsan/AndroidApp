@@ -41,6 +41,7 @@ import com.taller2.droidclient.R;
 import com.taller2.droidclient.adapters.ChannelListAdapter;
 import com.taller2.droidclient.adapters.MessageListAdapter;
 import com.taller2.droidclient.adapters.WorkspaceListAdapter;
+import com.taller2.droidclient.model.CallbackRequester;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.CallbackWorkspaceRequester;
 import com.taller2.droidclient.model.Channel;
@@ -48,6 +49,7 @@ import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.model.UserMessage;
 import com.taller2.droidclient.model.Workspace;
 import com.taller2.droidclient.model.WorkspaceResponse;
+import com.taller2.droidclient.requesters.ChannelRequester;
 import com.taller2.droidclient.requesters.UserRequester;
 import com.taller2.droidclient.requesters.WorkspaceRequester;
 
@@ -89,10 +91,11 @@ public class ChatActivity extends BasicActivity
     //Change to Channel or UserChat
 
     private ArrayList<WorkspaceResponse> workspaces;
-    private ArrayList<String> actualChannels;
+    private ArrayList<Channel> actualChannels;
     private List<UserMessage> messageList;
     private UserRequester userRequester;
     private WorkspaceRequester workspaceRequester;
+    private ChannelRequester channelRequester;
 
     private String[] channel = {"# General",
             "# Random",
@@ -130,6 +133,7 @@ public class ChatActivity extends BasicActivity
         messageList = new LinkedList<UserMessage>();
         userRequester = new UserRequester();
         workspaceRequester = new WorkspaceRequester();
+        channelRequester = new ChannelRequester();
 
         mMessageRecycler = findViewById(R.id.reyclerview_message_list);
         mMessageAdapter = new MessageListAdapter(this, messageList);
@@ -166,7 +170,7 @@ public class ChatActivity extends BasicActivity
         token = preference.getToken();//this.getUserToken();
 
         workspaces = new ArrayList<WorkspaceResponse>();
-        actualChannels = new ArrayList<String>();
+        actualChannels = new ArrayList<Channel>();
 
         retrieveWorkspaces();
 
@@ -213,13 +217,6 @@ public class ChatActivity extends BasicActivity
     }
 
     private void retrieveWorkspaces() {
-        //**DO REQUEST**
-        //Retrieve all workspaces from this user
-        //If user doesn't have any workspace, well, that's weird, change activity to
-        //NoWorkspaceActivity
-        //If it has, store them in workspaces
-        //After it finishes (and succeeds) call retrieveChannels/retrieveChats with actual workspace
-        //Again, if it doesn't have an actual workspace, set one please (?
         userRequester.getUser(preference.getToken(), new CallbackUserRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -240,7 +237,6 @@ public class ChatActivity extends BasicActivity
                                 WorkspaceListAdapter adapter = new WorkspaceListAdapter(ChatActivity.this, workspaces);
                                 mDrawerWorkspaceList.setAdapter(adapter);
                                 retrieveChannels(workspaces.get(workspaces.indexOf(actual_workspace)));
-                                retrieveChats(workspaces.get(workspaces.indexOf(actual_workspace)));
                                 setListenersList();
                             }
                         });
@@ -268,26 +264,25 @@ public class ChatActivity extends BasicActivity
                     String msg = response.body().string();
                     final WorkspaceResponse work = new Gson().fromJson(msg, WorkspaceResponse.class);
                     if (response.isSuccessful()) {
-                        actualChannels = (ArrayList<String>) work.getChannels();
+                        actualChannels = (ArrayList<Channel>) work.getChannels();
 
                         ChatActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 Channel actual_channel = preference.getActualChannel();
                                 if (!actualChannels.contains(actual_channel.getName())) {
-                                    actualChannels.add(actual_channel.getName());
+                                    actualChannels.add(actual_channel);
                                 }
-                                ArrayList<Channel> channels = new ArrayList<>();
-                                for (String channel:actualChannels) {
-                                    channels.add(new Channel(channel));
-                                }
-                                ChannelListAdapter adapter = new ChannelListAdapter(ChatActivity.this, channels);
+                                ChannelListAdapter adapter = new ChannelListAdapter(ChatActivity.this, actualChannels);
                                 mDrawerChannelsList.setAdapter(adapter);
+                                retrieveChats(workspaces.get(workspaces.indexOf(preference.getActualWorkspace())));
+                                setListenersChannels();
                             }
                         });
                     }
                     Log.d("LOAD/CHANNEL", msg);
                 }catch (Exception e){
+                    Log.d("LOAD/CHANNEL", e.getMessage());
                     finish();
                 }
             }
@@ -301,9 +296,41 @@ public class ChatActivity extends BasicActivity
     }
 
     private void retrieveChats(WorkspaceResponse actual_workspace) {
-        //Add request and get chats
-        mDrawerMessagesList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.format_text_navigation, message));
+        String channelName = preference.getActualChannel().getName();
+        String workName = actual_workspace.getName();
+        String token = preference.getToken();
+        channelRequester.getChannel(channelName, workName, token, new CallbackRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try{
+                    String msg = response.body().string();
+                    //final Channel channel = new Gson().fromJson(msg, Channel.class);
+                    if (response.isSuccessful()) {
+
+                        ChatActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mDrawerMessagesList.setAdapter(new ArrayAdapter<String>(ChatActivity.this,
+                                        R.layout.format_text_navigation, message));
+                            }
+                        });
+                    }
+                    Log.d("LOAD/messages", msg);
+                }catch (Exception e){
+                    Log.d("LOAD/messages", e.getMessage());
+                    finish();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("LOAD/Message", e.getMessage());
+                call.cancel();
+                finish();
+
+            }
+        });
     }
 
     private void setListeners(){
@@ -370,6 +397,23 @@ public class ChatActivity extends BasicActivity
     }
 
 
+    private void setListenersChannels(){
+        mDrawerChannelsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected item text from ListView
+                try {
+                    Channel selectedItem = (Channel) parent.getItemAtPosition(position);
+                    String channelName = selectedItem.getName();
+                    preference.saveActualChannel(new Channel(channelName));
+                    changeActivity(ChatActivity.this, StartLoadingActivity.class);
+                }catch (Exception e){
+                    Log.d("ERROR", e.getMessage());
+                }
+            }
+        });
+    }
+
     private void setListenersList(){
         mDrawerWorkspaceList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -386,8 +430,9 @@ public class ChatActivity extends BasicActivity
 
             }
         });
-
     }
+
+
 
     private void sendTextMessage(String msg) {
         //**DO REQUEST**
@@ -417,8 +462,8 @@ public class ChatActivity extends BasicActivity
             public void onItemClick(final AdapterView<?> parent, View view, final int position, long id) {
                 ChatActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
-                        String channelName = actualChannels.get(position);
-                        Channel channel = new Channel(channelName);
+                        Channel channel = actualChannels.get(position);
+
                         //Channel channel = workspaces.get(workspaces.indexOf(preference.getActualWorkspace())).getChannels().get(position);
                         Toast.makeText(ChatActivity.this, channel.getName(), Toast.LENGTH_SHORT).show();
                     }
@@ -448,7 +493,4 @@ public class ChatActivity extends BasicActivity
         }
     }
 
-    private void loadWorkspaces() {
-
-    }
 }

@@ -11,7 +11,7 @@ public class WorkspaceResponse {
     private User creator;
     private String description;
     private String welcomeMessage;
-    private List<String> channels;
+    private List<Channel> channels;
     private List<User> users;
     private List<User> admins;
 
@@ -27,14 +27,14 @@ public class WorkspaceResponse {
         //this.location = "";
         this.description = "Workspace " + name;
         this.welcomeMessage = "Welcome to " + name;
-        this.channels = new ArrayList<String>();
+        this.channels = new ArrayList<Channel>();
         this.users = new ArrayList<User>();
         this.admins = new ArrayList<User>();
         this.users.add(creator);
         this.admins.add(creator);
     }
 
-    public WorkspaceResponse(String name, String imageUrl, String location, User creator, String description, String welcomeMessage, List<String> channels, List<User> users, List<User> admins) {
+    public WorkspaceResponse(String name, String imageUrl, String location, User creator, String description, String welcomeMessage, List<Channel> channels, List<User> users, List<User> admins) {
         this.name = name;
         this.imageUrl = imageUrl;
         this.location = location;
@@ -88,11 +88,11 @@ public class WorkspaceResponse {
         this.welcomeMessage = welcomeMessage;
     }
 
-    public List<String> getChannels() {
+    public List<Channel> getChannels() {
         return channels;
     }
 
-    public void setChannels(List<String> channels) {
+    public void setChannels(List<Channel> channels) {
         this.channels = channels;
     }
 
