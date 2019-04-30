@@ -2,6 +2,7 @@ package com.taller2.droidclient.requesters;
 
 import android.util.Log;
 
+import com.taller2.droidclient.model.CallbackRequester;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.CallbackWorkspaceRequester;
 import com.taller2.droidclient.model.NewChannel;
@@ -21,8 +22,20 @@ import okhttp3.Response;
 public class ChannelRequester {
 
     private String postUrl = "https://hypechat-t2.herokuapp.com/api/channels/workspace";
+    private String getUrl = "https://hypechat-t2.herokuapp.com/api/channels/";
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+
+    public void getChannel(String channelName, String workName, String token, CallbackRequester callback){
+        try{
+            String url = getUrl+channelName +"/workspace/"+ workName;
+            getRequest(url,token,callback);
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void createChannel(NewChannel channel,String workName, String token, CallbackWorkspaceRequester callback){
         try {
@@ -76,8 +89,23 @@ public class ChannelRequester {
 
             }
         });
+    }
 
+    private void getRequest(String url, String token,final CallbackRequester callback) throws IOException {
+        OkHttpClient client = new OkHttpClient();
 
+        Request request = new Request.Builder().url(url).header("x-auth-token", token).get().build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(call, e);
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                callback.onResponse(call, response);
+            }
+        });
     }
 
 
