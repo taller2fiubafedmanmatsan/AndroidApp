@@ -85,6 +85,7 @@ public class ChannelCreationActivity extends BasicActivity {
                 String channel = channelName.getText().toString();
 
                 if (!channel.isEmpty()) {
+                    loadingSpin.showDialog(ChannelCreationActivity.this);
                     List<String> users = new ArrayList<>();
                     users.add(currentUserEmail);
                     NewChannel newChannel = new NewChannel(currentWorkspace,channel,users);
@@ -110,6 +111,12 @@ public class ChannelCreationActivity extends BasicActivity {
         channelRequester.createChannel(channel,workName,token, new CallbackWorkspaceRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                ChannelCreationActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        loadingSpin.hideDialog();
+                    }
+                });
+
                 try{
                     String msg = response.body().string();
                     final Channel channel1 = new Gson().fromJson(msg,Channel.class);
@@ -126,7 +133,6 @@ public class ChannelCreationActivity extends BasicActivity {
                     Log.d("CreateWork/loadData", msg);
 
                 }catch (Exception e){
-                    loadingSpin.hideDialog();
                     finish();
                 }
 
@@ -136,6 +142,11 @@ public class ChannelCreationActivity extends BasicActivity {
             public void onFailure(Call call, IOException e) {
                 Log.d("CreateWork/loadData", e.getMessage());
                 call.cancel();
+                ChannelCreationActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        loadingSpin.hideDialog();
+                    }
+                });
             }
         });
     }
@@ -169,6 +180,11 @@ public class ChannelCreationActivity extends BasicActivity {
             public void onFailure(Call call, IOException e) {
                 Log.d("CreateWork/loadData", e.getMessage());
                 call.cancel();
+                ChannelCreationActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        loadingSpin.hideDialog();
+                    }
+                });
                 onBackPressed();
             }
         });
