@@ -120,6 +120,8 @@ public class ConfigRegisterActivity extends BasicActivity {
     }
 
     private void changeProfilePicture(Bitmap bitmap) {
+        loadingSpin.showDialog(ConfigRegisterActivity.this);
+
         final String image_name = "profile-" + "random" + ".jpg";
         StorageReference mountainsRef = mStorageRef.child(image_name);
 
@@ -150,7 +152,11 @@ public class ConfigRegisterActivity extends BasicActivity {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         Log.d("Changing/ProfilePic", response.body().string());
-
+                        ConfigRegisterActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                loadingSpin.hideDialog();
+                            }
+                        });
                         //userdata.setPhotoUrl(downloadUrl.toString());
                         if (response.isSuccessful()) {
                             ConfigRegisterActivity.this.runOnUiThread(new Runnable() {
@@ -163,13 +169,24 @@ public class ConfigRegisterActivity extends BasicActivity {
                                     }
                                 }
                             });
+                        } else {
+                            ConfigRegisterActivity.this.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(ConfigRegisterActivity.this, "Image failed to load: Try again", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
                     }
 
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Log.d("Changing/ProfilePic", e.getMessage());
-                        Toast.makeText(ConfigRegisterActivity.this, "Image failed to load: Try again", Toast.LENGTH_SHORT).show();
+                        ConfigRegisterActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                loadingSpin.hideDialog();
+                                Toast.makeText(ConfigRegisterActivity.this, "Image failed to load: Try again", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
 

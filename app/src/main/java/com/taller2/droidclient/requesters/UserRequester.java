@@ -106,7 +106,7 @@ public class UserRequester {
     public void changeProfilePic(Uri url, String token, CallbackUserRequester callback){
         try{
             Map<String, String> urlMap = new HashMap<String,String>();
-            urlMap.put("photo_url",url.toString());
+            urlMap.put("photoUrl",url.toString());
 
             putRequest(postUrl+ "/me",new JsonConverter().mapToJsonString(urlMap),token,callback);
 

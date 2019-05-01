@@ -70,7 +70,7 @@ public class WorkspaceCreationActivity extends BasicActivity {
                 final String workspaceName = editWorkspaceName.getText().toString();
 
                 if (!workspaceName.isEmpty()) {
-
+                    loadingSpin.showDialog(WorkspaceCreationActivity.this);
                     Workspace workspace = new Workspace(workspaceName,currentUserEmail);
 
                     createWorkspace(workspace, token);
@@ -79,7 +79,7 @@ public class WorkspaceCreationActivity extends BasicActivity {
                 } else {
                     WorkspaceCreationActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
-                            Toast.makeText(WorkspaceCreationActivity.this, "Insert a name for the new workspace", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(WorkspaceCreationActivity.this, "Put a name for the new workspace", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -106,12 +106,23 @@ public class WorkspaceCreationActivity extends BasicActivity {
                                 createChannel(newChannel,preference.getToken());
                             }
                         });
+                    } else {
+                        WorkspaceCreationActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                loadingSpin.hideDialog();
+                            }
+                        });
                     }
                     Log.d("CreateWork/loadData", msg);
 
                 }catch (Exception e){
                     Log.d("CreateWork/loadData", e.getMessage());
-                    loadingSpin.hideDialog();
+                    WorkspaceCreationActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            loadingSpin.hideDialog();
+                            Toast.makeText(WorkspaceCreationActivity.this, "The workspace couldn't be created", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     finish();
                 }
 
@@ -120,6 +131,12 @@ public class WorkspaceCreationActivity extends BasicActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.d("CreateWork/loadData", e.getMessage());
+                WorkspaceCreationActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        loadingSpin.hideDialog();
+                        Toast.makeText(WorkspaceCreationActivity.this, "The workspace couldn't be created", Toast.LENGTH_SHORT).show();
+                    }
+                });
                 call.cancel();
             }
         });
@@ -130,12 +147,16 @@ public class WorkspaceCreationActivity extends BasicActivity {
         channelRequester.createChannel(channel,workName,token, new CallbackWorkspaceRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                WorkspaceCreationActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        loadingSpin.hideDialog();
+                    }
+                });
                 try{
                     String msg = response.body().string();
                     final Channel channel1 = new Gson().fromJson(msg,Channel.class);
 
                     if(response.isSuccessful()){
-
                         WorkspaceCreationActivity.this.runOnUiThread(new Runnable() {
                             public void run() {
                                 preference.saveActualChannel(channel1);
@@ -144,11 +165,16 @@ public class WorkspaceCreationActivity extends BasicActivity {
 
                             }
                         });
+                    } else {
+                        WorkspaceCreationActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(WorkspaceCreationActivity.this, "Failed to create General channel", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                     Log.d("CreateWork/loadData", msg);
 
                 }catch (Exception e){
-                    loadingSpin.hideDialog();
                     finish();
                 }
 
@@ -156,6 +182,12 @@ public class WorkspaceCreationActivity extends BasicActivity {
 
             @Override
             public void onFailure(Call call, IOException e) {
+                WorkspaceCreationActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        loadingSpin.hideDialog();
+                        Toast.makeText(WorkspaceCreationActivity.this, "Failed to create General channel", Toast.LENGTH_SHORT).show();
+                    }
+                });
                 Log.d("CreateWork/loadData", e.getMessage());
                 call.cancel();
             }
@@ -170,6 +202,12 @@ public class WorkspaceCreationActivity extends BasicActivity {
         userRequester.getUser(token, new CallbackUserRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                WorkspaceCreationActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        loadingSpin.hideDialog();
+                    }
+                });
+
                 try{
                     String msg = response.body().string();
 
@@ -177,13 +215,11 @@ public class WorkspaceCreationActivity extends BasicActivity {
 
                     if (response.isSuccessful()) {
                         currentUserEmail = newuserdata.getEmail();
-                        loadingSpin.hideDialog();
                     }
 
                     Log.d("CreateWork/loadData", msg);
 
                 }catch (Exception e){
-                    loadingSpin.hideDialog();
                     finish();
                 }
 
@@ -191,6 +227,11 @@ public class WorkspaceCreationActivity extends BasicActivity {
 
             @Override
             public void onFailure(Call call, IOException e) {
+                WorkspaceCreationActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        loadingSpin.hideDialog();
+                    }
+                });
                 Log.d("CreateWork/loadData", e.getMessage());
                 call.cancel();
                 onBackPressed();

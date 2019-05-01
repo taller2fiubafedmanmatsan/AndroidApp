@@ -55,6 +55,7 @@ public class StartLoadingActivity extends BasicActivity {
     }
 
     private void sendTokenFCM() {
+        loading_text.setText("Sending data to server");
         userRequester.patchTokenFCM(preference.getToken(), preference.getActualFCM(), new CallbackUserRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -89,12 +90,7 @@ public class StartLoadingActivity extends BasicActivity {
     private void getMyWorkspaces() {
         //SavedState preference = new SavedState(this);
         loading_text.setText("Loading workspaces");
-        loadingSpin.showDialog(this);
-
         loadWorkspaces();
-        loadingSpin.hideDialog();
-
-
     }
 
 
@@ -111,8 +107,6 @@ public class StartLoadingActivity extends BasicActivity {
                         workspaces = userdata.getWorkspaces();
 
                         choosePath();
-                        loadingSpin.hideDialog();
-
                     }
 
                     Log.d("CreateWork/loadData", msg);
