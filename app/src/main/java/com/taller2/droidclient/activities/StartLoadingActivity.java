@@ -50,12 +50,13 @@ public class StartLoadingActivity extends BasicActivity {
         Animation fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fadein);
         loading_picture.startAnimation(fadeInAnimation);
 
-        //sendTokenFCM();
-        getMyWorkspaces();
+        sendTokenFCM();
+        //getMyWorkspaces();
     }
 
     private void sendTokenFCM() {
         loading_text.setText("Sending data to server");
+
         userRequester.patchTokenFCM(preference.getToken(), preference.getActualFCM(), new CallbackUserRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
