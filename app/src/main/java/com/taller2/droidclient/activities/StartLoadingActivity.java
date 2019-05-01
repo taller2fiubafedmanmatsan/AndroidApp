@@ -47,8 +47,8 @@ public class StartLoadingActivity extends BasicActivity {
         Animation fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fadein);
         loading_picture.startAnimation(fadeInAnimation);
 
-        sendTokenFCM();
-        //getMyWorkspaces();
+        //sendTokenFCM();
+        getMyWorkspaces();
     }
 
     private void sendTokenFCM() {
