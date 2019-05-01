@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.core.view.Change;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.PasswordUser;
@@ -67,6 +68,7 @@ public class ChangePasswordActivity extends BasicActivity {
                 String password_2 = confirm_password.getText().toString();
                 if(password_1.equals(password_2)){
                     PasswordUser pass = new PasswordUser(password_1);
+                    loadingSpin.showDialog(ChangePasswordActivity.this);
                     changePassword(pass);
 
                 }else{
@@ -82,6 +84,12 @@ public class ChangePasswordActivity extends BasicActivity {
         userRequester.changePasswordUser(pass, token, new CallbackUserRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                ChangePasswordActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        loadingSpin.hideDialog();
+                    }
+                });
+
                 if (response.isSuccessful()) {
                     //changeActivity(ChangePasswordActivity.this, ProfileActivity.class, token);
                     finish();
@@ -105,6 +113,11 @@ public class ChangePasswordActivity extends BasicActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 //Toast.makeText(ChangePasswordActivity.this, "Error : Couldn't change password", Toast.LENGTH_SHORT).show();
+                ChangePasswordActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        loadingSpin.hideDialog();
+                    }
+                });
                 Log.d("ERROR", e.getMessage());
                 call.cancel();
             }
