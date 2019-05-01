@@ -38,6 +38,9 @@ public class StartLoadingActivity extends BasicActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_loading);
 
+        removeGoBackActionBar();
+        changeTextActionBar("Welcome to Hypechat!");
+
         workspaces = new ArrayList<>();
         userRequester = new UserRequester();
 
