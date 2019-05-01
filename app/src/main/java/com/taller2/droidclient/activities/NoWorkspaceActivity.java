@@ -42,7 +42,7 @@ public class NoWorkspaceActivity extends BasicActivity {
             public void onClick(View view) {
                 NoWorkspaceActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
-                        Toast.makeText(NoWorkspaceActivity.this, "Not implemented yet", Toast.LENGTH_SHORT).show();
+                        changeActivityNotFinish(NoWorkspaceActivity.this, WorkspaceJoinActivity.class);
                     }
                 });
             }

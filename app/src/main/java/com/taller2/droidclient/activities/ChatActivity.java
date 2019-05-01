@@ -441,7 +441,7 @@ public class ChatActivity extends BasicActivity
         buttonJoinWorkspace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ChatActivity.this, "Not implemented yet", Toast.LENGTH_SHORT).show();
+                changeActivityNotFinish(ChatActivity.this, WorkspaceJoinActivity.class);
             }
         });
 
