@@ -20,9 +20,11 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ChannelRequester {
+    //private String basicUrl = "https://hypechat-t2.herokuapp.com";
+    private String basicUrl = "https://app-server-t2.herokuapp.com";
 
-    private String postUrl = "https://hypechat-t2.herokuapp.com/api/channels/workspace";
-    private String getUrl = "https://hypechat-t2.herokuapp.com/api/channels/";
+    private String postUrl = basicUrl + "/api/channels/workspace";
+    private String getUrl = basicUrl + "/api/channels/";
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 

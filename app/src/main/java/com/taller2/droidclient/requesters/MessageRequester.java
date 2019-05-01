@@ -21,8 +21,10 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MessageRequester {
+    //private String basicUrl = "https://hypechat-t2.herokuapp.com";
+    private String basicUrl = "https://app-server-t2.herokuapp.com";
 
-    private String postUrl = "https://hypechat-t2.herokuapp.com/api/messages";
+    private String postUrl = basicUrl + "/api/messages";
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
