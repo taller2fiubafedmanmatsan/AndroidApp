@@ -15,16 +15,21 @@ import com.google.gson.Gson;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.CallbackWorkspaceRequester;
+import com.taller2.droidclient.model.Channel;
+import com.taller2.droidclient.model.NewChannel;
 import com.taller2.droidclient.model.NewWorkspace;
 import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.model.Workspace;
 import com.taller2.droidclient.model.WorkspaceResponse;
+import com.taller2.droidclient.requesters.ChannelRequester;
 import com.taller2.droidclient.requesters.UserRequester;
 import com.taller2.droidclient.requesters.WorkspaceRequester;
 
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -34,6 +39,7 @@ public class WorkspaceCreationActivity extends BasicActivity {
     private Button buttonCreateWorkspace;
     private UserRequester userRequester;
     private WorkspaceRequester workspaceRequester;
+    private ChannelRequester channelRequester;
 
     private String currentUserEmail;
     private String token;
@@ -46,6 +52,7 @@ public class WorkspaceCreationActivity extends BasicActivity {
 
         userRequester = new UserRequester();
         workspaceRequester = new WorkspaceRequester();
+        channelRequester = new ChannelRequester();
         loadUserdata();
 
         this.changeTextActionBar("Create a workspace");
@@ -93,9 +100,48 @@ public class WorkspaceCreationActivity extends BasicActivity {
                         WorkspaceCreationActivity.this.runOnUiThread(new Runnable() {
                             public void run() {
                                 preference.saveActualWorkspace(workspace);
+                                List<String> users = new ArrayList<>();
+                                users.add(currentUserEmail);
+                                NewChannel newChannel = new NewChannel(workspace.getName(),"General",users);
+                                createChannel(newChannel,preference.getToken());
+                            }
+                        });
+                    }
+                    Log.d("CreateWork/loadData", msg);
 
-                                changeActivity(WorkspaceCreationActivity.this, ChatActivity.class);
+                }catch (Exception e){
+                    Log.d("CreateWork/loadData", e.getMessage());
+                    loadingSpin.hideDialog();
+                    finish();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("CreateWork/loadData", e.getMessage());
+                call.cancel();
+            }
+        });
+    }
+
+    private void createChannel(NewChannel channel, String token){
+        String workName = preference.getActualWorkspace().getName();
+        channelRequester.createChannel(channel,workName,token, new CallbackWorkspaceRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try{
+                    String msg = response.body().string();
+                    final Channel channel1 = new Gson().fromJson(msg,Channel.class);
+
+                    if(response.isSuccessful()){
+
+                        WorkspaceCreationActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                preference.saveActualChannel(channel1);
+                                changeActivity(WorkspaceCreationActivity.this, StartLoadingActivity.class);
                                 Toast.makeText(WorkspaceCreationActivity.this, "Workspace created successfully", Toast.LENGTH_SHORT).show();
+
                             }
                         });
                     }
