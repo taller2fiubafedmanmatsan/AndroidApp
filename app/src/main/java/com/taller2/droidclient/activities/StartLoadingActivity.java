@@ -8,6 +8,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.CallbackUserRequester;
@@ -57,7 +58,12 @@ public class StartLoadingActivity extends BasicActivity {
     private void sendTokenFCM() {
         loading_text.setText("Sending data to server");
 
-        userRequester.patchTokenFCM(preference.getToken(), preference.getActualFCM(), new CallbackUserRequester() {
+        String tokenFCM = preference.getActualFCM();
+
+        if (tokenFCM.equals(""))
+            tokenFCM = FirebaseInstanceId.getInstance().getToken();
+
+        userRequester.patchTokenFCM(preference.getToken(), tokenFCM, new CallbackUserRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
