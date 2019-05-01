@@ -208,7 +208,7 @@ public class ChatActivity extends BasicActivity
         retrieveWorkspaces();
 
 
-        FirebaseMessaging.getInstance().subscribeToTopic("channel-topic")
+        /*FirebaseMessaging.getInstance().subscribeToTopic("channel-topic")
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -219,7 +219,7 @@ public class ChatActivity extends BasicActivity
                         Log.d("MESSAGING/FIREBASE", msg);
                         Toast.makeText(ChatActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
-                });
+                });*/
 
         /*FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {

@@ -2,6 +2,7 @@ package com.taller2.droidclient.servicies;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.taller2.droidclient.utils.JsonConverter;
+import com.taller2.droidclient.utils.SavedState;
 
 public class MessagingService extends FirebaseMessagingService {
     private static final String TAG = "FIREBASE/MSG";
@@ -68,11 +70,18 @@ public class MessagingService extends FirebaseMessagingService {
      */
     @Override
     public void onNewToken(String token) {
+        //super.onNewToken(token);
         Log.d(TAG, "Refreshed token: " + token);
+        //SharedPreferences preference = getApplicationContext().getSharedPreferences("login", MODE_PRIVATE);
+        //Log.d("FIREBASE/MSGTESTING", preference.getString("token", ""));
 
+        SavedState preference = new SavedState(getApplicationContext());
+
+        preference.saveActualFCM(token);
+        //Log.d("FIREBASE/MSGTESTING",preference.getToken());
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
-       // sendRegistrationToServer(token);
+        //sendRegistrationToServer(token);
     }
 }

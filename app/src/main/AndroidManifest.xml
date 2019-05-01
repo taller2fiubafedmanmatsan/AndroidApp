@@ -70,6 +70,13 @@
         <activity android:name=".activities.RegisterActivity" />
         <activity android:name=".activities.ProfileActivity" />
         <activity android:name=".activities.RecoverPasswordActivity" />
+
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
     </application>
 
 </manifest>

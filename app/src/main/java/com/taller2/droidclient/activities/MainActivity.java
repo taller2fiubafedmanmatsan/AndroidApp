@@ -2,6 +2,7 @@ package com.taller2.droidclient.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +19,8 @@ import com.facebook.login.widget.LoginButton;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FacebookAuthProvider;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.requesters.UserRequester;
@@ -61,7 +64,28 @@ public class MainActivity extends BasicActivity {
             changeActivity(MainActivity.this,StartLoadingActivity.class, token);
         }*/
 
+        //FirebaseMessaging.getInstance();
+        /*Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // Remove InstanceID initiate to unsubscribe all topic
+                    // TODO: May be a better way to use FirebaseMessaging.getInstance().unsubscribeFromTopic()
+                    FirebaseInstanceId.getInstance().deleteInstanceId();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        t.start();*/
+
+        FirebaseMessaging.getInstance().setAutoInitEnabled(false);
+        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
+        //Log.d("FIREBASE/MSG/TEST", FirebaseMessaging.getInstance().toString());
+        //FirebaseMessaging.getInstance().setAutoInitEnabled(true);
         if (preference.isLogged()) {
+            //sendActualToken();
             changeActivity(MainActivity.this,StartLoadingActivity.class);
         }
 
