@@ -348,7 +348,7 @@ public class ChatActivity extends BasicActivity
                             @Override
                             public void run() {
                                 Channel actual_channel = preference.getActualChannel();
-                                if (!actualChannels.contains(actual_channel.getName())) {
+                                if (!actualChannels.contains(actual_channel) && !actual_channel.getName().isEmpty()) {
                                     actualChannels.add(actual_channel);
                                 }
                                 ChannelListAdapter adapter = new ChannelListAdapter(ChatActivity.this, actualChannels);
@@ -501,6 +501,7 @@ public class ChatActivity extends BasicActivity
                     WorkspaceResponse selectedItem = (WorkspaceResponse) parent.getItemAtPosition(position);
                     String workName = selectedItem.getName();
                     preference.saveActualWorkspace(new WorkspaceResponse(workName));
+                    preference.saveActualChannel(new Channel(""));
                     changeActivity(ChatActivity.this, StartLoadingActivity.class);
                 }catch (Exception e){
                     Log.d("ERROR", e.getMessage());
