@@ -126,7 +126,7 @@ public class ChannelCreationActivity extends BasicActivity {
                         ChannelCreationActivity.this.runOnUiThread(new Runnable() {
                             public void run() {
                                 preference.saveActualChannel(channel1);
-                                changeActivity(ChannelCreationActivity.this, StartLoadingActivity.class);
+                                changeActivity(ChannelCreationActivity.this, ChatActivity.class);
                             }
                         });
                     }
