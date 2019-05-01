@@ -90,6 +90,8 @@ public class ChatActivity extends BasicActivity
     //Temporary strings
     //Change to Channel or UserChat
 
+    private ArrayList<String> directMessage;
+
     private ArrayList<WorkspaceResponse> workspaces;
     private ArrayList<Channel> actualChannels;
     private List<UserMessage> messageList;
@@ -134,6 +136,7 @@ public class ChatActivity extends BasicActivity
         userRequester = new UserRequester();
         workspaceRequester = new WorkspaceRequester();
         channelRequester = new ChannelRequester();
+        directMessage = new ArrayList<>();
 
         mMessageRecycler = findViewById(R.id.reyclerview_message_list);
         mMessageAdapter = new MessageListAdapter(this, messageList);
@@ -275,8 +278,15 @@ public class ChatActivity extends BasicActivity
                                 }
                                 ChannelListAdapter adapter = new ChannelListAdapter(ChatActivity.this, actualChannels);
                                 mDrawerChannelsList.setAdapter(adapter);
-                                retrieveChats(workspaces.get(workspaces.indexOf(preference.getActualWorkspace())));
+                                //retrieveChats(workspaces.get(workspaces.indexOf(preference.getActualWorkspace())));
                                 setListenersChannels();
+
+                                for (User user:work.getUsers()) {
+                                    directMessage.add(user.getName());
+                                }
+
+                                mDrawerMessagesList.setAdapter(new ArrayAdapter<String>(ChatActivity.this,
+                                        R.layout.format_text_navigation, directMessage));
                             }
                         });
                     }
@@ -295,6 +305,7 @@ public class ChatActivity extends BasicActivity
         });
     }
 
+    //Deprecadisimo
     private void retrieveChats(WorkspaceResponse actual_workspace) {
         String channelName = preference.getActualChannel().getName();
         String workName = actual_workspace.getName();
@@ -394,6 +405,24 @@ public class ChatActivity extends BasicActivity
             }
         });
 
+    }
+
+    // Esto hay que verlo
+    private void setListenersMessage(){
+        mDrawerMessagesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected item text from ListView
+                try {
+                    String selectedItem = (String) parent.getItemAtPosition(position);
+                    String name = selectedItem;
+                    preference.saveActualChannel(new Channel(name));
+                    changeActivity(ChatActivity.this, StartLoadingActivity.class);
+                }catch (Exception e){
+                    Log.d("ERROR", e.getMessage());
+                }
+            }
+        });
     }
 
 

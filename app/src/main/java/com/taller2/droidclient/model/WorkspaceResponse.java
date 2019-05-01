@@ -11,6 +11,8 @@ public class WorkspaceResponse {
     private String description;
     private String welcomeMessage;
     private List<Channel> channels;
+    private List<User> users;
+    private List<User> admins;
 
     public WorkspaceResponse(String name) {
         this.name = name;
@@ -18,21 +20,27 @@ public class WorkspaceResponse {
 
     public WorkspaceResponse(String name, User creator) {
         this.name = name;
+
         //this.imageUrl = "https://upload.wikimedia.org/wikipedia/commons/9/93/Logo-fiuba.gif";
         //this.location = "";
         this.description = "Workspace " + name;
         this.welcomeMessage = "Welcome to " + name;
         this.channels = new ArrayList<Channel>();
+        this.users = new ArrayList<User>();
+        this.admins = new ArrayList<User>();
+        this.users.add(creator);
+        this.admins.add(creator);
     }
 
-    public WorkspaceResponse(String name, String imageUrl, String location, User creator, String description, String welcomeMessage, List<Channel> channels, List<User> users, List<User> admins) {
+    public WorkspaceResponse(String name, String imageUrl, String location, String description, String welcomeMessage, List<Channel> channels, List<User> users, List<User> admins) {
         this.name = name;
         this.imageUrl = imageUrl;
         this.location = location;
         this.description = description;
         this.welcomeMessage = welcomeMessage;
         this.channels = channels;
-
+        this.users = users;
+        this.admins = admins;
     }
 
 
@@ -85,6 +93,21 @@ public class WorkspaceResponse {
         this.channels = channels;
     }
 
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
+
+    public List<User> getAdmins() {
+        return admins;
+    }
+
+    public void setAdmins(List<User> admins) {
+        this.admins = admins;
+    }
 
     @Override
     public boolean equals(Object obj) {
