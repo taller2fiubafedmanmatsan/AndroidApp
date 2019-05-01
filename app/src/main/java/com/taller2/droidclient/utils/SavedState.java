@@ -55,4 +55,12 @@ public class SavedState {
     public Channel getActualChannel(){
         return new Channel(preferences.getString("channel_name",""));
     }
+
+    public void saveActualFCM(String tokenFMC) {
+        preferences.edit().putString("token_fmc", tokenFMC).apply();
+    }
+
+    public String getActualFCM() {
+        return preferences.getString("token_fmc", "");
+    }
 }

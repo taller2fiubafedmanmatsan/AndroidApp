@@ -47,7 +47,40 @@ public class StartLoadingActivity extends BasicActivity {
         Animation fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fadein);
         loading_picture.startAnimation(fadeInAnimation);
 
-        getMyWorkspaces();
+        sendTokenFCM();
+        //getMyWorkspaces();
+    }
+
+    private void sendTokenFCM() {
+        userRequester.patchTokenFCM(preference.getToken(), preference.getActualFCM(), new CallbackUserRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    StartLoadingActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            getMyWorkspaces();
+                        }
+                    });
+                }
+                else {
+                    call.cancel();
+                    preference.logout();
+                    changeActivity(StartLoadingActivity.this,LoginActivity.class);
+                    finish();
+                }
+
+                Log.d("SendingTokenFCM", response.body().string());
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("SendingTokenFCM", e.getMessage());
+                call.cancel();
+                preference.logout();
+                changeActivity(StartLoadingActivity.this,LoginActivity.class);
+                finish();
+            }
+        });
     }
 
     private void getMyWorkspaces() {

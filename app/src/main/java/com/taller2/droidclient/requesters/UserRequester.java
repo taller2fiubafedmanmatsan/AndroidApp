@@ -27,14 +27,25 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class UserRequester {
+    //private String basicUrl = "https://hypechat-t2.herokuapp.com";
+    private String basicUrl = "https://app-server-t2.herokuapp.com";
 
-    private String postUrl = "https://hypechat-t2.herokuapp.com/api/users";
-    private String recoverPassUrl = "https://hypechat-t2.herokuapp.com/api/users/restorepassword";
-    private String authUrl = "https://hypechat-t2.herokuapp.com/api/auth/signin";
-    private String facebookUrl = "https://hypechat-t2.herokuapp.com/api/auth/facebook";
+    private String postUrl = basicUrl + "/api/users";
+    private String recoverPassUrl = basicUrl + "/api/users/restorepassword";
+    private String authUrl = basicUrl + "/api/auth/signin";
+    private String facebookUrl = basicUrl + "/api/auth/facebook";
+    private String fcmUrl = postUrl + "/fbtoken/";
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
+
+    public void patchTokenFCM(String token, String tokenFCM, CallbackUserRequester callback) {
+        try {
+            patchRequest(fcmUrl, token, tokenFCM, callback);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void registerUser(RegisterUser user, CallbackUserRequester callback){
         try {
@@ -79,8 +90,6 @@ public class UserRequester {
             e.printStackTrace();
         }
     }
-
-
 
     public void changeNicknameUser(String nickname, String token, CallbackUserRequester callback){
         try{
@@ -139,6 +148,30 @@ public class UserRequester {
         Request request = new Request.Builder().url(postUrl).post(body).build();
 
         Log.d("DEBUG", postBody);
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(call, e);
+                /*call.cancel();*/
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                callback.onResponse(call, response);
+            } /*throws IOException {
+                Log.d("LOG/Register",response.body().string());
+            }*/
+        });
+    }
+
+    private void patchRequest(String patchUrl, String id, String parameter, final CallbackUserRequester callback) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody body = RequestBody.create(JSON, "");
+
+        Request request = new Request.Builder().url(patchUrl + parameter).header("x-auth-token", id).patch(body).build();
+
+        Log.d("PATCH/USER", parameter);
 
         client.newCall(request).enqueue(new Callback() {
             @Override
