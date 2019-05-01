@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -68,6 +69,7 @@ public class ConfigRegisterActivity extends BasicActivity {
 
         button_finish.setEnabled(false);
         button_finish.getBackground().setAlpha(64);
+        button_finish.setTextColor(Color.GRAY);
 
         token = preference.getToken();//this.getUserToken();
 
@@ -162,7 +164,8 @@ public class ConfigRegisterActivity extends BasicActivity {
                             ConfigRegisterActivity.this.runOnUiThread(new Runnable() {
                                 public void run() {
                                     button_finish.setEnabled(true);
-                                    button_finish.getBackground().setAlpha(0);
+                                    button_finish.getBackground().setAlpha(255);
+                                    button_finish.setTextColor(Color.WHITE);
                                     if (!ConfigRegisterActivity.this.isDestroyed()) {
                                         Glide.with(ConfigRegisterActivity.this)
                                                 .load(downloadUrl).centerCrop().into(profile_picture);
