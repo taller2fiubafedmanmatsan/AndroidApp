@@ -8,7 +8,6 @@ public class WorkspaceResponse {
     private String name;
     private String imageUrl;
     private String location;
-    private User creator;
     private String description;
     private String welcomeMessage;
     private List<Channel> channels;
@@ -21,7 +20,6 @@ public class WorkspaceResponse {
 
     public WorkspaceResponse(String name, User creator) {
         this.name = name;
-        this.creator = creator;
 
         //this.imageUrl = "https://upload.wikimedia.org/wikipedia/commons/9/93/Logo-fiuba.gif";
         //this.location = "";
@@ -34,11 +32,10 @@ public class WorkspaceResponse {
         this.admins.add(creator);
     }
 
-    public WorkspaceResponse(String name, String imageUrl, String location, User creator, String description, String welcomeMessage, List<Channel> channels, List<User> users, List<User> admins) {
+    public WorkspaceResponse(String name, String imageUrl, String location, String description, String welcomeMessage, List<Channel> channels, List<User> users, List<User> admins) {
         this.name = name;
         this.imageUrl = imageUrl;
         this.location = location;
-        this.creator = creator;
         this.description = description;
         this.welcomeMessage = welcomeMessage;
         this.channels = channels;
@@ -94,14 +91,6 @@ public class WorkspaceResponse {
 
     public void setChannels(List<Channel> channels) {
         this.channels = channels;
-    }
-
-    public User getCreator() {
-        return creator;
-    }
-
-    public void setCreator(User creator) {
-        this.creator = creator;
     }
 
     public List<User> getUsers() {
