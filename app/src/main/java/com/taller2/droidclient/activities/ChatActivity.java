@@ -280,7 +280,6 @@ public class ChatActivity extends BasicActivity
                                 mDrawerChannelsList.setAdapter(adapter);
                                 //retrieveChats(workspaces.get(workspaces.indexOf(preference.getActualWorkspace())));
                                 setListenersChannels();
-
                                 for (User user:work.getUsers()) {
                                     directMessage.add(user.getName());
                                 }
@@ -435,7 +434,7 @@ public class ChatActivity extends BasicActivity
                     Channel selectedItem = (Channel) parent.getItemAtPosition(position);
                     String channelName = selectedItem.getName();
                     preference.saveActualChannel(new Channel(channelName));
-                    changeActivity(ChatActivity.this, StartLoadingActivity.class);
+                    changeActivity(ChatActivity.this, ChatActivity.class);
                 }catch (Exception e){
                     Log.d("ERROR", e.getMessage());
                 }
@@ -453,7 +452,7 @@ public class ChatActivity extends BasicActivity
                     String workName = selectedItem.getName();
                     preference.saveActualWorkspace(new WorkspaceResponse(workName));
                     preference.saveActualChannel(new Channel(""));
-                    changeActivity(ChatActivity.this, StartLoadingActivity.class);
+                    changeActivity(ChatActivity.this, ChatActivity.class);
                 }catch (Exception e){
                     Log.d("ERROR", e.getMessage());
                 }

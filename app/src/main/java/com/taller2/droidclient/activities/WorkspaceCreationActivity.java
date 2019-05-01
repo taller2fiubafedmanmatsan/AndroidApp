@@ -94,12 +94,12 @@ public class WorkspaceCreationActivity extends BasicActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 try{
                     String msg = response.body().string();
-                    final WorkspaceResponse workspace = new Gson().fromJson(msg,WorkspaceResponse.class);
+                    final Workspace workspace = new Gson().fromJson(msg,Workspace.class);
 
                     if(response.isSuccessful()){
                         WorkspaceCreationActivity.this.runOnUiThread(new Runnable() {
                             public void run() {
-                                preference.saveActualWorkspace(workspace);
+                                preference.saveActualWorkspace(new WorkspaceResponse(workspace.getName()));
                                 List<String> users = new ArrayList<>();
                                 users.add(currentUserEmail);
                                 NewChannel newChannel = new NewChannel(workspace.getName(),"General",users);
