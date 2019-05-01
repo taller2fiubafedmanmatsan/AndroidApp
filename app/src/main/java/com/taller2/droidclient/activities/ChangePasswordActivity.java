@@ -3,12 +3,14 @@ package com.taller2.droidclient.activities;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.core.view.Change;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.PasswordUser;
@@ -36,6 +38,8 @@ public class ChangePasswordActivity extends BasicActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_password);
 
+        changeTextActionBar("Change password");
+
         new_password = findViewById(R.id.password_new);
         confirm_password =findViewById(R.id.password_confirm);
         button_change_password = findViewById(R.id.button_send_password);
@@ -52,7 +56,8 @@ public class ChangePasswordActivity extends BasicActivity {
         button_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeActivity(ChangePasswordActivity.this, ProfileActivity.class, token);
+                //changeActivity(ChangePasswordActivity.this, ProfileActivity.class, token);
+                finish();
             }
         });
 
@@ -63,6 +68,7 @@ public class ChangePasswordActivity extends BasicActivity {
                 String password_2 = confirm_password.getText().toString();
                 if(password_1.equals(password_2)){
                     PasswordUser pass = new PasswordUser(password_1);
+                    loadingSpin.showDialog(ChangePasswordActivity.this);
                     changePassword(pass);
 
                 }else{
@@ -78,8 +84,15 @@ public class ChangePasswordActivity extends BasicActivity {
         userRequester.changePasswordUser(pass, token, new CallbackUserRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                ChangePasswordActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        loadingSpin.hideDialog();
+                    }
+                });
+
                 if (response.isSuccessful()) {
-                    changeActivity(ChangePasswordActivity.this, ProfileActivity.class, token);
+                    //changeActivity(ChangePasswordActivity.this, ProfileActivity.class, token);
+                    finish();
 
                     ChangePasswordActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
@@ -100,10 +113,30 @@ public class ChangePasswordActivity extends BasicActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 //Toast.makeText(ChangePasswordActivity.this, "Error : Couldn't change password", Toast.LENGTH_SHORT).show();
+                ChangePasswordActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        loadingSpin.hideDialog();
+                    }
+                });
                 Log.d("ERROR", e.getMessage());
                 call.cancel();
             }
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

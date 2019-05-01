@@ -203,45 +203,11 @@ public class ChatActivity extends BasicActivity
         setListeners();
 
         //preferences = getSharedPreferences("login",MODE_PRIVATE);
-        token = preference.getToken();//this.getUserToken();
 
         workspaces = new ArrayList<WorkspaceResponse>();
         actualChannels = new ArrayList<Channel>();
 
         retrieveWorkspaces();
-
-
-        /*FirebaseMessaging.getInstance().subscribeToTopic("channel-topic")
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        String msg = "Suscripto";
-                        if (!task.isSuccessful()) {
-                            msg = "No suscripto";
-                        }
-                        Log.d("MESSAGING/FIREBASE", msg);
-                        Toast.makeText(ChatActivity.this, msg, Toast.LENGTH_SHORT).show();
-                    }
-                });*/
-
-        /*FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w("MESSAGING/FIREBASE2", "getInstanceId failed", task.getException());
-                            return;
-                        }
-
-                        // Get new Instance ID token
-                        String token = task.getResult().getToken();
-
-                        // Log and toast
-                        String msg = token.toString();
-                        Log.d("MESSAGING/FIREBASE2", msg);
-                        Toast.makeText(ChatActivity.this, msg, Toast.LENGTH_SHORT).show();
-                    }
-                });*/
     }
 
     @Override
@@ -313,7 +279,11 @@ public class ChatActivity extends BasicActivity
                             public void run() {
                                 WorkspaceResponse actual_workspace = preference.getActualWorkspace();
                                 if (!workspaces.contains(actual_workspace)) {
-                                    workspaces.add(actual_workspace);
+                                    if (workspaces.isEmpty())
+                                        changeActivity(ChatActivity.this, NoWorkspaceActivity.class);
+
+                                    preference.saveActualWorkspace(workspaces.get(0));
+                                    //workspaces.add(actual_workspace);
                                 }
                                 WorkspaceListAdapter adapter = new WorkspaceListAdapter(ChatActivity.this, workspaces);
                                 mDrawerWorkspaceList.setAdapter(adapter);
@@ -351,9 +321,14 @@ public class ChatActivity extends BasicActivity
                             @Override
                             public void run() {
                                 Channel actual_channel = preference.getActualChannel();
-                                if (!actualChannels.contains(actual_channel) && !actual_channel.getName().isEmpty()) {
+                                /*if (!actualChannels.contains(actual_channel) && !actual_channel.getName().isEmpty()) {
                                     actualChannels.add(actual_channel);
+                                }*/
+
+                                if (!actualChannels.contains(actual_channel)) {
+                                    preference.saveActualChannel(actualChannels.get(0));
                                 }
+
                                 ChannelListAdapter adapter = new ChannelListAdapter(ChatActivity.this, actualChannels);
                                 mDrawerChannelsList.setAdapter(adapter);
                                 //retrieveChats(workspaces.get(workspaces.indexOf(preference.getActualWorkspace())));
@@ -425,7 +400,7 @@ public class ChatActivity extends BasicActivity
         buttonCreateChannel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeActivity(ChatActivity.this, ChannelCreationActivity.class, token);
+                changeActivity(ChatActivity.this, ChannelCreationActivity.class);
             }
         });
 
@@ -556,6 +531,9 @@ public class ChatActivity extends BasicActivity
 
         mMessageAdapter.notifyDataSetChanged();
         mMessageRecycler.smoothScrollToPosition(mMessageAdapter.getItemCount());*/
+
+        Log.d("SENDING/MSG/WORKSPACE", preference.getActualWorkspace().getName());
+        Log.d("SENDING/MSG/CHANNEL", preference.getActualChannel().getName());
 
         messageRequester.sendMessage(msg,
                 preference.getActualWorkspace(),

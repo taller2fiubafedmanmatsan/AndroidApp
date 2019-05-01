@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -45,7 +46,6 @@ public class ConfigRegisterActivity extends BasicActivity {
     private ImageView profile_picture;
     private Button button_change_picture;
 
-    private User userdata;
     private String token;
 
     private UserRequester userRequester;
@@ -68,12 +68,12 @@ public class ConfigRegisterActivity extends BasicActivity {
         button_finish = findViewById(R.id.button_finish_profile);
 
         button_finish.setEnabled(false);
+        button_finish.getBackground().setAlpha(64);
+        button_finish.setTextColor(Color.GRAY);
 
         token = preference.getToken();//this.getUserToken();
 
         userRequester = new UserRequester();
-
-        userdata = this.getUserData();
 
         if (!this.isDestroyed()) {
             Glide.with(this)
@@ -122,6 +122,8 @@ public class ConfigRegisterActivity extends BasicActivity {
     }
 
     private void changeProfilePicture(Bitmap bitmap) {
+        loadingSpin.showDialog(ConfigRegisterActivity.this);
+
         final String image_name = "profile-" + "random" + ".jpg";
         StorageReference mountainsRef = mStorageRef.child(image_name);
 
@@ -152,24 +154,42 @@ public class ConfigRegisterActivity extends BasicActivity {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         Log.d("Changing/ProfilePic", response.body().string());
-
-                        //userdata.setPhotoUrl(downloadUrl.toString());
-
                         ConfigRegisterActivity.this.runOnUiThread(new Runnable() {
                             public void run() {
-                                button_finish.setEnabled(true);
-                                if (!ConfigRegisterActivity.this.isDestroyed()) {
-                                    Glide.with(ConfigRegisterActivity.this)
-                                            .load(downloadUrl).centerCrop().into(profile_picture);
-                                }
+                                loadingSpin.hideDialog();
                             }
                         });
+                        //userdata.setPhotoUrl(downloadUrl.toString());
+                        if (response.isSuccessful()) {
+                            ConfigRegisterActivity.this.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    button_finish.setEnabled(true);
+                                    button_finish.getBackground().setAlpha(255);
+                                    button_finish.setTextColor(Color.WHITE);
+                                    if (!ConfigRegisterActivity.this.isDestroyed()) {
+                                        Glide.with(ConfigRegisterActivity.this)
+                                                .load(downloadUrl).centerCrop().into(profile_picture);
+                                    }
+                                }
+                            });
+                        } else {
+                            ConfigRegisterActivity.this.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(ConfigRegisterActivity.this, "Image failed to load: Try again", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
                     }
 
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Log.d("Changing/ProfilePic", e.getMessage());
-                        Toast.makeText(ConfigRegisterActivity.this, "Image failed to load: Try again", Toast.LENGTH_SHORT).show();
+                        ConfigRegisterActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                loadingSpin.hideDialog();
+                                Toast.makeText(ConfigRegisterActivity.this, "Image failed to load: Try again", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
 

@@ -8,6 +8,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.CallbackUserRequester;
@@ -38,6 +39,9 @@ public class StartLoadingActivity extends BasicActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_loading);
 
+        removeGoBackActionBar();
+        changeTextActionBar("Welcome to Hypechat!");
+
         workspaces = new ArrayList<>();
         userRequester = new UserRequester();
 
@@ -47,12 +51,19 @@ public class StartLoadingActivity extends BasicActivity {
         Animation fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fadein);
         loading_picture.startAnimation(fadeInAnimation);
 
-        //sendTokenFCM();
-        getMyWorkspaces();
+        sendTokenFCM();
+        //getMyWorkspaces();
     }
 
     private void sendTokenFCM() {
-        userRequester.patchTokenFCM(preference.getToken(), preference.getActualFCM(), new CallbackUserRequester() {
+        loading_text.setText("Sending data to server");
+
+        String tokenFCM = preference.getActualFCM();
+
+        if (tokenFCM.equals(""))
+            tokenFCM = FirebaseInstanceId.getInstance().getToken();
+
+        userRequester.patchTokenFCM(preference.getToken(), tokenFCM, new CallbackUserRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
@@ -86,12 +97,7 @@ public class StartLoadingActivity extends BasicActivity {
     private void getMyWorkspaces() {
         //SavedState preference = new SavedState(this);
         loading_text.setText("Loading workspaces");
-        loadingSpin.showDialog(this);
-
         loadWorkspaces();
-        loadingSpin.hideDialog();
-
-
     }
 
 
@@ -108,8 +114,6 @@ public class StartLoadingActivity extends BasicActivity {
                         workspaces = userdata.getWorkspaces();
 
                         choosePath();
-                        loadingSpin.hideDialog();
-
                     }
 
                     Log.d("CreateWork/loadData", msg);

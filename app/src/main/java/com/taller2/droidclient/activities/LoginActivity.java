@@ -62,10 +62,18 @@ public class LoginActivity extends BasicActivity {
                 if (TextUtils.isEmpty(email_address) || TextUtils.isEmpty(password)) {
                     Toast.makeText(LoginActivity.this, "Invalid email/password", Toast.LENGTH_SHORT).show();
                 } else {
+                    loadingSpin.showDialog(LoginActivity.this);
+
                     LoginUser loginuser = new LoginUser(email_address, password);
                     userRequester.loginUser(loginuser, new CallbackUserRequester() {
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
+                            LoginActivity.this.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    loadingSpin.hideDialog();
+                                }
+                            });
+
                             final String msg = response.body().string();
 
                             if (response.isSuccessful()) {
@@ -94,6 +102,7 @@ public class LoginActivity extends BasicActivity {
                         public void onFailure(Call call, IOException e) {
                             LoginActivity.this.runOnUiThread(new Runnable() {
                                 public void run() {
+                                    loadingSpin.hideDialog();
                                     Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
                                 }
                             });

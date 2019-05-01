@@ -78,9 +78,13 @@ public class MainActivity extends BasicActivity {
             }
         });
 
-        t.start();*/
-
-        FirebaseMessaging.getInstance().setAutoInitEnabled(false);
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            finish();
+        }*/
+        //FirebaseMessaging.getInstance().setAutoInitEnabled(false);
         FirebaseMessaging.getInstance().setAutoInitEnabled(true);
         //Log.d("FIREBASE/MSG/TEST", FirebaseMessaging.getInstance().toString());
         //FirebaseMessaging.getInstance().setAutoInitEnabled(true);
