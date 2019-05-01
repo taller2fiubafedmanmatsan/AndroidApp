@@ -48,4 +48,13 @@ public class Channel {
     public void setWelcomeMessage(String welcomeMessage) {
         this.welcomeMessage = welcomeMessage;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        //My eyes are bleeding...
+        if (!(obj instanceof Channel))
+            return false;
+
+        return ((Channel) obj).getName().equals(this.name);
+    }
 }
