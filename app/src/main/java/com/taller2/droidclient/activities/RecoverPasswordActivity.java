@@ -31,6 +31,7 @@ public class RecoverPasswordActivity extends BasicActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_recover_password);
+        changeTextActionBar("Recover password");
 
         button_recovery = findViewById(R.id.button_email_recovery);
         email_recovery = findViewById(R.id.email_recover);
@@ -40,14 +41,19 @@ public class RecoverPasswordActivity extends BasicActivity {
         setListeners();
     }
 
-    private void setListeners(){
+    @Override
+    public void onBackPressed() {
+        changeActivity(RecoverPasswordActivity.this, MainActivity.class);
+    }
 
+    private void setListeners(){
         button_recovery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String email = email_recovery.getText().toString();
 
                 if(email.contains("@")){
+                    loadingSpin.showDialog(RecoverPasswordActivity.this);
                     EmailRecoverUser emailRecover = new EmailRecoverUser(email);
                     sendEmail(emailRecover);
 
@@ -64,18 +70,24 @@ public class RecoverPasswordActivity extends BasicActivity {
         userRequester.recoverPassword(email, new CallbackUserRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                RecoverPasswordActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        loadingSpin.hideDialog();
+                    }
+                });
+
                 if (response.isSuccessful()) {
                     changeActivity(RecoverPasswordActivity.this, MainActivity.class);
 
                     RecoverPasswordActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
-                            Toast.makeText(RecoverPasswordActivity.this, "Email send to your inbox", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RecoverPasswordActivity.this, "Email sent to your inbox", Toast.LENGTH_SHORT).show();
                         }
                     });
                 } else {
                     RecoverPasswordActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
-                            Toast.makeText(RecoverPasswordActivity.this, "There has been an error in the reocvery procces", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RecoverPasswordActivity.this, "There has been an error in the recovery procces", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -85,6 +97,11 @@ public class RecoverPasswordActivity extends BasicActivity {
 
             @Override
             public void onFailure(Call call, IOException e) {
+                RecoverPasswordActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        loadingSpin.hideDialog();
+                    }
+                });
                 Log.d("ERROR RECOVERY", e.getMessage());
                 call.cancel();
             }

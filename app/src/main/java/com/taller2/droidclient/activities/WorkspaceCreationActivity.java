@@ -160,7 +160,8 @@ public class WorkspaceCreationActivity extends BasicActivity {
                         WorkspaceCreationActivity.this.runOnUiThread(new Runnable() {
                             public void run() {
                                 preference.saveActualChannel(channel1);
-                                changeActivity(WorkspaceCreationActivity.this, StartLoadingActivity.class);
+                                //changeActivity(WorkspaceCreationActivity.this, StartLoadingActivity.class);
+                                changeActivity(WorkspaceCreationActivity.this, ChatActivity.class);
                                 Toast.makeText(WorkspaceCreationActivity.this, "Workspace created successfully", Toast.LENGTH_SHORT).show();
 
                             }
