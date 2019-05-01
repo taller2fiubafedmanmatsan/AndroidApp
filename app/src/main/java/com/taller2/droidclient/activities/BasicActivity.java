@@ -15,8 +15,6 @@ import com.taller2.droidclient.utils.LoadingSpin;
 import com.taller2.droidclient.utils.SavedState;
 
 public class BasicActivity extends AppCompatActivity {
-
-    public String token;
     private ActionBar top_bar;
     protected SavedState preference;
     protected LoadingSpin loadingSpin;
@@ -109,17 +107,5 @@ public class BasicActivity extends AppCompatActivity {
         startActivity(intent);
 
         finish();
-    }
-
-    public String getUserToken(){
-        Bundle bundle = getIntent().getExtras();
-        String userToken = bundle.getString("userToken");
-        return userToken;
-    }
-
-    public User getUserData(){
-        Bundle bundle = getIntent().getExtras();
-        String userToken = bundle.getString("userdata");
-        return new Gson().fromJson(userToken, User.class);
     }
 }

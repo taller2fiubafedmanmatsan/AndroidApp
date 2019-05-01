@@ -67,6 +67,7 @@ public class RegisterActivity extends BasicActivity {
                 } else if (password.length() < 6) {
                     Toast.makeText(RegisterActivity.this, "Password must have at least 6 characters", Toast.LENGTH_SHORT).show();
                 } else {
+                    loadingSpin.showDialog(RegisterActivity.this);
                     registerUser(username, email_address, password, fullname);
                 }
             }
@@ -83,6 +84,7 @@ public class RegisterActivity extends BasicActivity {
                 } else {
                     RegisterActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
+                            loadingSpin.hideDialog();
                             Toast.makeText(RegisterActivity.this, "Register failed", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -95,6 +97,7 @@ public class RegisterActivity extends BasicActivity {
             public void onFailure(Call call, IOException e) {
                 RegisterActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
+                        loadingSpin.hideDialog();
                         Toast.makeText(RegisterActivity.this, "Register failed", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -111,6 +114,13 @@ public class RegisterActivity extends BasicActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String msg = response.body().string();
+
+                RegisterActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        loadingSpin.hideDialog();
+                        Toast.makeText(RegisterActivity.this, "Register failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
                 if (response.isSuccessful()) {
                     RegisterActivity.this.runOnUiThread(new Runnable() {
@@ -135,6 +145,7 @@ public class RegisterActivity extends BasicActivity {
             public void onFailure(Call call, IOException e) {
                 RegisterActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
+                        loadingSpin.hideDialog();
                         Toast.makeText(RegisterActivity.this, "Can't enter into account. Try login in later", Toast.LENGTH_SHORT).show();
                     }
                 });

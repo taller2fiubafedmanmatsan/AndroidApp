@@ -45,7 +45,6 @@ public class ConfigRegisterActivity extends BasicActivity {
     private ImageView profile_picture;
     private Button button_change_picture;
 
-    private User userdata;
     private String token;
 
     private UserRequester userRequester;
@@ -68,12 +67,11 @@ public class ConfigRegisterActivity extends BasicActivity {
         button_finish = findViewById(R.id.button_finish_profile);
 
         button_finish.setEnabled(false);
+        button_finish.getBackground().setAlpha(64);
 
         token = preference.getToken();//this.getUserToken();
 
         userRequester = new UserRequester();
-
-        userdata = this.getUserData();
 
         if (!this.isDestroyed()) {
             Glide.with(this)
@@ -154,16 +152,18 @@ public class ConfigRegisterActivity extends BasicActivity {
                         Log.d("Changing/ProfilePic", response.body().string());
 
                         //userdata.setPhotoUrl(downloadUrl.toString());
-
-                        ConfigRegisterActivity.this.runOnUiThread(new Runnable() {
-                            public void run() {
-                                button_finish.setEnabled(true);
-                                if (!ConfigRegisterActivity.this.isDestroyed()) {
-                                    Glide.with(ConfigRegisterActivity.this)
-                                            .load(downloadUrl).centerCrop().into(profile_picture);
+                        if (response.isSuccessful()) {
+                            ConfigRegisterActivity.this.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    button_finish.setEnabled(true);
+                                    button_finish.getBackground().setAlpha(0);
+                                    if (!ConfigRegisterActivity.this.isDestroyed()) {
+                                        Glide.with(ConfigRegisterActivity.this)
+                                                .load(downloadUrl).centerCrop().into(profile_picture);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
 
                     @Override

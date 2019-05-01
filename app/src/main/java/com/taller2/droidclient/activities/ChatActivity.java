@@ -203,7 +203,6 @@ public class ChatActivity extends BasicActivity
         setListeners();
 
         //preferences = getSharedPreferences("login",MODE_PRIVATE);
-        token = preference.getToken();//this.getUserToken();
 
         workspaces = new ArrayList<WorkspaceResponse>();
         actualChannels = new ArrayList<Channel>();
@@ -425,7 +424,7 @@ public class ChatActivity extends BasicActivity
         buttonCreateChannel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeActivity(ChatActivity.this, ChannelCreationActivity.class, token);
+                changeActivity(ChatActivity.this, ChannelCreationActivity.class);
             }
         });
 
