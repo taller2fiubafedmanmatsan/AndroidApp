@@ -99,6 +99,11 @@ public class ProfileActivity extends BasicActivity{
 
         userRequester = new UserRequester();
 
+        ProfileActivity.this.runOnUiThread(new Runnable() {
+            public void run() {
+                loadingSpin.showDialog(ProfileActivity.this);
+            }
+        });
         reloadUserdata();
 
         setListeners();
@@ -109,11 +114,6 @@ public class ProfileActivity extends BasicActivity{
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);*/
 
-        ProfileActivity.this.runOnUiThread(new Runnable() {
-            public void run() {
-                loadingSpin.showDialog(ProfileActivity.this);
-            }
-        });
         userRequester.getUser(token, new CallbackUserRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -219,7 +219,7 @@ public class ProfileActivity extends BasicActivity{
         button_change_password.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeActivity(ProfileActivity.this,ChangePasswordActivity.class,token);
+                changeActivityNotFinish(ProfileActivity.this,ChangePasswordActivity.class);
             }
         });
 
@@ -239,6 +239,8 @@ public class ProfileActivity extends BasicActivity{
     }
 
     private void update_profile(String newNick) {
+        loadingSpin.showDialog(ProfileActivity.this);
+
         userRequester.changeNicknameUser(newNick, token, new CallbackUserRequester() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -266,6 +268,7 @@ public class ProfileActivity extends BasicActivity{
             public void onFailure(Call call, IOException e) {
                 Log.d("ERROR", e.getMessage());
                 call.cancel();
+                loadingSpin.hideDialog();
             }
         });
 
@@ -274,6 +277,8 @@ public class ProfileActivity extends BasicActivity{
     private void changeProfilePicture(Bitmap bitmap) {
         //Mejor generar un string aleatorio sino puede ocurrir que se sobreescriba la foto en firebase
         //Pero el put fracase hacia el servidor.
+        loadingSpin.showDialog(ProfileActivity.this);
+
         String image_name = "profile-" + userdata.getId() + ".jpg";
         final StorageReference mountainsRef = mStorageRef.child(image_name);
 
@@ -303,14 +308,17 @@ public class ProfileActivity extends BasicActivity{
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         Log.d("Changing/ProfilePic", response.body().string());
-
-                        reloadUserdata();
+                        if (response.isSuccessful())
+                            reloadUserdata();
+                        else
+                            loadingSpin.hideDialog();
                     }
 
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Log.d("Changing/ProfilePic", e.getMessage());
                         Toast.makeText(ProfileActivity.this, "Image failed to load: Try again", Toast.LENGTH_SHORT).show();
+                        loadingSpin.hideDialog();
                     }
                 });
             }

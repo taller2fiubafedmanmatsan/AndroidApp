@@ -3,6 +3,7 @@ package com.taller2.droidclient.activities;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,6 +37,8 @@ public class ChangePasswordActivity extends BasicActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_password);
 
+        changeTextActionBar("Change password");
+
         new_password = findViewById(R.id.password_new);
         confirm_password =findViewById(R.id.password_confirm);
         button_change_password = findViewById(R.id.button_send_password);
@@ -52,7 +55,8 @@ public class ChangePasswordActivity extends BasicActivity {
         button_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeActivity(ChangePasswordActivity.this, ProfileActivity.class, token);
+                //changeActivity(ChangePasswordActivity.this, ProfileActivity.class, token);
+                finish();
             }
         });
 
@@ -79,7 +83,8 @@ public class ChangePasswordActivity extends BasicActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    changeActivity(ChangePasswordActivity.this, ProfileActivity.class, token);
+                    //changeActivity(ChangePasswordActivity.this, ProfileActivity.class, token);
+                    finish();
 
                     ChangePasswordActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
@@ -106,4 +111,19 @@ public class ChangePasswordActivity extends BasicActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
