@@ -1,15 +1,19 @@
 package com.taller2.droidclient.model;
 
+import java.util.Date;
+
 public class UserMessage extends BaseMessage {
 
     private String message;
-    private User sender;
-    private long createdAt;
+    private User creator;
+    private Date dateTime;
+    private String _id;
 
-    public UserMessage(String message, User sender, long createdAt) {
+    public UserMessage(String _id, String message, User creator, Date dateTime) {
+        this._id = _id;
         this.message = message;
-        this.sender = sender;
-        this.createdAt = createdAt;
+        this.creator = creator;
+        this.dateTime = dateTime;
     }
 
     public String getMessage() {
@@ -20,20 +24,28 @@ public class UserMessage extends BaseMessage {
         this.message = message;
     }
 
-    public User getSender() {
-        return sender;
+    public User getCreator() {
+        return creator;
     }
 
-    public void setSender(User sender) {
-        this.sender = sender;
+    public void setCreator(User creator) {
+        this.creator = creator;
     }
 
-    public long getCreatedAt() {
-        return createdAt;
+    public Date getDateTime() {
+        return dateTime;
     }
 
-    public void setCreatedAt(long createdAt) {
-        this.createdAt = createdAt;
+    public void setDateTime(Date dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 }
 

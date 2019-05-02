@@ -66,9 +66,13 @@ import com.taller2.droidclient.requesters.UserRequester;
 import com.taller2.droidclient.requesters.WorkspaceRequester;
 
 import java.io.IOException;
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import android.support.v4.app.FragmentActivity;
 
@@ -112,6 +116,7 @@ public class ChatActivity extends BasicActivity
 
     private MessageRequester messageRequester;
     private ChannelRequester channelRequester;
+    private boolean chatLoaded = false;
 
     private String[] channel = {"# General",
             "# Random",
@@ -138,9 +143,38 @@ public class ChatActivity extends BasicActivity
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            messageList.add(new UserMessage(intent.getExtras().getString("msg"),
+            if (!chatLoaded)
+                return;
+        /*data: {
+                    msg: message.text,
+                    createdAt: message.dateTime.toString(),
+                    workspace: workspace.name.toString(),
+                    channel: channel.name.toString(),
+                    sender_name: sender.name.toString(),
+                    sender_email: sender.email.toString(),
+                    sender_nickname: sender.nickname.toString()
+        }*/
+
+            try {
+                Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).parse(intent.getExtras().getString("createdAt"));
+                messageList.add(
+                        new UserMessage(intent.getExtras().getString("msgId"),
+                                intent.getExtras().getString("msg"),
+                                new User(
+                                        intent.getExtras().getString("sender_id"),
+                                        intent.getExtras().getString("sender_name"),
+                                        intent.getExtras().getString("sender_email"),
+                                        intent.getExtras().getString("sender_nickname"),
+                                        true),
+                                date
+                        ));
+            } catch (ParseException e) {
+                Log.d("EXCEPTION/RECVMSG", "true");
+                return;
+            }
+            /*messageList.add(new UserMessage("1", intent.getExtras().getString("msg"),
                     new User("0", "Juan", "admin@gmail.com", "soy_juan", true),
-                    4040));
+                    4040));*/
 
             /*User user_sender = new Gson().fromJson(intent.getExtras().getString("sender"), User.class);
             String msg = intent.getExtras().getString("msg");
@@ -207,6 +241,7 @@ public class ChatActivity extends BasicActivity
         workspaces = new ArrayList<WorkspaceResponse>();
         actualChannels = new ArrayList<Channel>();
 
+        loadUserdata();
         retrieveWorkspaces();
     }
 
@@ -332,6 +367,7 @@ public class ChatActivity extends BasicActivity
                                 ChannelListAdapter adapter = new ChannelListAdapter(ChatActivity.this, actualChannels);
                                 mDrawerChannelsList.setAdapter(adapter);
                                 //retrieveChats(workspaces.get(workspaces.indexOf(preference.getActualWorkspace())));
+                                loadMessagesActualChannel(preference.getActualChannel());
                                 setListenersChannels();
                                 for (User user:work.getUsers()) {
                                     directMessage.add(user.getName());
@@ -554,6 +590,37 @@ public class ChatActivity extends BasicActivity
             }
         });
     }
+
+    private void loadMessagesActualChannel(Channel channel) {
+        channelRequester.getChannel(channel.getName(),
+                preference.getActualWorkspace().getName(),
+                preference.getToken(),
+                new CallbackRequester() {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        Log.d("LOADING/MSGS", response.body().string());
+                        if (response.isSuccessful()) {
+
+                            chatLoaded = true;
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.d("LOADING/MSGS", e.getMessage());
+                        call.cancel();
+                    }
+                });
+    }
+
+    private void loadUserdata() {
+
+    }
+
+    /*public User getUser() {
+
+    }*/
 
     private void changeLayoutChannelAndMessageState(boolean enable) {
         buttonCreateChannel.setEnabled(enable);

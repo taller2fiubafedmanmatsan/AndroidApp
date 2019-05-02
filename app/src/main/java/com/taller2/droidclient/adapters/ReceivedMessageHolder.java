@@ -26,7 +26,7 @@ public class ReceivedMessageHolder extends MessageListAdapter.MyViewHolder {
 
         // Format the stored timestamp into a readable String using method.
         //timeText.setText(Utils.formatDateTime(message.getCreatedAt()));
-        nameText.setText(message.getSender().getNickname());
+        nameText.setText(message.getCreator().getNickname());
 
         // Insert the profile image from the URL into the ImageView.
         //Utils.displayRoundImageFromUrl(mContext, message.getSender().getPhotoUrl(), profileImage);

@@ -12,6 +12,8 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.taller2.droidclient.utils.JsonConverter;
 import com.taller2.droidclient.utils.SavedState;
 
+import java.util.Map;
+
 public class MessagingService extends FirebaseMessagingService {
     private static final String TAG = "FIREBASE/MSG";
     private LocalBroadcastManager broadcaster;
@@ -52,7 +54,21 @@ public class MessagingService extends FirebaseMessagingService {
 
         Intent intent = new Intent("Messages");
         //intent.putExtra("msg", remoteMessage.getNotification().getBody());
-        intent.putExtra("msg", remoteMessage.getData().get("msg"));
+
+        /*data: {
+                    msg: message.text,
+                    createdAt: message.dateTime.toString(),
+                    workspace: workspace.name.toString(),
+                    channel: channel.name.toString(),
+                    sender_name: sender.name.toString(),
+                    sender_email: sender.email.toString(),
+                    sender_nickname: sender.nickname.toString()
+        }*/
+        for (Map.Entry<String, String> entry : remoteMessage.getData().entrySet()) {
+            intent.putExtra(entry.getKey(), entry.getValue());
+        }
+
+        //intent.putExtra("msg", remoteMessage.getData().get("msg"));
 
         /*intent.putExtra("sender", new JsonConverter().objectToJsonString(remoteMessage.getData().get("sender")));
 
