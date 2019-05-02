@@ -52,6 +52,7 @@ import com.taller2.droidclient.R;
 import com.taller2.droidclient.adapters.ChannelListAdapter;
 import com.taller2.droidclient.adapters.MessageListAdapter;
 import com.taller2.droidclient.adapters.WorkspaceListAdapter;
+import com.taller2.droidclient.model.BaseMessage;
 import com.taller2.droidclient.model.CallbackRequester;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.CallbackWorkspaceRequester;
@@ -602,8 +603,34 @@ public class ChatActivity extends BasicActivity
                         String msg = response.body().string();
                         Log.d("LOADING/MSGS", msg);
                         if (response.isSuccessful()) {
-                            /*final MessagesResponse messages = new Gson().fromJson(msg, MessagesResponse.class);
-                            messageList = messages.getPages().get(0).getMessages();*/
+                            final MessagesResponse messages = new Gson().fromJson(msg, MessagesResponse.class);
+                            List<BaseMessage> msgs = messages.getPages().get(0).getMessages();
+                            
+                            for (int i = 0; i < msgs.size(); i++) {
+                                messageList.add(new UserMessage(
+                                        msgs.get(i).get_id(),
+                                        msgs.get(i).getText(),
+                                        new User(
+                                                "1",
+                                                "juan",
+                                                msgs.get(i).getCreator(),
+                                                "juan",
+                                                true
+                                        ),
+                                        msgs.get(i).getDateTime()
+                                        ));
+                            }
+
+                            //messageList = msgs_save;
+
+                            ChatActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mMessageAdapter.notifyDataSetChanged();
+                                    mMessageRecycler.smoothScrollToPosition(mMessageAdapter.getItemCount());
+                                }
+                            });
+
                             chatLoaded = true;
                         }
 

@@ -2,7 +2,7 @@ package com.taller2.droidclient.model;
 
 import java.util.Date;
 
-public class UserMessage extends BaseMessage {
+public class UserMessage {
 
     private String message;
     private User creator;
