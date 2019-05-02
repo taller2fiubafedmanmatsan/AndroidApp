@@ -10,7 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.taller2.droidclient.R;
+import com.taller2.droidclient.activities.ChatActivity;
 import com.taller2.droidclient.model.BaseMessage;
+import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.model.UserMessage;
 
 import java.util.List;
@@ -82,7 +84,9 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     public int getItemViewType(int position) {
         UserMessage message = (UserMessage) mMessageList.get(position);
 
-        if (message.getSender().getEmail().equals("admin@gmail.com")) {
+        //User user = ((ChatActivity) mContext).getUser();
+
+        if (message.getCreator().getEmail().equals("admin@gmail.com")) {
             // If the current user is the sender of the message
             return VIEW_TYPE_MESSAGE_SENT;
         } else {
