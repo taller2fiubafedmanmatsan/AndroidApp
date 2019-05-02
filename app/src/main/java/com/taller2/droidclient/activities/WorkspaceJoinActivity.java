@@ -93,8 +93,7 @@ public class WorkspaceJoinActivity extends BasicActivity {
                         WorkspaceJoinActivity.this.runOnUiThread(new Runnable() {
                             public void run() {
                                 preference.saveActualWorkspace(new WorkspaceResponse(workspace.getName()));
-                                changeActivity(WorkspaceJoinActivity.this, StartLoadingActivity.class);
-                                Toast.makeText(WorkspaceJoinActivity.this, "Join Succefull", Toast.LENGTH_SHORT).show();
+                                joinGeneralChannel(workspace.getName());
 
                             }
                         });
@@ -117,6 +116,42 @@ public class WorkspaceJoinActivity extends BasicActivity {
         });
     }
 
+    private void joinGeneralChannel(String workName){
+        List<String> users = new ArrayList<>();
+        users.add(currentUserEmail);
+        channelRequester.joinChannel(workName, users, preference.getToken(), new CallbackRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try{
+                    String msg = response.body().string();
+
+                    if(response.isSuccessful()){
+                        WorkspaceJoinActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                preference.saveActualChannel(new Channel("General"));
+                                changeActivity(WorkspaceJoinActivity.this, StartLoadingActivity.class);
+                                Toast.makeText(WorkspaceJoinActivity.this, "Join Succefull", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                    Log.d("JOINCHANNEL", msg);
+
+                }catch (Exception e){
+                    Log.d("JOINCHANNEL", e.getMessage());
+                    loadingSpin.hideDialog();
+                    finish();
+                }
+            }
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("JOINCHANNEL", e.getMessage());
+                call.cancel();
+
+
+            }
+        });
+
+    }
 
     private void loadUserdata() {
         loadingSpin.showDialog(this);

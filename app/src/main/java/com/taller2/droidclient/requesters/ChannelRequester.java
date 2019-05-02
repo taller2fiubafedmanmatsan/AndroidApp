@@ -5,11 +5,15 @@ import android.util.Log;
 import com.taller2.droidclient.model.CallbackRequester;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.CallbackWorkspaceRequester;
+import com.taller2.droidclient.model.JoinChannel;
 import com.taller2.droidclient.model.NewChannel;
 import com.taller2.droidclient.model.Workspace;
 import com.taller2.droidclient.utils.JsonConverter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -25,6 +29,7 @@ public class ChannelRequester {
 
     private String postUrl = basicUrl + "/api/channels/workspace";
     private String getUrl = basicUrl + "/api/channels/";
+    private String patchGeneral = basicUrl + "/api/channels/General/workspace/";
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -37,6 +42,17 @@ public class ChannelRequester {
         }catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void joinChannel(String workName, List<String> users, String token, CallbackRequester callback){
+        try{
+            String url = patchGeneral+ workName +"/addUsers";
+            patchRequest(url,token,new JsonConverter().objectToJsonString(new JoinChannel(users)),callback);
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void createChannel(NewChannel channel,String workName, String token, CallbackWorkspaceRequester callback){
@@ -107,6 +123,30 @@ public class ChannelRequester {
             public void onResponse(Call call, Response response) throws IOException {
                 callback.onResponse(call, response);
             }
+        });
+    }
+
+    private void patchRequest(String patchUrl, String token,String patchBody, final CallbackRequester callback) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody body = RequestBody.create(JSON, patchBody);
+
+        Request request = new Request.Builder().url(patchUrl).header("x-auth-token", token).patch(body).build();
+
+        Log.d("PATCH/WORKSPACE", patchUrl);
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(call, e);
+                /*call.cancel();*/
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                callback.onResponse(call, response);
+            } /*throws IOException {
+                Log.d("LOG/Register",response.body().string());
+            }*/
         });
     }
 
