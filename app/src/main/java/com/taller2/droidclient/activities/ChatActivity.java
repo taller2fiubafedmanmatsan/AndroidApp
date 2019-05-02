@@ -56,6 +56,7 @@ import com.taller2.droidclient.model.CallbackRequester;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.CallbackWorkspaceRequester;
 import com.taller2.droidclient.model.Channel;
+import com.taller2.droidclient.model.MessagesResponse;
 import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.model.UserMessage;
 import com.taller2.droidclient.model.Workspace;
@@ -169,7 +170,7 @@ public class ChatActivity extends BasicActivity
                                 date
                         ));
             } catch (ParseException e) {
-                Log.d("EXCEPTION/RECVMSG", "true");
+                Log.d("EXCEPTION/RECVMSG", e.getMessage());
                 return;
             }
             /*messageList.add(new UserMessage("1", intent.getExtras().getString("msg"),
@@ -598,9 +599,11 @@ public class ChatActivity extends BasicActivity
                 new CallbackRequester() {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        Log.d("LOADING/MSGS", response.body().string());
+                        String msg = response.body().string();
+                        Log.d("LOADING/MSGS", msg);
                         if (response.isSuccessful()) {
-
+                            /*final MessagesResponse messages = new Gson().fromJson(msg, MessagesResponse.class);
+                            messageList = messages.getPages().get(0).getMessages();*/
                             chatLoaded = true;
                         }
 
