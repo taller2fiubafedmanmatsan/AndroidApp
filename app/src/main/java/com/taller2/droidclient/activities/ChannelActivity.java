@@ -156,7 +156,7 @@ public class ChannelActivity extends BasicActivity{
     private void loadChannel() {
         name_channel.setText(channelData.getName());
         welcome_channel.setText(channelData.getWelcomeMessage());
-        description_channel.setText(channelData.getWelcomeMessage());
+        description_channel.setText(channelData.getDescription());
         setButtons();
     }
 
@@ -172,10 +172,11 @@ public class ChannelActivity extends BasicActivity{
                             ChannelActivity.this.runOnUiThread(new Runnable() {
                                 public void run() {
                                     button_update_channel_name.setVisibility(View.GONE);
-                                    loadingSpin.hideDialog();
+
                                 }
                             });
                         }
+                        loadingSpin.hideDialog();
                     }
                     Log.d("USER/loadData", msg);
                 }catch (Exception e){

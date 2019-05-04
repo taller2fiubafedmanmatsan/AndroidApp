@@ -30,6 +30,8 @@ import okhttp3.Response;
 
 public class ChannelCreationActivity extends BasicActivity {
     private EditText channelName;
+    private EditText channelWelcome;
+    private EditText channelDescription;
     private Button buttonCreateChannel;
     private String token;
     private UserRequester userRequester;
@@ -48,6 +50,8 @@ public class ChannelCreationActivity extends BasicActivity {
         setContentView(R.layout.activity_channel_creation);
 
         channelName = findViewById(R.id.channel_name);
+        channelWelcome = findViewById(R.id.channel_welcome);
+        channelDescription = findViewById(R.id.channel_description);
         buttonCreateChannel = findViewById(R.id.button_create_channel);
 
         token = preference.getToken();//this.getUserToken();
@@ -83,12 +87,16 @@ public class ChannelCreationActivity extends BasicActivity {
             @Override
             public void onClick(View v) {
                 String channel = channelName.getText().toString();
+                String welcome = channelWelcome.getText().toString();
+                String description = channelDescription.getText().toString();
 
-                if (!channel.isEmpty()) {
+                if (!channel.isEmpty() &&
+                    !welcome.isEmpty() &&
+                    !description.isEmpty()) {
                     loadingSpin.showDialog(ChannelCreationActivity.this);
                     List<String> users = new ArrayList<>();
                     users.add(currentUserEmail);
-                    NewChannel newChannel = new NewChannel(currentWorkspace,channel,users);
+                    NewChannel newChannel = new NewChannel(currentWorkspace,channel,welcome,description,users);
 
                     createChannel(newChannel,token);
 
