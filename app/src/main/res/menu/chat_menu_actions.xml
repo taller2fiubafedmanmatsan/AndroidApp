@@ -6,6 +6,9 @@
     <item android:id="@+id/action_workspace"
         android:title="Current Workspace"
         app:showAsAction="never" />
+    <item android:id="@+id/action_channel"
+        android:title="Current Channel"
+        app:showAsAction="never" />
     <item android:id="@+id/action_logout"
         android:title="Logout"
         app:showAsAction="never" />

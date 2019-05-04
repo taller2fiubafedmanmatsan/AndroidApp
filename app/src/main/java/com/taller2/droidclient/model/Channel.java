@@ -5,12 +5,14 @@ public class Channel {
     private String name;
     private String description;
     private String welcomeMessage;
+    private User creator;
 
-    public Channel(String id, String name, String description, String welcomeMessage) {
+    public Channel(String id, String name, String description, String welcomeMessage, User creator) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.welcomeMessage = welcomeMessage;
+        this.creator = creator;
     }
 
     public Channel(String name) {
@@ -47,6 +49,14 @@ public class Channel {
 
     public void setWelcomeMessage(String welcomeMessage) {
         this.welcomeMessage = welcomeMessage;
+    }
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
     }
 
     @Override

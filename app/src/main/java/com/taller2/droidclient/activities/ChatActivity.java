@@ -283,6 +283,9 @@ public class ChatActivity extends BasicActivity
             case R.id.action_workspace:
                 changeActivityNotFinish(ChatActivity.this, WorkspaceActivity.class);
                 return true;
+            case R.id.action_channel:
+                changeActivityNotFinish(ChatActivity.this, ChannelActivity.class);
+                return true;
             case R.id.action_logout:
                 /*preferences.edit().putBoolean("logged",false).apply();
                 preferences.edit().putString("token", "").apply();*/
