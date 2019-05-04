@@ -33,6 +33,19 @@ public class Workspace {
         this.users.add(creator);
         this.admins.add(creator);
     }
+    public Workspace(String name,String welcome, String description, String creator) {
+        this.name = name;
+        this.creator = creator;
+        //this.imageUrl = "https://upload.wikimedia.org/wikipedia/commons/9/93/Logo-fiuba.gif";
+        //this.location = "";
+        this.description = description;
+        this.welcomeMessage = welcome;
+        this.channels = new ArrayList<String>();
+        this.users = new ArrayList<String>();
+        this.admins = new ArrayList<String>();
+        this.users.add(creator);
+        this.admins.add(creator);
+    }
 
     public Workspace(String name, String imageUrl, String location, String creator, String description, String welcomeMessage, List<String> channels, List<String> users, List<String> admins) {
         this.name = name;

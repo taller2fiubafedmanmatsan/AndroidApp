@@ -36,6 +36,8 @@ import okhttp3.Response;
 
 public class WorkspaceCreationActivity extends BasicActivity {
     private EditText editWorkspaceName;
+    private EditText editWorkspaceWelcome;
+    private EditText editWorkspaceDescription;
     private Button buttonCreateWorkspace;
     private UserRequester userRequester;
     private WorkspaceRequester workspaceRequester;
@@ -59,6 +61,8 @@ public class WorkspaceCreationActivity extends BasicActivity {
 
         buttonCreateWorkspace = findViewById(R.id.button_create_workspace);
         editWorkspaceName = findViewById(R.id.workspace_name);
+        editWorkspaceWelcome = findViewById(R.id.workspace_welcome);
+        editWorkspaceDescription = findViewById(R.id.workspace_description);
 
         setListeners();
     }
@@ -68,10 +72,14 @@ public class WorkspaceCreationActivity extends BasicActivity {
             @Override
             public void onClick(View view) {
                 final String workspaceName = editWorkspaceName.getText().toString();
+                final String workWelcome = editWorkspaceWelcome.getText().toString();
+                final String workDescription = editWorkspaceDescription.getText().toString();
 
-                if (!workspaceName.isEmpty()) {
+                if (!workspaceName.isEmpty() &&
+                    !workWelcome.isEmpty() &&
+                    !workDescription.isEmpty()) {
                     loadingSpin.showDialog(WorkspaceCreationActivity.this);
-                    Workspace workspace = new Workspace(workspaceName,currentUserEmail);
+                    Workspace workspace = new Workspace(workspaceName,workWelcome,workDescription,currentUserEmail);
 
                     createWorkspace(workspace, token);
 

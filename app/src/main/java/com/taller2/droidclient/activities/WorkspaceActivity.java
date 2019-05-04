@@ -153,7 +153,7 @@ public class WorkspaceActivity extends BasicActivity{
     private void loadWorkspace() {
         name_workspace.setText(workData.getName());
         welcome_workspace.setText(workData.getWelcomeMessage());
-        description_workspace.setText(workData.getWelcomeMessage());
+        description_workspace.setText(workData.getDescription());
 
         if (workData.getImageUrl() == null || workData.getImageUrl().equals("")) {
             if (!this.isDestroyed()) {
@@ -186,10 +186,11 @@ public class WorkspaceActivity extends BasicActivity{
                                 public void run() {
                                     button_change_picture_workspace.setVisibility(View.GONE);
                                     button_update_workspace_name.setVisibility(View.GONE);
-                                    loadingSpin.hideDialog();
+
                                 }
                             });
                         }
+                        loadingSpin.hideDialog();
                     }
                     Log.d("USER/loadData", msg);
                 }catch (Exception e){
