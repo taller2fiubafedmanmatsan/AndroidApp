@@ -20,11 +20,39 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="250dp"
         android:gravity="center_horizontal"
         android:textColorHint="#FFFFFF"
         android:textColor="#FFFFFF"
         android:hint="Workspace name"
+        android:backgroundTint="#FFFFFF"
+        android:inputType="textWebEditText" />
+
+    <EditText
+        android:id="@+id/workspace_welcome"
+        android:layout_centerHorizontal="true"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_marginTop="300dp"
+        android:gravity="center_horizontal"
+        android:textColorHint="#FFFFFF"
+        android:textColor="#FFFFFF"
+        android:hint="Welcome Message"
+        android:backgroundTint="#FFFFFF"
+        android:inputType="textWebEditText" />
+
+    <EditText
+        android:id="@+id/workspace_description"
+        android:layout_centerHorizontal="true"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_marginTop="350dp"
+        android:gravity="center_horizontal"
+        android:textColorHint="#FFFFFF"
+        android:textColor="#FFFFFF"
+        android:hint="Description"
         android:backgroundTint="#FFFFFF"
         android:inputType="textWebEditText" />
 
@@ -33,7 +61,7 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="175dp"
+        android:layout_marginTop="450dp"
         android:background="@drawable/round_border_button"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
