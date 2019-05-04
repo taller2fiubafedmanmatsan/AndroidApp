@@ -82,5 +82,13 @@ public class User {
     public void setWorkspaces(List<WorkspaceResponse> workspaces) {
         this.workspaces = workspaces;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof User))
+            return false;
+
+        return ((User) obj).getName().equals(this.name);
+    }
 }
 
