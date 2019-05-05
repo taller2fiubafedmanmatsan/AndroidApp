@@ -123,6 +123,14 @@ public class UserRequester {
         }
     }
 
+    public void getOtherUser(String userEmail,String token, CallbackUserRequester callback) {
+        try {
+            getRequest(postUrl +"/"+userEmail, token, callback);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void getRequest(String url, String id, final CallbackUserRequester callback) throws IOException {
         OkHttpClient client = new OkHttpClient();
 

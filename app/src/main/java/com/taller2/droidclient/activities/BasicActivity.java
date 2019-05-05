@@ -75,6 +75,12 @@ public class BasicActivity extends AppCompatActivity {
         finish();
     }
 
+    public void changeActivityNotFinish(Context from, Class to, String token) {
+        Intent intent = new Intent(from, to);
+        intent.putExtra("userToken",token);
+        startActivity(intent);
+    }
+
     public void changeActivityNotFinish(Context from, Class to) {
         Intent intent = new Intent(from, to);
 

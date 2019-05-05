@@ -378,7 +378,7 @@ public class ChatActivity extends BasicActivity
                                 loadMessagesActualChannel(preference.getActualChannel());
                                 setListenersChannels();
                                 for (User user:work.getUsers()) {
-                                    directMessage.add(user.getName());
+                                    directMessage.add(user.getEmail());
                                 }
 
                                 mDrawerMessagesList.setAdapter(new ArrayAdapter<String>(ChatActivity.this,
@@ -501,24 +501,6 @@ public class ChatActivity extends BasicActivity
             }
         });
 
-    }
-
-    // Esto hay que verlo
-    private void setListenersMessage(){
-        mDrawerMessagesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Get the selected item text from ListView
-                try {
-                    String selectedItem = (String) parent.getItemAtPosition(position);
-                    String name = selectedItem;
-                    preference.saveActualChannel(new Channel(name));
-                    changeActivity(ChatActivity.this, StartLoadingActivity.class);
-                }catch (Exception e){
-                    Log.d("ERROR", e.getMessage());
-                }
-            }
-        });
     }
 
 
@@ -646,7 +628,6 @@ public class ChatActivity extends BasicActivity
                 ChatActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
                         Channel channel = actualChannels.get(position);
-
                         //Channel channel = workspaces.get(workspaces.indexOf(preference.getActualWorkspace())).getChannels().get(position);
                         Toast.makeText(ChatActivity.this, channel.getName(), Toast.LENGTH_SHORT).show();
                     }
@@ -662,6 +643,15 @@ public class ChatActivity extends BasicActivity
                         Toast.makeText(ChatActivity.this, message[position], Toast.LENGTH_SHORT).show();
                     }
                 });
+            }
+        });
+
+        mDrawerMessagesList.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                String userEmail = directMessage.get(position);
+                changeActivityNotFinish(ChatActivity.this,UserActivity.class,userEmail);
+                return true;
             }
         });
     }
