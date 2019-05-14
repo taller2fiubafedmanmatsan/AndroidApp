@@ -1,9 +1,13 @@
 package com.taller2.droidclient.activities;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 
@@ -56,6 +60,8 @@ public class MainActivity extends BasicActivity {
         button_recovery = findViewById(R.id.button_recovery);
         loginButton = findViewById(R.id.login_facebook);
 
+        /*if (Build.VERSION.SDK_INT >= 23)
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);*/
         /*preferences = getSharedPreferences("login",MODE_PRIVATE);
 
         if(preferences.getBoolean("logged",false)){
@@ -85,9 +91,10 @@ public class MainActivity extends BasicActivity {
             finish();
         }*/
         //FirebaseMessaging.getInstance().setAutoInitEnabled(false);
-        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
         //Log.d("FIREBASE/MSG/TEST", FirebaseMessaging.getInstance().toString());
         //FirebaseMessaging.getInstance().setAutoInitEnabled(true);
+        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
+
         if (preference.isLogged()) {
             //sendActualToken();
             changeActivity(MainActivity.this,StartLoadingActivity.class);
@@ -96,7 +103,6 @@ public class MainActivity extends BasicActivity {
         setListeners();
         setCallbacksFacebook();
     }
-
     private void setCallbacksFacebook() {
         //Facebook integration
         callbackManager = CallbackManager.Factory.create();

@@ -1,5 +1,7 @@
 package com.taller2.droidclient.model;
 
+import android.net.Uri;
+
 import java.util.Date;
 
 public class UserMessage {
@@ -8,12 +10,16 @@ public class UserMessage {
     private User creator;
     private Date dateTime;
     private String _id;
+    private int type;
+    private String photoUrl;
 
-    public UserMessage(String _id, String message, User creator, Date dateTime) {
+    public UserMessage(String _id, String message, User creator, Date dateTime, int type, String photoUrl) {
         this._id = _id;
         this.message = message;
         this.creator = creator;
         this.dateTime = dateTime;
+        this.type = type;
+        this.photoUrl = photoUrl;
     }
 
     public String getMessage() {
@@ -47,5 +53,20 @@ public class UserMessage {
     public void set_id(String _id) {
         this._id = _id;
     }
-}
 
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+}

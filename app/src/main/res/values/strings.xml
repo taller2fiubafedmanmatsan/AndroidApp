@@ -5,4 +5,5 @@
     <string name="Hypechat">Hypechat</string>
     <string name="drawer_open">drawer_open</string>
     <string name="drawer_close">drawer_close</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

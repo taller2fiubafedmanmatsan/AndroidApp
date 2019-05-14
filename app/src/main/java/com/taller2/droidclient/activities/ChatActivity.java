@@ -1,18 +1,29 @@
 package com.taller2.droidclient.activities;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -42,11 +53,19 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.adapters.ChannelListAdapter;
@@ -59,6 +78,7 @@ import com.taller2.droidclient.model.CallbackWorkspaceRequester;
 import com.taller2.droidclient.model.Channel;
 import com.taller2.droidclient.model.MessagesResponse;
 import com.taller2.droidclient.model.User;
+import com.taller2.droidclient.model.UserMail;
 import com.taller2.droidclient.model.UserMessage;
 import com.taller2.droidclient.model.Workspace;
 import com.taller2.droidclient.model.WorkspaceResponse;
@@ -66,21 +86,25 @@ import com.taller2.droidclient.requesters.MessageRequester;
 import com.taller2.droidclient.requesters.ChannelRequester;
 import com.taller2.droidclient.requesters.UserRequester;
 import com.taller2.droidclient.requesters.WorkspaceRequester;
+import com.theartofdev.edmodo.cropper.CropImage;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
 import android.support.v4.app.FragmentActivity;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 import okhttp3.Call;
 import okhttp3.Response;
-
 
 public class ChatActivity extends BasicActivity
         /*implements NavigationView.OnNavigationItemSelectedListener*/ {
@@ -100,6 +124,8 @@ public class ChatActivity extends BasicActivity
     private Button buttonCreateWorkspace;
     private Button buttonJoinWorkspace;
     private Button buttonSendText;
+    private Button buttonSendImage;
+    private Button buttonSendLoc;
     private LinearLayout layoutChannelAndMessages;
     private LinearLayout layoutWorkspace;
 
@@ -119,6 +145,10 @@ public class ChatActivity extends BasicActivity
     private MessageRequester messageRequester;
     private ChannelRequester channelRequester;
     private boolean chatLoaded = false;
+    private StorageReference mStorageRef;
+
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationManager locationManager;
 
     private String[] channel = {"# General",
             "# Random",
@@ -147,15 +177,6 @@ public class ChatActivity extends BasicActivity
         public void onReceive(Context context, Intent intent) {
             if (!chatLoaded)
                 return;
-        /*data: {
-                    msg: message.text,
-                    createdAt: message.dateTime.toString(),
-                    workspace: workspace.name.toString(),
-                    channel: channel.name.toString(),
-                    sender_name: sender.name.toString(),
-                    sender_email: sender.email.toString(),
-                    sender_nickname: sender.nickname.toString()
-        }*/
 
             try {
                 Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).parse(intent.getExtras().getString("createdAt"));
@@ -168,7 +189,9 @@ public class ChatActivity extends BasicActivity
                                         intent.getExtras().getString("sender_email"),
                                         intent.getExtras().getString("sender_nickname"),
                                         true),
-                                date
+                                date,
+                                Integer.valueOf(intent.getExtras().getString("msgType")),
+                                intent.getExtras().getString("sender_photoUrl")
                         ));
             } catch (ParseException e) {
                 Log.d("EXCEPTION/RECVMSG", e.getMessage());
@@ -207,6 +230,10 @@ public class ChatActivity extends BasicActivity
         channelRequester = new ChannelRequester();
         directMessage = new ArrayList<>();
 
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
         mMessageRecycler = findViewById(R.id.reyclerview_message_list);
         mMessageAdapter = new MessageListAdapter(this, messageList);
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -224,6 +251,8 @@ public class ChatActivity extends BasicActivity
         buttonCreateChannel = findViewById(R.id.icon_create_channel);
         buttonWorkspaces = findViewById(R.id.icon_show_workspaces);
         buttonSendText = findViewById(R.id.button_chatbox_send);
+        buttonSendImage = findViewById(R.id.button_send_image);
+        buttonSendLoc = findViewById(R.id.button_send_loc);
         buttonBackWorkspaces = findViewById(R.id.icon_back_workspaces);
         buttonCreateWorkspace = findViewById(R.id.button_create_workspace);
         buttonJoinWorkspace = findViewById(R.id.button_join_workspace);
@@ -495,7 +524,59 @@ public class ChatActivity extends BasicActivity
             }
         });
 
+        buttonSendImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                open_gallery();
+            }
+        });
+
+        buttonSendLoc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= 23)
+                    ActivityCompat.requestPermissions(ChatActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                else
+                    Log.d("LOCATION", "Require SDK Level >= 23");
+                //changeActivityNotFinish(ChatActivity.this, MapsActivity.class);
+            }
+        });
     }
+
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    try {
+                        String locationProvider = LocationManager.NETWORK_PROVIDER;
+
+                        Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+
+                        Log.d("LOCATION", String.valueOf(lastKnownLocation.getLatitude()));
+
+                        sendLocationMessage(lastKnownLocation);
+                    } catch (SecurityException e) {
+                        Log.d("LOCATION", e.getMessage());
+                    }
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Log.d("LOCATION", "Service not granted");
+                }
+                return;
+            }
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+    /*private boolean checkLocationPermission() {
+        String permission = "android.permission.ACCESS_FINE_LOCATION";
+        int res = this.checkCallingOrSelfPermission(permission);
+        return (res == PackageManager.PERMISSION_GRANTED);
+    }*/
 
     // Esto hay que verlo
     private void setListenersMessage(){
@@ -573,7 +654,7 @@ public class ChatActivity extends BasicActivity
         Log.d("SENDING/MSG/WORKSPACE", preference.getActualWorkspace().getName());
         Log.d("SENDING/MSG/CHANNEL", preference.getActualChannel().getName());
 
-        messageRequester.sendMessage(msg,
+        messageRequester.sendMessageTxt(msg,
                 preference.getActualWorkspace(),
                 preference.getActualChannel(),
                 preference.getToken(),
@@ -593,6 +674,87 @@ public class ChatActivity extends BasicActivity
         });
     }
 
+    private void sendImageMessage(Bitmap bitmap) {
+        //loadingSpin.showDialog(ConfigRegisterActivity.this);
+        //TO DO: Replace with random string
+        Log.d("SENDING/MSG/WORKSPACE", preference.getActualWorkspace().getName());
+        Log.d("SENDING/MSG/CHANNEL", preference.getActualChannel().getName());
+
+        final String random_str = RandomStringUtils.randomAlphanumeric(25).toUpperCase();
+
+        final String image_name = random_str + ".jpg";
+        StorageReference mountainsRef = mStorageRef.child(image_name);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = mountainsRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Toast.makeText(ChatActivity.this, "Image failed to load: Try again", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
+
+                while (!urlTask.isSuccessful());
+
+                final Uri downloadUrl = urlTask.getResult();
+                //final Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                messageRequester.sendMessageImg(
+                        downloadUrl,
+                        preference.getActualWorkspace(),
+                        preference.getActualChannel(),
+                        preference.getToken(),
+                        new CallbackUserRequester() {
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                if (response.isSuccessful())
+                                    Log.d("SENDING/IMG", "Sucessful");
+
+                                Log.d("SENDING/IMG", response.body().string());
+                            }
+
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                Log.d("SENDING/IMG", "Failure");
+                            }
+                        });
+
+            }
+        });
+    }
+
+    private void sendLocationMessage(Location location) {
+        Log.d("SENDING/MSG/WORKSPACE", preference.getActualWorkspace().getName());
+        Log.d("SENDING/MSG/CHANNEL", preference.getActualChannel().getName());
+
+        messageRequester.sendMessageLocation(location.getLatitude(),
+                location.getLongitude(),
+                preference.getActualWorkspace(),
+                preference.getActualChannel(),
+                preference.getToken(),
+                new CallbackUserRequester() {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        if (response.isSuccessful())
+                            Log.d("SENDING/MSG", "Sucessful");
+
+                        Log.d("SENDING/MSG", response.body().string());
+                    }
+
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.d("SENDING/MSG", "Failure");
+                    }
+                });
+    }
+
     private void loadMessagesActualChannel(Channel channel) {
         channelRequester.getChannel(channel.getName(),
                 preference.getActualWorkspace().getName(),
@@ -605,19 +767,32 @@ public class ChatActivity extends BasicActivity
                         if (response.isSuccessful()) {
                             final MessagesResponse messages = new Gson().fromJson(msg, MessagesResponse.class);
                             List<BaseMessage> msgs = messages.getPages().get(0).getMessages();
-                            
+                            List<UserMail> users = messages.getUsers();
+                            HashMap<String, UserMail> users_map = new HashMap<>();
+
+                            for (int i = 0; i < users.size(); i++) {
+                                users_map.put(users.get(i).get_id(), users.get(i));
+                            }
+
                             for (int i = 0; i < msgs.size(); i++) {
                                 messageList.add(new UserMessage(
                                         msgs.get(i).get_id(),
                                         msgs.get(i).getText(),
                                         new User(
-                                                "1",
+                                                /*"1",
                                                 "juan",
                                                 msgs.get(i).getCreator(),
                                                 "juan",
+                                                true*/
+                                                users_map.get(msgs.get(i).getCreator()).get_id(),
+                                                users_map.get(msgs.get(i).getCreator()).getName(),
+                                                users_map.get(msgs.get(i).getCreator()).getEmail(),
+                                                users_map.get(msgs.get(i).getCreator()).getNickname(),
                                                 true
                                         ),
-                                        msgs.get(i).getDateTime()
+                                        msgs.get(i).getDateTime(),
+                                        Integer.valueOf(msgs.get(i).getType()),
+                                        users_map.get(msgs.get(i).getCreator()).getPhotoUrl()
                                         ));
                             }
 
@@ -696,4 +871,30 @@ public class ChatActivity extends BasicActivity
         }
     }
 
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SELECT_IMAGE) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    CropImage.activity(data.getData())
+                            .start(ChatActivity.this);
+                }
+            } else if (resultCode == Activity.RESULT_CANCELED)  {
+                Toast.makeText(ChatActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(ChatActivity.this.getContentResolver(), resultUri);
+                    sendImageMessage(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
+        }
+    }
 }

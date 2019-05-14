@@ -31,35 +31,76 @@
     <LinearLayout
         android:id="@+id/layout_chatbox"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:orientation="horizontal"
+        android:layout_height="90dp"
+        android:orientation="vertical"
         android:minHeight="48dp"
         android:background="#ffffff"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        >
 
-        <EditText
-            android:id="@+id/edittext_chatbox"
-            android:hint="Enter message"
-            android:background="@android:color/transparent"
-            android:layout_gravity="center"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:maxLines="6"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:minHeight="48dp"
+            android:background="#ffffff">
 
-        <Button
-            android:id="@+id/button_chatbox_send"
+            <Button
+                android:id="@+id/button_send_image"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:background="@android:drawable/ic_menu_crop"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                />
 
-            android:background="@drawable/ic_menu_send"
-            android:scaleX="0.5"
-            android:scaleY="0.7"
-            android:layout_width="64dp"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:layout_gravity="bottom" />
+            <Button
+                android:id="@+id/button_send_loc"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:background="@android:drawable/ic_dialog_map"
+                android:backgroundTint="@color/colorPrimaryDark"
+                />
+        </LinearLayout>
 
+        <View
+            android:id="@+id/view_bar_id2"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#dfdfdf" />
+
+        <LinearLayout
+            android:id="@+id/layout_chatbox2"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:minHeight="48dp"
+            android:background="#ffffff">
+
+            <EditText
+                android:id="@+id/edittext_chatbox"
+                android:hint="Enter message"
+                android:background="@android:color/transparent"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:maxLines="6"/>
+
+            <Button
+                android:id="@+id/button_chatbox_send"
+
+                android:background="@drawable/ic_menu_send"
+                android:scaleX="0.5"
+                android:scaleY="0.7"
+                android:layout_width="64dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_gravity="bottom" />
+
+        </LinearLayout>
     </LinearLayout>
-
 </RelativeLayout>

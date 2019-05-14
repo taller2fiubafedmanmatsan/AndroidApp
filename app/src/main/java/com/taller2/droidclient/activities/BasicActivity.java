@@ -18,6 +18,7 @@ public class BasicActivity extends AppCompatActivity {
     private ActionBar top_bar;
     protected SavedState preference;
     protected LoadingSpin loadingSpin;
+    protected final int SELECT_IMAGE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,5 +108,12 @@ public class BasicActivity extends AppCompatActivity {
         startActivity(intent);
 
         finish();
+    }
+
+    protected void open_gallery() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"),SELECT_IMAGE);
     }
 }

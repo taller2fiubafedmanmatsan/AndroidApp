@@ -1,6 +1,8 @@
 package com.taller2.droidclient.requesters;
 
+import android.net.Uri;
 import android.util.Log;
+import android.view.ViewDebug;
 
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.Channel;
@@ -21,18 +23,56 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MessageRequester {
-    //private String basicUrl = "https://hypechat-t2.herokuapp.com";
-    private String basicUrl = "https://app-server-t2.herokuapp.com";
+    private String basicUrl = "https://hypechat-t2.herokuapp.com";
+    //private String basicUrl = "https://app-server-t2.herokuapp.com";
 
     private String postUrl = basicUrl + "/api/messages";
 
+    private static final int msg_text = 2;
+    private static final int msg_image = 3;
+    private static final int msg_loc = 4;
+
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    public void sendMessage(String msg, WorkspaceResponse workspace, Channel channel, String token, CallbackUserRequester callback) {
+    public void sendMessageTxt(String msg, WorkspaceResponse workspace, Channel channel, String token, CallbackUserRequester callback) {
         try{
             Map<String, String> msgMap = new HashMap<String,String>();
             msgMap.put("creator", "admin@gmail.com");
             msgMap.put("text",msg);
+            msgMap.put("type", String.valueOf(msg_text));
+
+            postRequest(postUrl + "/workspace/" + workspace.getName() + "/channel/" + channel.getName(),
+                    new JsonConverter().mapToJsonString(msgMap)
+                    , token
+                    , callback);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void sendMessageImg(Uri url, WorkspaceResponse workspace, Channel channel, String token, CallbackUserRequester callback) {
+        try{
+            Map<String, String> msgMap = new HashMap<String,String>();
+            msgMap.put("creator", "admin@gmail.com");
+            msgMap.put("text",url.toString());
+            msgMap.put("type", String.valueOf(msg_image));
+
+            postRequest(postUrl + "/workspace/" + workspace.getName() + "/channel/" + channel.getName(),
+                    new JsonConverter().mapToJsonString(msgMap)
+                    , token
+                    , callback);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void sendMessageLocation(Double lat, Double lon, WorkspaceResponse workspace, Channel channel, String token, CallbackUserRequester callback) {
+        try{
+            String msg = String.valueOf(lat) + ";" + String.valueOf(lon);
+            Map<String, String> msgMap = new HashMap<String,String>();
+            msgMap.put("creator", "admin@gmail.com");
+            msgMap.put("text",msg);
+            msgMap.put("type", String.valueOf(msg_loc));
 
             postRequest(postUrl + "/workspace/" + workspace.getName() + "/channel/" + channel.getName(),
                     new JsonConverter().mapToJsonString(msgMap)

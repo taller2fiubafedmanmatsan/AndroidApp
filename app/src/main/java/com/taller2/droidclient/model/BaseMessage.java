@@ -8,12 +8,14 @@ public class BaseMessage {
     private String creator;
     private Date dateTime;
     private String _id;
+    private String type;
 
-    public BaseMessage(String _id, String text, String creator, Date dateTime) {
+    public BaseMessage(String _id, String text, String creator, Date dateTime, String type) {
         this._id = _id;
         this.text = text;
         this.creator = creator;
         this.dateTime = dateTime;
+        this.type = type;
     }
 
     public String getText() {
@@ -46,6 +48,14 @@ public class BaseMessage {
 
     public void set_id(String _id) {
         this._id = _id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
 
