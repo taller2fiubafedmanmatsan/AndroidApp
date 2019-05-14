@@ -87,6 +87,7 @@ public class WorkspaceJoinActivity extends BasicActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 try{
                     String msg = response.body().string();
+                    Log.d("JOINWORK", msg);
                     final Workspace workspace = new Gson().fromJson(msg,Workspace.class);
 
                     if(response.isSuccessful()){
@@ -98,7 +99,6 @@ public class WorkspaceJoinActivity extends BasicActivity {
                             }
                         });
                     }
-                    Log.d("JOINWORK", msg);
 
                 }catch (Exception e){
                     Log.d("JOINWORK", e.getMessage());

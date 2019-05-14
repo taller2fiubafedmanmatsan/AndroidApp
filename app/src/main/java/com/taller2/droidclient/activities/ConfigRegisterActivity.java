@@ -29,6 +29,7 @@ import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.requesters.UserRequester;
+import com.taller2.droidclient.utils.GlideApp;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
@@ -37,9 +38,11 @@ import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Response;
 
+import static com.taller2.droidclient.utils.GlideOptions.centerCropTransform;
+
 public class ConfigRegisterActivity extends BasicActivity {
 
-    private final int SELECT_IMAGE = 1;
+    //private final int SELECT_IMAGE = 1;
 
     private Button button_omit;
     private Button button_finish;
@@ -76,10 +79,11 @@ public class ConfigRegisterActivity extends BasicActivity {
         userRequester = new UserRequester();
 
         if (!this.isDestroyed()) {
-            Glide.with(this)
+            GlideApp.with(this)
                     .load(getResources()
                             .getIdentifier("default_profile_pic", "drawable", this.getPackageName()))
-                    .centerCrop()
+                    //.centerCrop()
+                    .apply(centerCropTransform())
                     .into(profile_picture);
         }
         setListeners();
@@ -114,12 +118,12 @@ public class ConfigRegisterActivity extends BasicActivity {
         });
     }
 
-    private void open_gallery() {
+    /*private void open_gallery() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"),SELECT_IMAGE);
-    }
+    }*/
 
     private void changeProfilePicture(Bitmap bitmap) {
         loadingSpin.showDialog(ConfigRegisterActivity.this);
@@ -167,8 +171,11 @@ public class ConfigRegisterActivity extends BasicActivity {
                                     button_finish.getBackground().setAlpha(255);
                                     button_finish.setTextColor(Color.WHITE);
                                     if (!ConfigRegisterActivity.this.isDestroyed()) {
-                                        Glide.with(ConfigRegisterActivity.this)
-                                                .load(downloadUrl).centerCrop().into(profile_picture);
+                                        GlideApp.with(ConfigRegisterActivity.this)
+                                                .load(downloadUrl)
+                                                //.centerCrop()
+                                                .apply(centerCropTransform())
+                                                .into(profile_picture);
                                     }
                                 }
                             });

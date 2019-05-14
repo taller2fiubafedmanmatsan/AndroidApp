@@ -3,12 +3,14 @@ package com.taller2.droidclient.adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.activities.ChatActivity;
 import com.taller2.droidclient.model.BaseMessage;
@@ -20,6 +22,8 @@ import java.util.List;
 public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.MyViewHolder> {
     private static final int VIEW_TYPE_MESSAGE_SENT = 1;
     private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
+    private static final int VIEW_TYPE_IMAGE_RECEIVED = 3;
+    private static final int VIEW_TYPE_MAP_RECEIVED = 4;
 
     private Context mContext;
     //private List<BaseMessage> mMessageList;
@@ -56,6 +60,16 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
             view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_message_received, parent, false);
             return new ReceivedMessageHolder(view);
+        } else if (viewType == VIEW_TYPE_IMAGE_RECEIVED) {
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_image, parent, false);
+
+            return new ReceivedImageHolder(view);
+        } else if (viewType == VIEW_TYPE_MAP_RECEIVED) {
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_map, parent, false);
+
+            return new ReceivedMapHolder(view);
         }
 
         return null;
@@ -71,6 +85,13 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                 break;
             case VIEW_TYPE_MESSAGE_RECEIVED:
                 ((ReceivedMessageHolder) holder).bind(message);
+                break;
+            case VIEW_TYPE_IMAGE_RECEIVED:
+                ((ReceivedImageHolder) holder).bind(message);
+                break;
+            case VIEW_TYPE_MAP_RECEIVED:
+                ((ReceivedMapHolder) holder).bind(message);
+                break;
         }
     }
 
@@ -86,11 +107,21 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
 
         //User user = ((ChatActivity) mContext).getUser();
 
-        if (message.getCreator().getEmail().equals("admin@gmail.com")) {
+        /*if (message.getCreator().getEmail().equals("admin@gmail.com")) {
             // If the current user is the sender of the message
             return VIEW_TYPE_MESSAGE_SENT;
         } else {
             // If some other user sent the message
+            return VIEW_TYPE_MESSAGE_RECEIVED;
+        }*/
+
+        if (message.getType() == VIEW_TYPE_IMAGE_RECEIVED) {
+            return VIEW_TYPE_IMAGE_RECEIVED;
+        }
+        else if (message.getType() == VIEW_TYPE_MAP_RECEIVED) {
+            return VIEW_TYPE_MAP_RECEIVED;
+        }
+        else {
             return VIEW_TYPE_MESSAGE_RECEIVED;
         }
     }

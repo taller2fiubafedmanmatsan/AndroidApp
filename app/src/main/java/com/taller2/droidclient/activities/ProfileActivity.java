@@ -58,7 +58,7 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 public class ProfileActivity extends BasicActivity{
 
-    private final int SELECT_IMAGE = 1;
+    //private final int SELECT_IMAGE = 1;
 
     private EditText user_profile;
     private TextView email_profile;
@@ -231,12 +231,12 @@ public class ProfileActivity extends BasicActivity{
         });
     }
 
-    private void open_gallery() {
+    /*private void open_gallery() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"),SELECT_IMAGE);
-    }
+    }*/
 
     private void update_profile(String newNick) {
         loadingSpin.showDialog(ProfileActivity.this);

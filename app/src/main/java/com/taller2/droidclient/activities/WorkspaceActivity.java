@@ -241,12 +241,12 @@ public class WorkspaceActivity extends BasicActivity{
         });
     }
 
-    private void open_gallery() {
+    /*private void open_gallery() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"),SELECT_IMAGE);
-    }
+    }*/
 
     private void changeProfilePicture(Bitmap bitmap) {
         loadingSpin.showDialog(WorkspaceActivity.this);

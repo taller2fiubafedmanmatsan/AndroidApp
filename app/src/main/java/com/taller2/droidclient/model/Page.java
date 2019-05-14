@@ -4,10 +4,10 @@ import java.util.List;
 
 public class Page {
     private String _id;
-    private List<UserMessage> messages;
+    private List<BaseMessage> messages;
     private int number;
 
-    public Page(String _id, List<UserMessage> messages, int number) {
+    public Page(String _id, List<BaseMessage> messages, int number) {
         this._id = _id;
         this.messages = messages;
         this.number = number;
@@ -21,11 +21,11 @@ public class Page {
         this._id = _id;
     }
 
-    public List<UserMessage> getMessages() {
+    public List<BaseMessage> getMessages() {
         return messages;
     }
 
-    public void setMessages(List<UserMessage> messages) {
+    public void setMessages(List<BaseMessage> messages) {
         this.messages = messages;
     }
 
