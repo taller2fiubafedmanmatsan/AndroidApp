@@ -309,6 +309,13 @@ public class ChatActivity extends BasicActivity
                 //changeActivity(ChatActivity.this,ProfileActivity.class, token);
                 changeActivityNotFinish(ChatActivity.this, ProfileActivity.class);
                 return true;
+
+            case R.id.action_workspace:
+                changeActivityNotFinish(ChatActivity.this, WorkspaceActivity.class);
+                return true;
+            case R.id.action_channel:
+                changeActivityNotFinish(ChatActivity.this, ChannelActivity.class);
+                return true;
             case R.id.action_logout:
                 /*preferences.edit().putBoolean("logged",false).apply();
                 preferences.edit().putString("token", "").apply();*/
@@ -401,7 +408,7 @@ public class ChatActivity extends BasicActivity
                                 loadMessagesActualChannel(preference.getActualChannel());
                                 setListenersChannels();
                                 for (User user:work.getUsers()) {
-                                    directMessage.add(user.getName());
+                                    directMessage.add(user.getEmail());
                                 }
 
                                 mDrawerMessagesList.setAdapter(new ArrayAdapter<String>(ChatActivity.this,
@@ -595,7 +602,6 @@ public class ChatActivity extends BasicActivity
             }
         });
     }
-
 
     private void setListenersChannels(){
         mDrawerChannelsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -841,7 +847,6 @@ public class ChatActivity extends BasicActivity
                 ChatActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
                         Channel channel = actualChannels.get(position);
-
                         //Channel channel = workspaces.get(workspaces.indexOf(preference.getActualWorkspace())).getChannels().get(position);
                         Toast.makeText(ChatActivity.this, channel.getName(), Toast.LENGTH_SHORT).show();
                     }
@@ -857,6 +862,15 @@ public class ChatActivity extends BasicActivity
                         Toast.makeText(ChatActivity.this, message[position], Toast.LENGTH_SHORT).show();
                     }
                 });
+            }
+        });
+
+        mDrawerMessagesList.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                String userEmail = directMessage.get(position);
+                changeActivityNotFinish(ChatActivity.this,UserActivity.class,userEmail);
+                return true;
             }
         });
     }

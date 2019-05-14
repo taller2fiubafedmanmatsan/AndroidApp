@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ProfileActivity">
+
+    <ImageView
+        android:id="@+id/background_profile_photo"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:alpha="0.75"
+        android:layout_alignParentTop="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/profile_background" />
+    
+    <TextView
+        android:id="@+id/user_label"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/profile_picture"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        tools:fontFamily="sans-serif-light" />
+
+    <ImageView
+        android:id="@+id/icon_email"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_below="@+id/user_label"
+        android:layout_alignTop="@+id/email_label"
+        android:layout_alignBottom="@+id/email_label"
+        android:tint="#000000"
+        android:background="@android:drawable/sym_action_email" />
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/profile_picture"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
+        android:layout_marginTop="30dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:scaleType="fitXY"
+        app:riv_corner_radius="30dip"
+        app:riv_border_width="2dip"
+        app:riv_border_color="#333333"
+        app:riv_mutate_background="true"
+        app:riv_tile_mode="repeat"
+        app:riv_oval="true" />
+
+    <TextView
+        android:id="@+id/email_label"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/background_profile_photo"
+        android:layout_toEndOf="@id/icon_email"
+        android:layout_marginTop="20dp"
+        android:textSize="18sp"
+        tools:fontFamily="sans-serif-light" />
+
+    <ImageView
+        android:id="@+id/icon_name"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/user_label"
+        android:layout_alignTop="@+id/name_label"
+        android:layout_alignBottom="@+id/name_label"
+        android:layout_marginStart="20dp"
+        android:background="@drawable/com_facebook_profile_picture_blank_square"
+        android:tint="#000000" />
+    <TextView
+        android:id="@+id/name_label"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/background_profile_photo"
+        android:layout_toEndOf="@id/icon_email"
+        android:layout_marginTop="60dp"
+        android:textSize="18sp"
+        tools:fontFamily="sans-serif-light" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/layout_progress_bar"
+        android:layout_centerInParent="true"
+        android:orientation="horizontal"
+        android:visibility="gone">
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+
+            android:indeterminate="true"
+            android:visibility="visible" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:text="Loading profile data"
+            android:layout_marginTop="10dp"
+        />
+    </LinearLayout>
+</RelativeLayout>

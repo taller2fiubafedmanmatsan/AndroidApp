@@ -21,6 +21,15 @@ public class NewChannel {
         this.description = "Channel " + name;
         this.welcomeMessage = "Welcome to " + name;
     }
+    public NewChannel(String workspaceName, String name,String welcome, String description, List<String> users) {
+        this.workspaceName = workspaceName;
+        this.name = name;
+        this.users = users;
+        this.creator = users.get(0);
+        this.isPrivate = false;
+        this.description = description;
+        this.welcomeMessage = welcome;
+    }
 
     public String getName() {
         return name;
