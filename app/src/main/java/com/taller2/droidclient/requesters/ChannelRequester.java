@@ -5,6 +5,7 @@ import android.util.Log;
 import com.taller2.droidclient.model.CallbackRequester;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.CallbackWorkspaceRequester;
+import com.taller2.droidclient.model.Channel;
 import com.taller2.droidclient.model.JoinChannel;
 import com.taller2.droidclient.model.NewChannel;
 import com.taller2.droidclient.model.Workspace;
@@ -24,8 +25,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ChannelRequester {
-    private String basicUrl = "https://hypechat-t2.herokuapp.com";
-    //private String basicUrl = "https://app-server-t2.herokuapp.com";
+    //private String basicUrl = "https://hypechat-t2.herokuapp.com";
+    private String basicUrl = "https://app-server-t2.herokuapp.com";
 
     private String postUrl = basicUrl + "/api/channels/workspace";
     private String getUrl = basicUrl + "/api/channels/";
@@ -43,6 +44,26 @@ public class ChannelRequester {
             e.printStackTrace();
         }
     }
+
+    public void deleteChannel(String channelName, String workName, String token, CallbackRequester callback){
+        try{
+            String url = getUrl+channelName +"/workspace/"+ workName;
+            deleteRequest(url,token,callback);
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void changeChannel(String channelName, String workName, Channel channel, String token, CallbackRequester callback){
+        try{
+            String url = getUrl+channelName +"/workspace/"+ workName;
+            patchRequest(url,token,new JsonConverter().objectToJsonString(channel),callback);
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void joinChannel(String workName, List<String> users, String token, CallbackRequester callback){
         try{
@@ -147,6 +168,23 @@ public class ChannelRequester {
             } /*throws IOException {
                 Log.d("LOG/Register",response.body().string());
             }*/
+        });
+    }
+
+    private void deleteRequest(String url, String token,final CallbackRequester callback) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder().url(url).header("x-auth-token", token).delete().build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(call, e);
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                callback.onResponse(call, response);
+            }
         });
     }
 

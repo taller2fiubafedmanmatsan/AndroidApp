@@ -398,7 +398,7 @@ public class ChatActivity extends BasicActivity
                                     actualChannels.add(actual_channel);
                                 }*/
 
-                                if (!actualChannels.contains(actual_channel)) {
+                                if (!actualChannels.contains(actual_channel) && !actualChannels.isEmpty()) {
                                     preference.saveActualChannel(actualChannels.get(0));
                                 }
 
@@ -420,6 +420,7 @@ public class ChatActivity extends BasicActivity
                 }catch (Exception e){
                     Log.d("LOAD/CHANNEL", e.getMessage());
                     finish();
+
                 }
             }
             @Override

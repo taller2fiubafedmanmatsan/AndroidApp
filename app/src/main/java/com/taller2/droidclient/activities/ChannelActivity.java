@@ -50,9 +50,10 @@ public class ChannelActivity extends BasicActivity{
     private final int SELECT_IMAGE = 1;
 
     private EditText name_channel;
-    private TextView welcome_channel;
-    private TextView description_channel;
-    private Button button_update_channel_name;
+    private EditText welcome_channel;
+    private EditText description_channel;
+    private Button button_update_channel;
+    private Button button_delete_channel;
 
     private Channel channelData;
     private String token;
@@ -77,7 +78,8 @@ public class ChannelActivity extends BasicActivity{
         name_channel = findViewById(R.id.channel_name_label);
         welcome_channel = findViewById(R.id.welcome_label);
         description_channel = findViewById(R.id.description_label);
-        button_update_channel_name= findViewById(R.id.icon_edit_name_channel);
+        button_update_channel= findViewById(R.id.update_channel);
+        button_delete_channel =findViewById(R.id.delete_channel);
         layoutLoadingBar = findViewById(R.id.layout_progress_bar);
 
         token = preference.getToken();
@@ -171,7 +173,10 @@ public class ChannelActivity extends BasicActivity{
                         if(!channelData.getCreator().equals(userdata)){
                             ChannelActivity.this.runOnUiThread(new Runnable() {
                                 public void run() {
-                                    button_update_channel_name.setVisibility(View.GONE);
+                                    button_update_channel.setVisibility(View.GONE);
+                                    welcome_channel.setEnabled(false);
+                                    description_channel.setEnabled(false);
+                                    name_channel.setEnabled(false);
 
                                 }
                             });
@@ -197,16 +202,34 @@ public class ChannelActivity extends BasicActivity{
     }
 
     private void setListeners(){
-        button_update_channel_name.setOnClickListener(new View.OnClickListener() {
+        button_update_channel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String newName = name_channel.getText().toString();
+                String newWelcome = welcome_channel.getText().toString();
+                String newDescription = description_channel.getText().toString();
                 if(!channelData.getName().equals(newName)){
-                    ChannelActivity.this.runOnUiThread(new Runnable() {
-                        public void run() {
-                            Toast.makeText(ChannelActivity.this, "NOT IMPLEMENTED YET", Toast.LENGTH_SHORT).show();
+                    String currentWorkspace = preference.getActualWorkspace().getName();
+                    String currentChannel = preference.getActualChannel().getName();
+                    Channel channel = new Channel(newName,newDescription,newWelcome);
+                    channelRequester.changeChannel(currentChannel, currentWorkspace, channel, preference.getToken(), new CallbackRequester() {
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String msg = response.body().string();
+                            if (response.isSuccessful()) {
+                                changeActivity(ChannelActivity.this,ChatActivity.class);
+                            }
+                            Log.d("Channel/MOD", msg);
+                        }
+
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            Log.d("Channel/MOD", e.getMessage());
+                            call.cancel();
+                            finish();
                         }
                     });
+
 
                 }else{
                     ChannelActivity.this.runOnUiThread(new Runnable() {
@@ -215,6 +238,34 @@ public class ChannelActivity extends BasicActivity{
                         }
                     });
                 }
+
+            }
+        });
+
+        button_delete_channel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String currentWorkspace = preference.getActualWorkspace().getName();
+                String currentChannel = preference.getActualChannel().getName();
+                channelRequester.deleteChannel(currentChannel, currentWorkspace, preference.getToken(), new CallbackRequester() {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String msg = response.body().string();
+                        if (response.isSuccessful()) {
+                            changeActivity(ChannelActivity.this,ChatActivity.class);
+                        }
+                        Log.d("Channel/DELETE", msg);
+
+                    }
+
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.d("Channel/DELETE", e.getMessage());
+                        call.cancel();
+                        finish();
+
+                    }
+                });
 
             }
         });
