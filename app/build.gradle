@@ -84,4 +84,5 @@ dependencies {
     implementation 'com.github.MikeOrtiz:TouchImageView:1.4.0'
     implementation 'com.github.chathuralakmal:AndroidImagePopup:1.2.1'
     implementation "com.google.android.gms:play-services-location:15.0.1"
+    implementation 'com.github.TutorialsAndroid:FilePicker:v1.0.19'
 }

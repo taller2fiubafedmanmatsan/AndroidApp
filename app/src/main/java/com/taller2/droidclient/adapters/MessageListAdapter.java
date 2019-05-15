@@ -24,6 +24,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
     private static final int VIEW_TYPE_IMAGE_RECEIVED = 3;
     private static final int VIEW_TYPE_MAP_RECEIVED = 4;
+    private static final int VIEW_TYPE_FILE_RECEIVED = 5;
 
     private Context mContext;
     //private List<BaseMessage> mMessageList;
@@ -70,6 +71,11 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                     .inflate(R.layout.item_message_map, parent, false);
 
             return new ReceivedMapHolder(view);
+        } else if (viewType == VIEW_TYPE_FILE_RECEIVED) {
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_file, parent, false);
+
+            return new ReceivedFileHolder(view);
         }
 
         return null;
@@ -91,6 +97,9 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                 break;
             case VIEW_TYPE_MAP_RECEIVED:
                 ((ReceivedMapHolder) holder).bind(message);
+                break;
+            case VIEW_TYPE_FILE_RECEIVED:
+                ((ReceivedFileHolder) holder).bind(message);
                 break;
         }
     }
@@ -120,6 +129,9 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         }
         else if (message.getType() == VIEW_TYPE_MAP_RECEIVED) {
             return VIEW_TYPE_MAP_RECEIVED;
+        }
+        else if (message.getType() == VIEW_TYPE_FILE_RECEIVED) {
+            return VIEW_TYPE_FILE_RECEIVED;
         }
         else {
             return VIEW_TYPE_MESSAGE_RECEIVED;

@@ -23,14 +23,15 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MessageRequester {
-    //private String basicUrl = "https://hypechat-t2.herokuapp.com";
-    private String basicUrl = "https://app-server-t2.herokuapp.com";
+    private String basicUrl = "https://hypechat-t2.herokuapp.com";
+    //private String basicUrl = "https://app-server-t2.herokuapp.com";
 
     private String postUrl = basicUrl + "/api/messages";
 
     private static final int msg_text = 2;
     private static final int msg_image = 3;
     private static final int msg_loc = 4;
+    private static final int msg_file = 5;
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -56,6 +57,23 @@ public class MessageRequester {
             msgMap.put("creator", "admin@gmail.com");
             msgMap.put("text",url.toString());
             msgMap.put("type", String.valueOf(msg_image));
+
+            postRequest(postUrl + "/workspace/" + workspace.getName() + "/channel/" + channel.getName(),
+                    new JsonConverter().mapToJsonString(msgMap)
+                    , token
+                    , callback);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void sendMessageFile(String filename, Uri url, WorkspaceResponse workspace, Channel channel, String token, CallbackUserRequester callback) {
+        try{
+            String msg = filename + " " + url.toString();
+            Map<String, String> msgMap = new HashMap<String,String>();
+            msgMap.put("creator", "admin@gmail.com");
+            msgMap.put("text",msg);
+            msgMap.put("type", String.valueOf(msg_file));
 
             postRequest(postUrl + "/workspace/" + workspace.getName() + "/channel/" + channel.getName(),
                     new JsonConverter().mapToJsonString(msgMap)
