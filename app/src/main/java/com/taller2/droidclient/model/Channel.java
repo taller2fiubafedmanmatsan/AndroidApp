@@ -15,6 +15,14 @@ public class Channel {
         this.creator = creator;
     }
 
+    public Channel(String name, String description, String welcomeMessage) {
+        this.name = name;
+        this.description = description;
+        this.welcomeMessage = welcomeMessage;
+    }
+
+
+
     public Channel(String name) {
         this.name = name;
     }
