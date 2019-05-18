@@ -6,6 +6,7 @@ import com.taller2.droidclient.model.CallbackRequester;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.CallbackWorkspaceRequester;
 import com.taller2.droidclient.model.Workspace;
+import com.taller2.droidclient.model.WorkspaceUpdate;
 import com.taller2.droidclient.utils.JsonConverter;
 
 import java.io.IOException;
@@ -24,12 +25,22 @@ public class WorkspaceRequester {
 
     private String postUrl = basicUrl + "/api/workspaces";
 
+
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     public void joinWorkspace(Workspace work, String token, CallbackRequester callback){
         try{
             String patchUrl = postUrl +"/"+ work.getName();
             patchRequest(patchUrl,token,callback);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void updateWorkspace(WorkspaceUpdate work,String workPastName, String token, CallbackRequester callback){
+        try{
+            String patchUrl = postUrl +"/"+ workPastName + "/fields";
+            patchRequest(patchUrl,token,new JsonConverter().objectToJsonString(work),callback);
         } catch (IOException e){
             e.printStackTrace();
         }
@@ -121,6 +132,27 @@ public class WorkspaceRequester {
         OkHttpClient client = new OkHttpClient();
 
         RequestBody body = RequestBody.create(JSON, "");
+
+        Request request = new Request.Builder().url(patchUrl).header("x-auth-token", token).patch(body).build();
+
+        Log.d("PATCH/WORKSPACE", patchUrl);
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(call, e);
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                callback.onResponse(call, response);
+            }
+        });
+    }
+
+    private void patchRequest(String patchUrl, String token,String patchBody, final CallbackRequester callback) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody body = RequestBody.create(JSON, patchBody);
 
         Request request = new Request.Builder().url(patchUrl).header("x-auth-token", token).patch(body).build();
 

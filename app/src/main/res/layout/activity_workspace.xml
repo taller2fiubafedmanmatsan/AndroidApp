@@ -26,15 +26,6 @@
         android:textColor="#FFFFFF"
         tools:fontFamily="sans-serif-light" />
 
-    <Button
-        android:id="@+id/icon_edit_name_work"
-        android:layout_width="30dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/workspace_picture"
-        android:layout_toEndOf="@id/workspace_name_label"
-        android:layout_alignTop="@id/workspace_name_label"
-        android:layout_alignBottom="@id/workspace_name_label"
-        android:background="@android:drawable/ic_menu_edit" />
 
     <ImageView
         android:id="@+id/icon_welcome"
@@ -83,7 +74,7 @@
         android:background="@mipmap/ic_launcher"
         android:tint="#000000" />
 
-    <TextView
+    <EditText
         android:id="@+id/welcome_label"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
@@ -93,15 +84,48 @@
         android:textSize="18sp"
         tools:fontFamily="sans-serif-light" />
 
-    <TextView
+    <EditText
         android:id="@+id/description_label"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/background_profile_photo"
-        android:layout_marginTop="200dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="123dp"
         android:layout_toEndOf="@id/icon_welcome"
         android:textSize="18sp"
         tools:fontFamily="sans-serif-light" />
+
+
+    <Button
+        android:id="@+id/update_work"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="29dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="111dp"
+        android:background="@android:color/holo_purple"
+        android:text="Update Workspace"
+        android:textAppearance="@style/TextAppearance.AppCompat.Button"
+        android:textColor="@color/com_facebook_button_login_silver_background_color" />
+
+    <Button
+        android:id="@+id/delete_work"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="50dp"
+        android:background="@android:color/holo_red_dark"
+        android:text="Delete Workspace"
+        android:textAppearance="@style/TextAppearance.AppCompat.Button"
+        android:textColor="@color/com_facebook_button_login_silver_background_color" />
+
 
 
 
