@@ -2,6 +2,7 @@ package com.taller2.droidclient.requesters;
 
 import android.util.Log;
 
+import com.taller2.droidclient.model.Admins;
 import com.taller2.droidclient.model.CallbackRequester;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.CallbackWorkspaceRequester;
@@ -45,6 +46,26 @@ public class WorkspaceRequester {
             e.printStackTrace();
         }
     }
+
+    public void addAdmin(String workName, Admins admins, String token, CallbackRequester callback){
+        try{
+            String patchUrl = postUrl +"/"+ workName + "/addAdmins";
+            patchRequest(patchUrl,token,new JsonConverter().objectToJsonString(admins),callback);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void removeAdmin(String workName, Admins admins, String token, CallbackRequester callback){
+        try{
+            String patchUrl = postUrl +"/"+ workName + "/removeAdmins";
+            patchRequest(patchUrl,token,new JsonConverter().objectToJsonString(admins),callback);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+
 
 
     public void createWorkspace(Workspace workspace, String token,CallbackWorkspaceRequester callback){

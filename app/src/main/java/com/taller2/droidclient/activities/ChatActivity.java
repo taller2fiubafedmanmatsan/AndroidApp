@@ -128,6 +128,7 @@ public class ChatActivity extends BasicActivity
     private Button buttonSendLoc;
     private LinearLayout layoutChannelAndMessages;
     private LinearLayout layoutWorkspace;
+    private String currentUserEmail;
 
     //private PopupWindow mPopupWindow;
     //private ConstraintLayout mConstraintLayout;
@@ -428,45 +429,6 @@ public class ChatActivity extends BasicActivity
                 Log.d("LOAD/CHANNEL", e.getMessage());
                 call.cancel();
                 finish();
-            }
-        });
-    }
-
-    //Deprecadisimo
-    private void retrieveChats(WorkspaceResponse actual_workspace) {
-        String channelName = preference.getActualChannel().getName();
-        String workName = actual_workspace.getName();
-        String token = preference.getToken();
-        channelRequester.getChannel(channelName, workName, token, new CallbackRequester() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try{
-                    String msg = response.body().string();
-                    //final Channel channel = new Gson().fromJson(msg, Channel.class);
-                    if (response.isSuccessful()) {
-
-                        ChatActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mDrawerMessagesList.setAdapter(new ArrayAdapter<String>(ChatActivity.this,
-                                        R.layout.format_text_navigation, message));
-                            }
-                        });
-                    }
-                    Log.d("LOAD/messages", msg);
-                }catch (Exception e){
-                    Log.d("LOAD/messages", e.getMessage());
-                    finish();
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d("LOAD/Message", e.getMessage());
-                call.cancel();
-                finish();
-
             }
         });
     }
@@ -827,12 +789,28 @@ public class ChatActivity extends BasicActivity
     }
 
     private void loadUserdata() {
+        userRequester.getUser(preference.getToken(), new CallbackUserRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String msg = response.body().string();
+                final User user = new Gson().fromJson(msg, User.class);
+                if (response.isSuccessful()) {
+                    currentUserEmail = user.getEmail();
+                }else{
+                    changeActivity(ChatActivity.this,LoginActivity.class);
+                }
+                Log.d("CHAT/USER", msg);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("CHAT/USER", e.getMessage());
+                call.cancel();
+
+            }
+        });
 
     }
-
-    /*public User getUser() {
-
-    }*/
 
     private void changeLayoutChannelAndMessageState(boolean enable) {
         buttonCreateChannel.setEnabled(enable);
@@ -870,7 +848,12 @@ public class ChatActivity extends BasicActivity
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 String userEmail = directMessage.get(position);
-                changeActivityNotFinish(ChatActivity.this,UserActivity.class,userEmail);
+                if(userEmail.equals(currentUserEmail)){
+                    changeActivityNotFinish(ChatActivity.this,ProfileActivity.class);
+                }else{
+                    changeActivityNotFinish(ChatActivity.this,UserActivity.class,userEmail,currentUserEmail);
+                }
+
                 return true;
             }
         });
