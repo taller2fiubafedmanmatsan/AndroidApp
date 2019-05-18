@@ -239,10 +239,46 @@ public class WorkspaceActivity extends BasicActivity{
             }
         });
 
+        button_delete_workspace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteWorkspace();
+            }
+        });
+
         button_change_picture_workspace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 open_gallery();
+            }
+        });
+    }
+
+    private void deleteWorkspace(){
+        String workName = preference.getActualWorkspace().getName();
+        String token = preference.getToken();
+        workspaceRequester.deleteWorkspace(workName, token, new CallbackRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String msg = response.body().string();
+                if (response.isSuccessful()) {
+                    changeActivity(WorkspaceActivity.this,StartLoadingActivity.class);
+                }else{
+                    WorkspaceActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(WorkspaceActivity.this, "Delete Failed", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                Log.d("WORKSPACE/DELETE", msg);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("WORKSPACE/DELETE", e.getMessage());
+                call.cancel();
+                finish();
+
             }
         });
     }

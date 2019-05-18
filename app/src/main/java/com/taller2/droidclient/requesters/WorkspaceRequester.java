@@ -86,6 +86,15 @@ public class WorkspaceRequester {
         }
     }
 
+    public void deleteWorkspace(String name,String token, CallbackRequester callback) {
+        try {
+            String url = postUrl +"/"+ name;
+            deleteRequest(url, token, callback);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void postRequest(String postUrl, String postBody,String token, final CallbackWorkspaceRequester callback) throws IOException {
         OkHttpClient client = new OkHttpClient();
 
@@ -191,6 +200,23 @@ public class WorkspaceRequester {
             } /*throws IOException {
                 Log.d("LOG/Register",response.body().string());
             }*/
+        });
+    }
+
+    private void deleteRequest(String url, String token,final CallbackRequester callback) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder().url(url).header("x-auth-token", token).delete().build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(call, e);
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                callback.onResponse(call, response);
+            }
         });
     }
 
