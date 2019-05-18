@@ -154,7 +154,7 @@ public class ChannelRequester {
 
         Request request = new Request.Builder().url(patchUrl).header("x-auth-token", token).patch(body).build();
 
-        Log.d("PATCH/WORKSPACE", patchUrl);
+        Log.d("PATCH/CHANNEL", patchUrl);
 
         client.newCall(request).enqueue(new Callback() {
             @Override
