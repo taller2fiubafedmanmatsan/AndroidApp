@@ -126,6 +126,7 @@ public class ChatActivity extends BasicActivity
     private Button buttonSendText;
     private Button buttonSendImage;
     private Button buttonSendLoc;
+    private Button buttonAddUser;
     private LinearLayout layoutChannelAndMessages;
     private LinearLayout layoutWorkspace;
     private String currentUserEmail;
@@ -142,6 +143,7 @@ public class ChatActivity extends BasicActivity
     private List<UserMessage> messageList;
     private UserRequester userRequester;
     private WorkspaceRequester workspaceRequester;
+    private ArrayList<String> workAdmins;
 
     private MessageRequester messageRequester;
     private ChannelRequester channelRequester;
@@ -230,6 +232,7 @@ public class ChatActivity extends BasicActivity
         messageRequester = new MessageRequester();
         channelRequester = new ChannelRequester();
         directMessage = new ArrayList<>();
+        workAdmins = new ArrayList<>();
 
         mStorageRef = FirebaseStorage.getInstance().getReference();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -259,6 +262,7 @@ public class ChatActivity extends BasicActivity
         buttonJoinWorkspace = findViewById(R.id.button_join_workspace);
         layoutChannelAndMessages = findViewById(R.id.channel_nav);
         layoutWorkspace = findViewById(R.id.workspace_nav);
+        buttonAddUser = findViewById(R.id.icon_add_user);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 toolbar,R.string.drawer_open, R.string.drawer_close);
@@ -411,6 +415,9 @@ public class ChatActivity extends BasicActivity
                                 for (User user:work.getUsers()) {
                                     directMessage.add(user.getEmail());
                                 }
+                                for (User user:work.getAdmins()) {
+                                    workAdmins.add(user.getEmail());
+                                }
 
                                 mDrawerMessagesList.setAdapter(new ArrayAdapter<String>(ChatActivity.this,
                                         R.layout.format_text_navigation, directMessage));
@@ -511,7 +518,25 @@ public class ChatActivity extends BasicActivity
                 //changeActivityNotFinish(ChatActivity.this, MapsActivity.class);
             }
         });
+
+        buttonAddUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(workAdmins.contains(currentUserEmail)){
+                    changeActivity(ChatActivity.this,AddUserWorkspaceActivity.class);
+
+                }else{
+                    ChatActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(ChatActivity.this, "No tiene permisos para realizar esta accion.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+            }
+        });
     }
+
 
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
