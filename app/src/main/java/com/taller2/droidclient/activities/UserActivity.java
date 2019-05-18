@@ -32,6 +32,7 @@ import com.taller2.droidclient.model.CallbackRequester;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.CallbackWorkspaceRequester;
 import com.taller2.droidclient.model.User;
+import com.taller2.droidclient.model.Users;
 import com.taller2.droidclient.model.WorkspaceResponse;
 import com.taller2.droidclient.requesters.UserRequester;
 import com.taller2.droidclient.requesters.WorkspaceRequester;
@@ -59,6 +60,7 @@ public class UserActivity extends BasicActivity{
     private LinearLayout layoutLoadingBar;
     private Button button_make_admin;
     private Button button_remove_admin;
+    private Button button_remove_user;
 
     private StorageReference mStorageRef;
     private SharedPreferences preferences;
@@ -84,6 +86,7 @@ public class UserActivity extends BasicActivity{
         layoutLoadingBar = findViewById(R.id.layout_progress_bar);
         button_make_admin = findViewById(R.id.add_admin);
         button_remove_admin = findViewById(R.id.remove_admin);
+        button_remove_user = findViewById(R.id.remove_user);
 
         token = preference.getToken();
         userEmail = getIntent().getStringExtra("userToken");
@@ -205,6 +208,55 @@ public class UserActivity extends BasicActivity{
                 });
             }
         });
+
+        button_remove_user.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String work = preference.getActualWorkspace().getName();
+                String token = preference.getToken();
+                Users users = new Users(userEmail);
+
+                workspaceRequester.removeUser(work, users, token, new CallbackRequester() {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try{
+                            String msg = response.body().string();
+                            if (response.isSuccessful()) {
+                                UserActivity.this.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(UserActivity.this, "User remove", Toast.LENGTH_SHORT).show();
+                                        changeActivity(UserActivity.this, ChatActivity.class);
+                                    }
+                                });
+                            }
+                            Log.d("USER/CHANGE", msg);
+
+                        }catch (Exception e){
+                            Log.d("USER/CHANGE", e.getMessage());
+                            UserActivity.this.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(UserActivity.this, "Removal Failed", Toast.LENGTH_SHORT).show();
+                                    changeActivity(UserActivity.this, ChatActivity.class);
+                                }
+                            });
+                            finish();
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        UserActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(UserActivity.this, "Removal Failed", Toast.LENGTH_SHORT).show();
+                                changeActivity(UserActivity.this, ChatActivity.class);
+                            }
+                        });
+                        Log.d("USER/CHANGE", e.getMessage());
+                        call.cancel();
+
+                    }
+                });
+            }
+        });
     }
 
     private void loadUserdata() {
@@ -304,6 +356,7 @@ public class UserActivity extends BasicActivity{
                 if(!currentAdmin){
                     button_make_admin.setVisibility(View.GONE);
                     button_remove_admin.setVisibility(View.GONE);
+                    button_remove_user.setVisibility(View.GONE);
                 }
                 if(currentAdmin && !is_admin){
                     button_remove_admin.setVisibility(View.GONE);

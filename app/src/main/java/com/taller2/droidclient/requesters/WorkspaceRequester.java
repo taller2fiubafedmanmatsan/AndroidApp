@@ -75,6 +75,15 @@ public class WorkspaceRequester {
         }
     }
 
+    public void removeUser(String workName, Users users, String token, CallbackRequester callback){
+        try{
+            String patchUrl = postUrl +"/"+ workName + "/removeUsers";
+            patchRequest(patchUrl,token,new JsonConverter().objectToJsonString(users),callback);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
 
     public void createWorkspace(Workspace workspace, String token,CallbackWorkspaceRequester callback){
         try {
