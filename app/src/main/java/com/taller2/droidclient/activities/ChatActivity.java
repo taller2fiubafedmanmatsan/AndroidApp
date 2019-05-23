@@ -922,6 +922,30 @@ public class ChatActivity extends BasicActivity {
         });
     }
 
+    public void sendSnippetMessage(String snippet) {
+        Log.d("SENDING/MSG/WORKSPACE", preference.getActualWorkspace().getName());
+        Log.d("SENDING/MSG/CHANNEL", preference.getActualChannel().getName());
+
+        messageRequester.sendMessageSnippet(snippet,
+                preference.getActualWorkspace(),
+                preference.getActualChannel(),
+                preference.getToken(),
+                new CallbackUserRequester() {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        if (response.isSuccessful())
+                            Log.d("SENDING/SNIPPET", "Sucessful");
+
+                        Log.d("SENDING/SNIPPET", response.body().string());
+                    }
+
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.d("SENDING/SNIPPET", "Failure");
+                    }
+                });
+    }
+
     private void loadMessagesActualChannel(Channel channel) {
         channelRequester.getChannel(channel.getName(),
                 preference.getActualWorkspace().getName(),

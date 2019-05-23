@@ -11,12 +11,16 @@ import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.taller2.droidclient.R;
+import com.taller2.droidclient.activities.ChatActivity;
+import com.taller2.droidclient.activities.ProfileActivity;
 
 import io.github.kbiakov.codeview.CodeView;
 import io.github.kbiakov.codeview.adapters.Options;
@@ -26,8 +30,8 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 public class SnippetDialog {
-    public void showDialog(Activity activity) {
-        Dialog dialog = new Dialog(activity);
+    public void showDialog(final Activity activity) {
+        final Dialog dialog = new Dialog(activity);
 
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -37,6 +41,28 @@ public class SnippetDialog {
 
         final TextView numbers = dialog.findViewById(R.id.code_number);
         final EditText code = dialog.findViewById(R.id.code_view);
+
+        Button cancel = dialog.findViewById(R.id.cancel_snippet);
+        Button send_snippet = dialog.findViewById(R.id.send_snippet);
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        send_snippet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (code.getText().toString().isEmpty()) {
+                    Toast.makeText(v.getContext(), "Write some code", Toast.LENGTH_SHORT).show();
+                } else {
+                    ((ChatActivity) activity).sendSnippetMessage(code.getText().toString());
+                    dialog.dismiss();
+                }
+            }
+        });
 
         code.addTextChangedListener(new TextWatcher() {
             @Override

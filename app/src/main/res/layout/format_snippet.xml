@@ -39,6 +39,7 @@
             android:background="@android:color/transparent"
             android:scrollbarAlwaysDrawVerticalTrack="false"
             android:scrollbarStyle="insideOverlay"
+            android:inputType="textMultiLine|textNoSuggestions"
             />
     </LinearLayout>
 </ScrollView>
