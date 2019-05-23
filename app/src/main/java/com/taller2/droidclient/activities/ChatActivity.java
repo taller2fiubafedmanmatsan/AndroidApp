@@ -93,6 +93,7 @@ import com.taller2.droidclient.requesters.ChannelRequester;
 import com.taller2.droidclient.requesters.UserRequester;
 import com.taller2.droidclient.requesters.WorkspaceRequester;
 import com.taller2.droidclient.utils.DownloadDialog;
+import com.taller2.droidclient.utils.SnippetDialog;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
@@ -138,6 +139,7 @@ public class ChatActivity extends BasicActivity {
     private Button buttonSendImage;
     private Button buttonSendLoc;
     private Button buttonSendFile;
+    private Button buttonSendSnippet;
     private LinearLayout layoutChannelAndMessages;
     private LinearLayout layoutWorkspace;
 
@@ -267,6 +269,7 @@ public class ChatActivity extends BasicActivity {
         buttonSendImage = findViewById(R.id.button_send_image);
         buttonSendLoc = findViewById(R.id.button_send_loc);
         buttonSendFile = findViewById(R.id.button_send_file);
+        buttonSendSnippet = findViewById(R.id.button_send_snippet);
         buttonBackWorkspaces = findViewById(R.id.icon_back_workspaces);
         buttonCreateWorkspace = findViewById(R.id.button_create_workspace);
         buttonJoinWorkspace = findViewById(R.id.button_join_workspace);
@@ -589,6 +592,15 @@ public class ChatActivity extends BasicActivity {
             @Override
             public void onSelectedFilePaths(String[] files) {
                 sendFileMessage(new File(files[0]));
+            }
+        });
+
+        buttonSendSnippet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SnippetDialog snippet_dialog = new SnippetDialog();
+
+                snippet_dialog.showDialog(ChatActivity.this);
             }
         });
     }

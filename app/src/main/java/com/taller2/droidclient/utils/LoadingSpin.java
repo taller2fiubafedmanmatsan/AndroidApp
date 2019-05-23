@@ -9,7 +9,7 @@ import com.bumptech.glide.Glide;
 import com.taller2.droidclient.R;
 
 public class LoadingSpin {
-    Dialog dialog;
+    private Dialog dialog;
     //..we need the context else we can not create the dialog so get context in constructor
     public LoadingSpin() { }
 
