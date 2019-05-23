@@ -33,32 +33,10 @@ public class SnippetDialog {
 
         dialog.setContentView(R.layout.message_snippet);
 
-        //Button cancel = activity.findViewById(R.id.cancel_snippet);
-        //Button send = activity.findViewById(R.id.send_snippet);
-
-
-        //dialog.show();
-
-        /*AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-        LayoutInflater inflater = activity.getLayoutInflater();
-
-        builder.setView(inflater.inflate(R.layout.message_snippet, null));*/
-
-        //codeView.setCode("Este es un codigo de prueba", "py");
-
-        /*codeView.getOptions()
-                .withCode("Este es un codigo de prueba")
-                .withLanguage("java")
-                .withTheme(ColorTheme.MONOKAI);*/
-
-        //AlertDialog dialog = builder.create();
-
         dialog.show();
 
         final TextView numbers = dialog.findViewById(R.id.code_number);
         final EditText code = dialog.findViewById(R.id.code_view);
-        //CodeView codeView = (CodeView) dialog.findViewById(R.id.code_view);
 
         code.addTextChangedListener(new TextWatcher() {
             @Override
