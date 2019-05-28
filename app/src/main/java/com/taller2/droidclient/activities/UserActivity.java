@@ -31,9 +31,11 @@ import com.taller2.droidclient.model.Admins;
 import com.taller2.droidclient.model.CallbackRequester;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.CallbackWorkspaceRequester;
+import com.taller2.droidclient.model.Channel;
 import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.model.Users;
 import com.taller2.droidclient.model.WorkspaceResponse;
+import com.taller2.droidclient.requesters.ChannelRequester;
 import com.taller2.droidclient.requesters.UserRequester;
 import com.taller2.droidclient.requesters.WorkspaceRequester;
 import com.taller2.droidclient.utils.GlideApp;
@@ -57,16 +59,21 @@ public class UserActivity extends BasicActivity{
     private String token;
     private UserRequester userRequester;
     private WorkspaceRequester workspaceRequester;
+    private ChannelRequester channelRequester;
     private LinearLayout layoutLoadingBar;
     private Button button_make_admin;
     private Button button_remove_admin;
     private Button button_remove_user;
+    private Button button_remove_user_channel;
 
     private StorageReference mStorageRef;
     private SharedPreferences preferences;
 
     private String userEmail;
     private String currentEmail;
+
+    private WorkspaceResponse workData;
+    private Channel chanData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +94,7 @@ public class UserActivity extends BasicActivity{
         button_make_admin = findViewById(R.id.add_admin);
         button_remove_admin = findViewById(R.id.remove_admin);
         button_remove_user = findViewById(R.id.remove_user);
+        button_remove_user_channel = findViewById(R.id.remove_user_channel);
 
         token = preference.getToken();
         userEmail = getIntent().getStringExtra("userToken");
@@ -95,8 +103,7 @@ public class UserActivity extends BasicActivity{
 
         userRequester = new UserRequester();
         workspaceRequester = new WorkspaceRequester();
-
-
+        channelRequester = new ChannelRequester();
 
         UserActivity.this.runOnUiThread(new Runnable() {
             public void run() {
@@ -224,7 +231,57 @@ public class UserActivity extends BasicActivity{
                             if (response.isSuccessful()) {
                                 UserActivity.this.runOnUiThread(new Runnable() {
                                     public void run() {
-                                        Toast.makeText(UserActivity.this, "User remove", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(UserActivity.this, "User remove from workspace", Toast.LENGTH_SHORT).show();
+                                        changeActivity(UserActivity.this, ChatActivity.class);
+                                    }
+                                });
+                            }
+                            Log.d("USER/CHANGE", msg);
+
+                        }catch (Exception e){
+                            Log.d("USER/CHANGE", e.getMessage());
+                            UserActivity.this.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(UserActivity.this, "Removal Failed", Toast.LENGTH_SHORT).show();
+                                    changeActivity(UserActivity.this, ChatActivity.class);
+                                }
+                            });
+                            finish();
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        UserActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(UserActivity.this, "Removal Failed", Toast.LENGTH_SHORT).show();
+                                changeActivity(UserActivity.this, ChatActivity.class);
+                            }
+                        });
+                        Log.d("USER/CHANGE", e.getMessage());
+                        call.cancel();
+
+                    }
+                });
+            }
+        });
+
+        button_remove_user_channel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String work = preference.getActualWorkspace().getName();
+                final String channel = preference.getActualChannel().getName();
+                String token = preference.getToken();
+                Users users = new Users(userEmail);
+
+                channelRequester.removeUser(channel,work, users, token, new CallbackRequester() {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try{
+                            String msg = response.body().string();
+                            if (response.isSuccessful()) {
+                                UserActivity.this.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(UserActivity.this, "User remove from channel ".concat(channel), Toast.LENGTH_SHORT).show();
                                         changeActivity(UserActivity.this, ChatActivity.class);
                                     }
                                 });
@@ -315,22 +372,12 @@ public class UserActivity extends BasicActivity{
                 try{
                     String msg = response.body().string();
                     final WorkspaceResponse workspaceData = new Gson().fromJson(msg, WorkspaceResponse.class);
+                    workData = workspaceData;
                     if (response.isSuccessful()) {
-                        boolean userIsAdmin = false;
-                        boolean currentIsAdmin = false;
-                        for (User user: workspaceData.getAdmins()) {
-                            if (user.getEmail().equals(userEmail)){
-                                userIsAdmin = true;
-                            }
-                            if(user.getEmail().equals(currentEmail)){
-                                currentIsAdmin = true;
-                            }
-                        }
-                        setButtons(userIsAdmin,currentIsAdmin);
-
+                        getChannel();
                     }
                     Log.d("USER/PRIVI", msg);
-                    loadingSpin.hideDialog();
+
 
                 }catch (Exception e){
                     Log.d("USER/PRIVI", e.getMessage());
@@ -350,7 +397,54 @@ public class UserActivity extends BasicActivity{
 
     }
 
-    private void setButtons(final boolean is_admin, final boolean currentAdmin){
+    private void getChannel(){
+        String work = preference.getActualWorkspace().getName();
+        String channel = preference.getActualChannel().getName();
+        String token = preference.getToken();
+        channelRequester.getChannel(channel, work, token, new CallbackRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try{
+                    String msg = response.body().string();
+                    final Channel channelData = new Gson().fromJson(msg, Channel.class);
+                    chanData = channelData;
+                    if (response.isSuccessful()) {
+                        boolean userIsAdmin = false;
+                        boolean currentIsAdmin = false;
+                        boolean isChannelCreator = false;
+                        for (User user: workData.getAdmins()) {
+                            if (user.getEmail().equals(userEmail)){
+                                userIsAdmin = true;
+                            }
+                            if(user.getEmail().equals(currentEmail)){
+                                currentIsAdmin = true;
+                            }
+                        }
+                        if(chanData.getCreator().getEmail().equals(currentEmail)){
+                            isChannelCreator = true;
+                        }
+                        setButtons(userIsAdmin,currentIsAdmin, isChannelCreator);
+
+                    }
+                    Log.d("USER/PRIVI", msg);
+                    loadingSpin.hideDialog();
+
+                }catch (Exception e){
+                    Log.d("USER/PRIVI", e.getMessage());
+                    changeActivity(UserActivity.this, ChatActivity.class);
+                    finish();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+        });
+    }
+
+    private void setButtons(final boolean is_admin, final boolean currentAdmin, final boolean isChannelCreator){
         UserActivity.this.runOnUiThread(new Runnable() {
             public void run() {
                 if(!currentAdmin){
@@ -363,6 +457,9 @@ public class UserActivity extends BasicActivity{
                 }
                 if(currentAdmin && is_admin){
                     button_make_admin.setVisibility(View.GONE);
+                }
+                if(!currentAdmin && !isChannelCreator){
+                    button_remove_user_channel.setVisibility(View.GONE);
                 }
             }
         });

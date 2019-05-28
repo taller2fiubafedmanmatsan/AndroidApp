@@ -523,8 +523,7 @@ public class ChatActivity extends BasicActivity
             @Override
             public void onClick(View v) {
                 if(workAdmins.contains(currentUserEmail)){
-                    changeActivity(ChatActivity.this,AddUserWorkspaceActivity.class);
-
+                    changeActivityNotFinish(ChatActivity.this,AddUserWorkspaceActivity.class);
                 }else{
                     ChatActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
