@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.WorkspaceCreationActivity">
+    <ImageView
+        android:id="@+id/main_backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/login_register_background"
+        />
+
+    <EditText
+        android:id="@+id/user_email"
+        android:layout_centerHorizontal="true"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_marginTop="150dp"
+        android:gravity="center_horizontal"
+        android:textColorHint="#FFFFFF"
+        android:textColor="#FFFFFF"
+        android:hint="User Email"
+        android:backgroundTint="#FFFFFF"
+        android:inputType="textWebEditText" />
+
+    <Button
+        android:id="@+id/button_add_user"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/user_email"
+        android:layout_marginTop="250dp"
+        android:background="@drawable/round_border_button"
+        android:text="Add user to Channel"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF" />
+</RelativeLayout>

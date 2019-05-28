@@ -8,6 +8,7 @@ import com.taller2.droidclient.model.CallbackWorkspaceRequester;
 import com.taller2.droidclient.model.Channel;
 import com.taller2.droidclient.model.JoinChannel;
 import com.taller2.droidclient.model.NewChannel;
+import com.taller2.droidclient.model.Users;
 import com.taller2.droidclient.model.Workspace;
 import com.taller2.droidclient.utils.JsonConverter;
 
@@ -51,6 +52,24 @@ public class ChannelRequester {
             deleteRequest(url,token,callback);
 
         }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addUser(String channelName, String workName, Users users, String token, CallbackRequester callback){
+        try{
+            String patchUrl = getUrl +channelName +"/workspace/"+ workName + "/addUsers";
+            patchRequest(patchUrl,token,new JsonConverter().objectToJsonString(users),callback);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void removeUser(String channelName, String workName, Users users, String token, CallbackRequester callback){
+        try{
+            String patchUrl = getUrl +channelName +"/workspace/"+ workName + "/users";
+            patchRequest(patchUrl,token,new JsonConverter().objectToJsonString(users),callback);
+        } catch (IOException e){
             e.printStackTrace();
         }
     }

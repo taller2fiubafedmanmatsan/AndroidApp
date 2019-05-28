@@ -101,6 +101,7 @@
         <activity android:name=".activities.ChannelActivity" />
         <activity android:name=".activities.UserActivity" />
         <activity android:name=".activities.AddUserWorkspaceActivity" />
+        <activity android:name=".activities.AddUserChannelActivity" />
 
         <meta-data
             android:name="firebase_messaging_auto_init_enabled"
