@@ -412,6 +412,7 @@ public class UserActivity extends BasicActivity{
                         boolean userIsAdmin = false;
                         boolean currentIsAdmin = false;
                         boolean isChannelCreator = false;
+                        boolean belongsToChannel = false;
                         for (User user: workData.getAdmins()) {
                             if (user.getEmail().equals(userEmail)){
                                 userIsAdmin = true;
@@ -420,10 +421,15 @@ public class UserActivity extends BasicActivity{
                                 currentIsAdmin = true;
                             }
                         }
+                        for(User user: chanData.getUsers()){
+                            if(user.getEmail().equals(userEmail)){
+                                belongsToChannel = true;
+                            }
+                        }
                         if(chanData.getCreator().getEmail().equals(currentEmail)){
                             isChannelCreator = true;
                         }
-                        setButtons(userIsAdmin,currentIsAdmin, isChannelCreator);
+                        setButtons(userIsAdmin,currentIsAdmin, isChannelCreator, belongsToChannel);
 
                     }
                     Log.d("USER/PRIVI", msg);
@@ -444,7 +450,7 @@ public class UserActivity extends BasicActivity{
         });
     }
 
-    private void setButtons(final boolean is_admin, final boolean currentAdmin, final boolean isChannelCreator){
+    private void setButtons(final boolean is_admin, final boolean currentAdmin, final boolean isChannelCreator, final boolean belongsToChannel){
         UserActivity.this.runOnUiThread(new Runnable() {
             public void run() {
                 if(!currentAdmin){
@@ -458,7 +464,10 @@ public class UserActivity extends BasicActivity{
                 if(currentAdmin && is_admin){
                     button_make_admin.setVisibility(View.GONE);
                 }
-                if(!currentAdmin && !isChannelCreator){
+                if(!currentAdmin && !isChannelCreator ){
+                    button_remove_user_channel.setVisibility(View.GONE);
+                }
+                if(!belongsToChannel){
                     button_remove_user_channel.setVisibility(View.GONE);
                 }
             }
