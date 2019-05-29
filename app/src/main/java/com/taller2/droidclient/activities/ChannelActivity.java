@@ -54,6 +54,7 @@ public class ChannelActivity extends BasicActivity{
     private EditText description_channel;
     private Button button_update_channel;
     private Button button_delete_channel;
+    private Button button_add_user;
 
     private Channel channelData;
     private String token;
@@ -80,6 +81,7 @@ public class ChannelActivity extends BasicActivity{
         description_channel = findViewById(R.id.description_label);
         button_update_channel= findViewById(R.id.update_channel);
         button_delete_channel =findViewById(R.id.delete_channel);
+        button_add_user = findViewById(R.id.add_user_channel);
         layoutLoadingBar = findViewById(R.id.layout_progress_bar);
 
         token = preference.getToken();
@@ -177,6 +179,7 @@ public class ChannelActivity extends BasicActivity{
                                     welcome_channel.setEnabled(false);
                                     description_channel.setEnabled(false);
                                     name_channel.setEnabled(false);
+                                    button_add_user.setVisibility(View.GONE);
 
                                 }
                             });
@@ -267,6 +270,13 @@ public class ChannelActivity extends BasicActivity{
                     }
                 });
 
+            }
+        });
+
+        button_add_user.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeActivityNotFinish(ChannelActivity.this, AddUserChannelActivity.class);
             }
         });
     }

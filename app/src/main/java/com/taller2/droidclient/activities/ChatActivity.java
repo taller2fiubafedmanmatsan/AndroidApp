@@ -140,8 +140,10 @@ public class ChatActivity extends BasicActivity {
     private Button buttonSendLoc;
     private Button buttonSendFile;
     private Button buttonSendSnippet;
+    private Button buttonAddUser;
     private LinearLayout layoutChannelAndMessages;
     private LinearLayout layoutWorkspace;
+    private String currentUserEmail;
 
     //private PopupWindow mPopupWindow;
     //private ConstraintLayout mConstraintLayout;
@@ -155,6 +157,7 @@ public class ChatActivity extends BasicActivity {
     private List<UserMessage> messageList;
     private UserRequester userRequester;
     private WorkspaceRequester workspaceRequester;
+    private ArrayList<String> workAdmins;
 
     private MessageRequester messageRequester;
     private ChannelRequester channelRequester;
@@ -244,6 +247,7 @@ public class ChatActivity extends BasicActivity {
         messageRequester = new MessageRequester();
         channelRequester = new ChannelRequester();
         directMessage = new ArrayList<>();
+        workAdmins = new ArrayList<>();
 
         mStorageRef = FirebaseStorage.getInstance().getReference();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -275,6 +279,7 @@ public class ChatActivity extends BasicActivity {
         buttonJoinWorkspace = findViewById(R.id.button_join_workspace);
         layoutChannelAndMessages = findViewById(R.id.channel_nav);
         layoutWorkspace = findViewById(R.id.workspace_nav);
+        buttonAddUser = findViewById(R.id.icon_add_user);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 toolbar,R.string.drawer_open, R.string.drawer_close);
@@ -441,6 +446,9 @@ public class ChatActivity extends BasicActivity {
                                 for (User user:work.getUsers()) {
                                     directMessage.add(user.getEmail());
                                 }
+                                for (User user:work.getAdmins()) {
+                                    workAdmins.add(user.getEmail());
+                                }
 
                                 mDrawerMessagesList.setAdapter(new ArrayAdapter<String>(ChatActivity.this,
                                         R.layout.format_text_navigation, directMessage));
@@ -459,45 +467,6 @@ public class ChatActivity extends BasicActivity {
                 Log.d("LOAD/CHANNEL", e.getMessage());
                 call.cancel();
                 finish();
-            }
-        });
-    }
-
-    //Deprecadisimo
-    private void retrieveChats(WorkspaceResponse actual_workspace) {
-        String channelName = preference.getActualChannel().getName();
-        String workName = actual_workspace.getName();
-        String token = preference.getToken();
-        channelRequester.getChannel(channelName, workName, token, new CallbackRequester() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try{
-                    String msg = response.body().string();
-                    //final Channel channel = new Gson().fromJson(msg, Channel.class);
-                    if (response.isSuccessful()) {
-
-                        ChatActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mDrawerMessagesList.setAdapter(new ArrayAdapter<String>(ChatActivity.this,
-                                        R.layout.format_text_navigation, message));
-                            }
-                        });
-                    }
-                    Log.d("LOAD/messages", msg);
-                }catch (Exception e){
-                    Log.d("LOAD/messages", e.getMessage());
-                    finish();
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d("LOAD/Message", e.getMessage());
-                call.cancel();
-                finish();
-
             }
         });
     }
@@ -625,7 +594,24 @@ public class ChatActivity extends BasicActivity {
         DownloadDialog dialog = new DownloadDialog(filename, url);
 
         dialog.showDialog(this);
+
+        buttonAddUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(workAdmins.contains(currentUserEmail)){
+                    changeActivityNotFinish(ChatActivity.this,AddUserWorkspaceActivity.class);
+                }else{
+                    ChatActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(ChatActivity.this, "No tiene permisos para realizar esta accion.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+            }
+        });
     }
+
 
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
@@ -1011,12 +997,28 @@ public class ChatActivity extends BasicActivity {
     }
 
     private void loadUserdata() {
+        userRequester.getUser(preference.getToken(), new CallbackUserRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String msg = response.body().string();
+                final User user = new Gson().fromJson(msg, User.class);
+                if (response.isSuccessful()) {
+                    currentUserEmail = user.getEmail();
+                }else{
+                    changeActivity(ChatActivity.this,LoginActivity.class);
+                }
+                Log.d("CHAT/USER", msg);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("CHAT/USER", e.getMessage());
+                call.cancel();
+
+            }
+        });
 
     }
-
-    /*public User getUser() {
-
-    }*/
 
     private void changeLayoutChannelAndMessageState(boolean enable) {
         buttonCreateChannel.setEnabled(enable);
@@ -1054,7 +1056,12 @@ public class ChatActivity extends BasicActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 String userEmail = directMessage.get(position);
-                changeActivityNotFinish(ChatActivity.this,UserActivity.class,userEmail);
+                if(userEmail.equals(currentUserEmail)){
+                    changeActivityNotFinish(ChatActivity.this,ProfileActivity.class);
+                }else{
+                    changeActivityNotFinish(ChatActivity.this,UserActivity.class,userEmail,currentUserEmail);
+                }
+
                 return true;
             }
         });

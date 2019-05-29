@@ -1,18 +1,22 @@
 package com.taller2.droidclient.model;
 
+import java.util.List;
+
 public class Channel {
     private String id;
     private String name;
     private String description;
     private String welcomeMessage;
     private User creator;
+    private List<User> users;
 
-    public Channel(String id, String name, String description, String welcomeMessage, User creator) {
+    public Channel(String id, String name, String description, String welcomeMessage, User creator, List<User> users) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.welcomeMessage = welcomeMessage;
         this.creator = creator;
+        this.users = users;
     }
 
     public Channel(String name, String description, String welcomeMessage) {
@@ -65,6 +69,14 @@ public class Channel {
 
     public void setCreator(User creator) {
         this.creator = creator;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 
     @Override

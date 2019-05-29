@@ -63,10 +63,26 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/background_profile_photo"
-        android:layout_marginTop="150dp"
+        android:layout_marginStart="-1dp"
+        android:layout_marginTop="119dp"
         android:layout_toEndOf="@id/icon_welcome"
         android:textSize="18sp"
         tools:fontFamily="sans-serif-light" />
+
+    <Button
+        android:id="@+id/add_user_channel"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="29dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="170dp"
+        android:background="@android:color/holo_green_dark"
+        android:text="Add user to channel"
+        android:textAppearance="@style/TextAppearance.AppCompat.Button"
+        android:textColor="@color/com_facebook_button_login_silver_background_color" />
 
 
     <Button
@@ -76,9 +92,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="30dp"
+        android:layout_marginStart="29dp"
         android:layout_marginEnd="30dp"
-        android:layout_marginBottom="125dp"
+        android:layout_marginBottom="111dp"
         android:background="@android:color/holo_purple"
         android:text="Update Channel"
         android:textAppearance="@style/TextAppearance.AppCompat.Button"

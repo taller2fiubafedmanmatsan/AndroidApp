@@ -111,11 +111,11 @@
                         android:id="@+id/direct_messages_label"
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
-                        android:text="DIRECT MESSAGES"
+                        android:text="USERS"
                         android:textColor="#b3b3b3"
                         />
                     <Button
-                        android:id="@+id/icon_create_chat"
+                        android:id="@+id/icon_add_user"
                         android:layout_width="20dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="20dp"

@@ -81,6 +81,13 @@ public class BasicActivity extends AppCompatActivity {
         finish();
     }
 
+    public void changeActivityNotFinish(Context from, Class to, String token, String currentUser) {
+        Intent intent = new Intent(from, to);
+        intent.putExtra("userToken",token);
+        intent.putExtra("currentEmail",currentUser);
+        startActivity(intent);
+    }
+
     public void changeActivityNotFinish(Context from, Class to, String token) {
         Intent intent = new Intent(from, to);
         intent.putExtra("userToken",token);

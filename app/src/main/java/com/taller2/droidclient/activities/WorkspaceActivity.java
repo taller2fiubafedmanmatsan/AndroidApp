@@ -27,10 +27,12 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.taller2.droidclient.R;
+import com.taller2.droidclient.model.CallbackRequester;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.CallbackWorkspaceRequester;
 import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.model.WorkspaceResponse;
+import com.taller2.droidclient.model.WorkspaceUpdate;
 import com.taller2.droidclient.requesters.UserRequester;
 import com.taller2.droidclient.requesters.WorkspaceRequester;
 import com.taller2.droidclient.utils.GlideApp;
@@ -47,9 +49,10 @@ public class WorkspaceActivity extends BasicActivity{
     private final int SELECT_IMAGE = 1;
 
     private EditText name_workspace;
-    private TextView welcome_workspace;
-    private TextView description_workspace;
-    private Button button_update_workspace_name;
+    private EditText welcome_workspace;
+    private EditText description_workspace;
+    private Button button_update_workspace;
+    private Button button_delete_workspace;
     private ImageView workspace_picture;
     private Button button_change_picture_workspace;
     private WorkspaceResponse workData;
@@ -75,7 +78,8 @@ public class WorkspaceActivity extends BasicActivity{
         name_workspace = findViewById(R.id.workspace_name_label);
         welcome_workspace = findViewById(R.id.welcome_label);
         description_workspace = findViewById(R.id.description_label);
-        button_update_workspace_name= findViewById(R.id.icon_edit_name_work);
+        button_update_workspace= findViewById(R.id.update_work);
+        button_delete_workspace = findViewById(R.id.delete_work);
         workspace_picture = findViewById(R.id.workspace_picture);
         button_change_picture_workspace = findViewById(R.id.icon_edit_image);
         layoutLoadingBar = findViewById(R.id.layout_progress_bar);
@@ -185,8 +189,11 @@ public class WorkspaceActivity extends BasicActivity{
                             WorkspaceActivity.this.runOnUiThread(new Runnable() {
                                 public void run() {
                                     button_change_picture_workspace.setVisibility(View.GONE);
-                                    button_update_workspace_name.setVisibility(View.GONE);
-
+                                    button_update_workspace.setVisibility(View.GONE);
+                                    button_delete_workspace.setVisibility(View.GONE);
+                                    name_workspace.setEnabled(false);
+                                    description_workspace.setEnabled(false);
+                                    welcome_workspace.setEnabled(false);
                                 }
                             });
                         }
@@ -211,16 +218,15 @@ public class WorkspaceActivity extends BasicActivity{
     }
 
     private void setListeners(){
-        button_update_workspace_name.setOnClickListener(new View.OnClickListener() {
+        button_update_workspace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String newName = name_workspace.getText().toString();
+                String newDescription = description_workspace.getText().toString();
+                String newWelcome = welcome_workspace.getText().toString();
                 if(!workData.getName().equals(newName)){
-                    WorkspaceActivity.this.runOnUiThread(new Runnable() {
-                        public void run() {
-                            Toast.makeText(WorkspaceActivity.this, "NOT IMPLEMENTED YET", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    WorkspaceUpdate update = new WorkspaceUpdate(newName,newDescription,newWelcome);
+                    updateWorkspace(update);
 
                 }else{
                     WorkspaceActivity.this.runOnUiThread(new Runnable() {
@@ -233,6 +239,13 @@ public class WorkspaceActivity extends BasicActivity{
             }
         });
 
+        button_delete_workspace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteWorkspace();
+            }
+        });
+
         button_change_picture_workspace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -241,12 +254,74 @@ public class WorkspaceActivity extends BasicActivity{
         });
     }
 
+    private void deleteWorkspace(){
+        String workName = preference.getActualWorkspace().getName();
+        String token = preference.getToken();
+        workspaceRequester.deleteWorkspace(workName, token, new CallbackRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String msg = response.body().string();
+                if (response.isSuccessful()) {
+                    changeActivity(WorkspaceActivity.this,StartLoadingActivity.class);
+                }else{
+                    WorkspaceActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(WorkspaceActivity.this, "Delete Failed", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                Log.d("WORKSPACE/DELETE", msg);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("WORKSPACE/DELETE", e.getMessage());
+                call.cancel();
+                finish();
+
+            }
+        });
+    }
+
+    private void updateWorkspace(final WorkspaceUpdate update){
+        String workName = preference.getActualWorkspace().getName();
+        String token = preference.getToken();
+        workspaceRequester.updateWorkspace(update, workName, token, new CallbackRequester() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String msg = response.body().string();
+                final WorkspaceUpdate work = new Gson().fromJson(msg, WorkspaceUpdate.class);
+                if (response.isSuccessful()) {
+                    preference.saveActualWorkspace(new WorkspaceResponse(work.getName()));
+                    changeActivity(WorkspaceActivity.this,ChatActivity.class);
+                }else{
+                    WorkspaceActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(WorkspaceActivity.this, "Update Failed", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                Log.d("WORKSPACE/MOD", msg);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("WORKSPACE/MOD", e.getMessage());
+                call.cancel();
+                finish();
+            }
+        });
+
+    }
+
     /*private void open_gallery() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"),SELECT_IMAGE);
     }*/
+
+
 
     private void changeProfilePicture(Bitmap bitmap) {
         loadingSpin.showDialog(WorkspaceActivity.this);
