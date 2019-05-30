@@ -31,6 +31,8 @@ public class MessageRequester {
     private static final int msg_text = 2;
     private static final int msg_image = 3;
     private static final int msg_loc = 4;
+    private static final int msg_file = 5;
+    private static final int msg_snippet = 6;
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -66,6 +68,23 @@ public class MessageRequester {
         }
     }
 
+    public void sendMessageFile(String filename, Uri url, WorkspaceResponse workspace, Channel channel, String token, CallbackUserRequester callback) {
+        try{
+            String msg = filename + " " + url.toString();
+            Map<String, String> msgMap = new HashMap<String,String>();
+            msgMap.put("creator", "admin@gmail.com");
+            msgMap.put("text",msg);
+            msgMap.put("type", String.valueOf(msg_file));
+
+            postRequest(postUrl + "/workspace/" + workspace.getName() + "/channel/" + channel.getName(),
+                    new JsonConverter().mapToJsonString(msgMap)
+                    , token
+                    , callback);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
     public void sendMessageLocation(Double lat, Double lon, WorkspaceResponse workspace, Channel channel, String token, CallbackUserRequester callback) {
         try{
             String msg = String.valueOf(lat) + ";" + String.valueOf(lon);
@@ -73,6 +92,22 @@ public class MessageRequester {
             msgMap.put("creator", "admin@gmail.com");
             msgMap.put("text",msg);
             msgMap.put("type", String.valueOf(msg_loc));
+
+            postRequest(postUrl + "/workspace/" + workspace.getName() + "/channel/" + channel.getName(),
+                    new JsonConverter().mapToJsonString(msgMap)
+                    , token
+                    , callback);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void sendMessageSnippet(String snippet, WorkspaceResponse workspace, Channel channel, String token, CallbackUserRequester callback) {
+        try{
+            Map<String, String> msgMap = new HashMap<String,String>();
+            msgMap.put("creator", "admin@gmail.com");
+            msgMap.put("text", snippet);
+            msgMap.put("type", String.valueOf(msg_snippet));
 
             postRequest(postUrl + "/workspace/" + workspace.getName() + "/channel/" + channel.getName(),
                     new JsonConverter().mapToJsonString(msgMap)

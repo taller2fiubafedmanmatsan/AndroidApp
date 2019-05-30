@@ -4,6 +4,7 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -54,6 +56,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.github.tutorialsandroid.filepicker.controller.DialogSelectionListener;
+import com.github.tutorialsandroid.filepicker.model.DialogConfigs;
+import com.github.tutorialsandroid.filepicker.model.DialogProperties;
+import com.github.tutorialsandroid.filepicker.view.FilePickerDialog;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -86,9 +92,12 @@ import com.taller2.droidclient.requesters.MessageRequester;
 import com.taller2.droidclient.requesters.ChannelRequester;
 import com.taller2.droidclient.requesters.UserRequester;
 import com.taller2.droidclient.requesters.WorkspaceRequester;
+import com.taller2.droidclient.utils.DownloadDialog;
+import com.taller2.droidclient.utils.SnippetDialog;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.text.ParseException;
@@ -106,8 +115,11 @@ import org.apache.commons.lang3.RandomStringUtils;
 import okhttp3.Call;
 import okhttp3.Response;
 
-public class ChatActivity extends BasicActivity
-        /*implements NavigationView.OnNavigationItemSelectedListener*/ {
+public class ChatActivity extends BasicActivity {
+
+    private final int REQUEST_LOC = 1;
+    private final int REQUEST_STORAGE = 2;
+
     private RecyclerView mMessageRecycler;
     private MessageListAdapter mMessageAdapter;
 
@@ -126,6 +138,8 @@ public class ChatActivity extends BasicActivity
     private Button buttonSendText;
     private Button buttonSendImage;
     private Button buttonSendLoc;
+    private Button buttonSendFile;
+    private Button buttonSendSnippet;
     private Button buttonAddUser;
     private LinearLayout layoutChannelAndMessages;
     private LinearLayout layoutWorkspace;
@@ -152,6 +166,7 @@ public class ChatActivity extends BasicActivity
 
     private FusedLocationProviderClient fusedLocationClient;
     private LocationManager locationManager;
+    private FilePickerDialog dialog;
 
     private String[] channel = {"# General",
             "# Random",
@@ -257,6 +272,8 @@ public class ChatActivity extends BasicActivity
         buttonSendText = findViewById(R.id.button_chatbox_send);
         buttonSendImage = findViewById(R.id.button_send_image);
         buttonSendLoc = findViewById(R.id.button_send_loc);
+        buttonSendFile = findViewById(R.id.button_send_file);
+        buttonSendSnippet = findViewById(R.id.button_send_snippet);
         buttonBackWorkspaces = findViewById(R.id.icon_back_workspaces);
         buttonCreateWorkspace = findViewById(R.id.button_create_workspace);
         buttonJoinWorkspace = findViewById(R.id.button_join_workspace);
@@ -268,6 +285,20 @@ public class ChatActivity extends BasicActivity
                 toolbar,R.string.drawer_open, R.string.drawer_close);
 
         mDrawerLayout.addDrawerListener(mDrawerToggle);
+
+        DialogProperties properties = new DialogProperties();
+
+        properties.selection_mode = DialogConfigs.SINGLE_MODE;
+        properties.selection_type = DialogConfigs.FILE_SELECT;
+        properties.root = new File(DialogConfigs.DEFAULT_DIR);
+        properties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
+        properties.offset = new File(DialogConfigs.DEFAULT_DIR);
+        properties.extensions = null;
+
+        dialog = new FilePickerDialog(ChatActivity.this, properties);
+        dialog.setTitle("Select a File");
+        dialog.setPositiveBtnName("Select");
+        dialog.setNegativeBtnName("Cancel");
 
         setDrawersListeners();
         setListeners();
@@ -512,12 +543,57 @@ public class ChatActivity extends BasicActivity
             @Override
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= 23)
-                    ActivityCompat.requestPermissions(ChatActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                    ActivityCompat.requestPermissions(ChatActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOC);
                 else
                     Log.d("LOCATION", "Require SDK Level >= 23");
                 //changeActivityNotFinish(ChatActivity.this, MapsActivity.class);
             }
         });
+
+        buttonSendFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.show();
+            }
+        });
+
+        dialog.setDialogSelectionListener(new DialogSelectionListener() {
+            @Override
+            public void onSelectedFilePaths(String[] files) {
+                sendFileMessage(new File(files[0]));
+            }
+        });
+
+        buttonSendSnippet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SnippetDialog snippet_dialog = new SnippetDialog();
+
+                snippet_dialog.showDialog(ChatActivity.this);
+            }
+        });
+    }
+
+    public void downloadFile(final String filename, final String url) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ActivityCompat.checkSelfPermission
+                    (ChatActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                        Log.d("PERMISSION/WRITE", "Granted");
+                        downloadFromUrl(filename, url);
+            } else {
+                Log.d("PERMISSION/WRITE", "Asking");
+                ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE); }
+        } else {
+            downloadFromUrl(filename, url);
+        }
+    }
+
+    private void downloadFromUrl(String filename, String url) {
+        Log.d("PERMISSION/WRITE", "Downloading");
+
+        DownloadDialog dialog = new DownloadDialog(filename, url);
+
+        dialog.showDialog(this);
 
         buttonAddUser.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -539,7 +615,7 @@ public class ChatActivity extends BasicActivity
 
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case 1: {
+            case REQUEST_LOC: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -560,6 +636,39 @@ public class ChatActivity extends BasicActivity
                     Log.d("LOCATION", "Service not granted");
                 }
                 return;
+            }
+            case REQUEST_STORAGE: {
+                /*if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    try {
+                        String locationProvider = LocationManager.NETWORK_PROVIDER;
+
+                        Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+
+                        Log.d("LOCATION", String.valueOf(lastKnownLocation.getLatitude()));
+
+                        sendLocationMessage(lastKnownLocation);
+                    } catch (SecurityException e) {
+                        Log.d("LOCATION", e.getMessage());
+                    }
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Log.d("LOCATION", "Service not granted");
+                }*/
+                return;
+            }
+            case FilePickerDialog.EXTERNAL_READ_PERMISSION_GRANT: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if(dialog!=null)
+                    {   //Show dialog if the read permission has been granted.
+                        dialog.show();
+                    }
+                }
+                else {
+                    //Permission has not been granted. Notify the user.
+                    Toast.makeText(ChatActivity.this,"Permission is required for sending files",Toast.LENGTH_SHORT).show();
+                }
             }
             // other 'case' lines to check for other
             // permissions this app might request
@@ -744,6 +853,81 @@ public class ChatActivity extends BasicActivity
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Log.d("SENDING/MSG", "Failure");
+                    }
+                });
+    }
+
+    private void sendFileMessage(final File file) {
+        Log.d("SENDING/MSG/WORKSPACE", preference.getActualWorkspace().getName());
+        Log.d("SENDING/MSG/CHANNEL", preference.getActualChannel().getName());
+
+        final String random_str = RandomStringUtils.randomAlphanumeric(25).toUpperCase();
+
+        StorageReference mountainsRef = mStorageRef.child(random_str + "/" + file.getName());
+
+        Uri file_uri = Uri.fromFile(file);
+
+        //StorageReference riversRef = mStorageRef.child("files/"+file_uri.getLastPathSegment());
+        UploadTask uploadTask = mountainsRef.putFile(file_uri);
+
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Toast.makeText(ChatActivity.this, "File failed to load: Try again", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
+
+                while (!urlTask.isSuccessful());
+
+                final Uri downloadUrl = urlTask.getResult();
+
+                messageRequester.sendMessageFile(
+                        file.getName(),
+                        downloadUrl,
+                        preference.getActualWorkspace(),
+                        preference.getActualChannel(),
+                        preference.getToken(),
+                        new CallbackUserRequester() {
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                if (response.isSuccessful())
+                                    Log.d("SENDING/FILE", "Sucessful");
+
+                                Log.d("SENDING/FILE", response.body().string());
+                            }
+
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                Log.d("SENDING/FILE", "Failure");
+                            }
+                        });
+            }
+        });
+    }
+
+    public void sendSnippetMessage(String snippet) {
+        Log.d("SENDING/MSG/WORKSPACE", preference.getActualWorkspace().getName());
+        Log.d("SENDING/MSG/CHANNEL", preference.getActualChannel().getName());
+
+        messageRequester.sendMessageSnippet(snippet,
+                preference.getActualWorkspace(),
+                preference.getActualChannel(),
+                preference.getToken(),
+                new CallbackUserRequester() {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        if (response.isSuccessful())
+                            Log.d("SENDING/SNIPPET", "Sucessful");
+
+                        Log.d("SENDING/SNIPPET", response.body().string());
+                    }
+
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.d("SENDING/SNIPPET", "Failure");
                     }
                 });
     }

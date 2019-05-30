@@ -2,6 +2,7 @@ package com.taller2.droidclient.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.RestrictTo;
 import android.support.v7.app.ActionBar;
@@ -9,10 +10,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.github.tutorialsandroid.filepicker.model.DialogConfigs;
+import com.github.tutorialsandroid.filepicker.model.DialogProperties;
 import com.google.gson.Gson;
 import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.utils.LoadingSpin;
 import com.taller2.droidclient.utils.SavedState;
+
+import java.io.File;
 
 public class BasicActivity extends AppCompatActivity {
     private ActionBar top_bar;
