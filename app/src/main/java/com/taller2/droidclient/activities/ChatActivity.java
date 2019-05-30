@@ -572,6 +572,22 @@ public class ChatActivity extends BasicActivity {
                 snippet_dialog.showDialog(ChatActivity.this);
             }
         });
+
+        buttonAddUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(workAdmins.contains(currentUserEmail)){
+                    changeActivityNotFinish(ChatActivity.this,AddUserWorkspaceActivity.class);
+                }else{
+                    ChatActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(ChatActivity.this, "No tiene permisos para realizar esta accion.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+            }
+        });
     }
 
     public void downloadFile(final String filename, final String url) {
@@ -594,22 +610,6 @@ public class ChatActivity extends BasicActivity {
         DownloadDialog dialog = new DownloadDialog(filename, url);
 
         dialog.showDialog(this);
-
-        buttonAddUser.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(workAdmins.contains(currentUserEmail)){
-                    changeActivityNotFinish(ChatActivity.this,AddUserWorkspaceActivity.class);
-                }else{
-                    ChatActivity.this.runOnUiThread(new Runnable() {
-                        public void run() {
-                            Toast.makeText(ChatActivity.this, "No tiene permisos para realizar esta accion.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-            }
-        });
     }
 
 
