@@ -10,9 +10,9 @@ public class NewChannel {
     private String description;
     private String welcomeMessage;
     private String creator;
+    private String channelType;
 
-
-    public NewChannel(String workspaceName, String name, List<String> users) {
+    public NewChannel(String workspaceName, String name, List<String> users, String channelType) {
         this.workspaceName = workspaceName;
         this.name = name;
         this.users = users;
@@ -20,8 +20,9 @@ public class NewChannel {
         this.isPrivate = false;
         this.description = "Channel " + name;
         this.welcomeMessage = "Welcome to " + name;
+        this.channelType = channelType;
     }
-    public NewChannel(String workspaceName, String name,String welcome, String description, List<String> users) {
+    public NewChannel(String workspaceName, String name,String welcome, String description, List<String> users, String channelType) {
         this.workspaceName = workspaceName;
         this.name = name;
         this.users = users;
@@ -29,6 +30,15 @@ public class NewChannel {
         this.isPrivate = false;
         this.description = description;
         this.welcomeMessage = welcome;
+        this.channelType = channelType;
+    }
+
+    public String getChannelType() {
+        return channelType;
+    }
+
+    public void setChannelType(String channelType) {
+        this.channelType = channelType;
     }
 
     public String getName() {

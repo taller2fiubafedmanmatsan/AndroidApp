@@ -2,20 +2,20 @@ package com.taller2.droidclient.model;
 
 import java.util.List;
 
-public class Channel {
-    private String _id;
+public class ChannelResponse {
+    private String id;
     private String name;
     private String description;
     private String welcomeMessage;
     private String fakeName;
     private User creator;
-    private List<User> users;
+    private List<String> users;
     private String channelType;
     private final String GROUP_CHANNEL = "group";
     private final String DIRECT_CHANNEL = "users";
 
-    public Channel(String _id, String name, String description, String welcomeMessage, User creator, List<User> users, String channelType) {
-        this._id = _id;
+    public ChannelResponse(String id, String name, String description, String welcomeMessage, User creator, List<String> users, String channelType) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.welcomeMessage = welcomeMessage;
@@ -24,33 +24,23 @@ public class Channel {
         this.channelType = channelType;
     }
 
-    public Channel(String name, String description, String welcomeMessage) {
+    public ChannelResponse(String name, String description, String welcomeMessage) {
         this.name = name;
         this.description = description;
         this.welcomeMessage = welcomeMessage;
     }
 
-    public Channel(String name, String description, String welcomeMessage, String channelType) {
+    public ChannelResponse(String name, String description, String welcomeMessage, String channelType) {
         this.name = name;
         this.description = description;
         this.welcomeMessage = welcomeMessage;
         this.channelType = channelType;
     }
 
-    public Channel(String name) {
+    public ChannelResponse(String name, List<String> users, String channelType) {
         this.name = name;
-    }
-
-    public Channel(String name, String channelType) {
-        this.name = name;
-        this.channelType = channelType;
-    }
-
-    public Channel(String _id, String name, String channelType, List<User> users) {
-        this._id = _id;
-        this.name = name;
-        this.channelType = channelType;
         this.users = users;
+        this.channelType = channelType;
     }
 
     public String getFakeName() {
@@ -74,11 +64,11 @@ public class Channel {
     }
 
     public String getId() {
-        return _id;
+        return id;
     }
 
-    public void setId(String _id) {
-        this._id = _id;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -113,11 +103,11 @@ public class Channel {
         this.creator = creator;
     }
 
-    public List<User> getUsers() {
+    public List<String> getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(List<String> users) {
         this.users = users;
     }
 

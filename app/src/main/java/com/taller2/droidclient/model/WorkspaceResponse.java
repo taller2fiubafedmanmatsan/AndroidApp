@@ -43,8 +43,6 @@ public class WorkspaceResponse {
         this.admins = admins;
     }
 
-
-
     public String getName() {
         return name;
     }

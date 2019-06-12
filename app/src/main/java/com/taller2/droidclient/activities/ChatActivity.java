@@ -33,6 +33,7 @@ import android.support.v7.widget.RecyclerView;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionManager;
+import android.util.ArraySet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuInflater;
@@ -75,6 +76,7 @@ import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.adapters.ChannelListAdapter;
+import com.taller2.droidclient.adapters.DirectListAdapter;
 import com.taller2.droidclient.adapters.MessageListAdapter;
 import com.taller2.droidclient.adapters.WorkspaceListAdapter;
 import com.taller2.droidclient.model.BaseMessage;
@@ -82,6 +84,7 @@ import com.taller2.droidclient.model.CallbackRequester;
 import com.taller2.droidclient.model.CallbackUserRequester;
 import com.taller2.droidclient.model.CallbackWorkspaceRequester;
 import com.taller2.droidclient.model.Channel;
+import com.taller2.droidclient.model.ChannelResponse;
 import com.taller2.droidclient.model.MessagesResponse;
 import com.taller2.droidclient.model.User;
 import com.taller2.droidclient.model.UserMail;
@@ -99,14 +102,15 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import android.support.v4.app.FragmentActivity;
 
@@ -154,6 +158,7 @@ public class ChatActivity extends BasicActivity {
 
     private ArrayList<WorkspaceResponse> workspaces;
     private ArrayList<Channel> actualChannels;
+    private ArrayList<Channel> actualDirectMessages;
     private List<UserMessage> messageList;
     private UserRequester userRequester;
     private WorkspaceRequester workspaceRequester;
@@ -307,9 +312,10 @@ public class ChatActivity extends BasicActivity {
 
         workspaces = new ArrayList<WorkspaceResponse>();
         actualChannels = new ArrayList<Channel>();
+        actualDirectMessages = new ArrayList<Channel>();
 
         loadUserdata();
-        retrieveWorkspaces();
+        //retrieveWorkspaces();
     }
 
     @Override
@@ -422,9 +428,37 @@ public class ChatActivity extends BasicActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 try{
                     String msg = response.body().string();
+                    Log.d("LOAD/CHANNEL", msg);
                     final WorkspaceResponse work = new Gson().fromJson(msg, WorkspaceResponse.class);
                     if (response.isSuccessful()) {
-                        actualChannels = (ArrayList<Channel>) work.getChannels();
+                        Log.d("LOAD/CHANNEL", msg);
+                        final List<String> users_already_messaged = new ArrayList<>();
+                        for (Channel channel : work.getChannels()) {
+
+                            //Channel channel = new Channel(channelRes.getName(), channelRes.getChannelType());
+
+                            if (channel.is_direct_channel()) {
+                                List<User> users = channel.getUsers();
+                                //List<String> users = channelRes.getUsers();
+
+                                String firstEmail = users.get(0).getEmail();
+                                String secondEmail = users.get(1).getEmail();
+                                //String firstEmail = users.get(0);
+                                //String secondEmail = users.get(1);
+                                if (firstEmail.equals(currentUserEmail)) {
+                                    channel.setFakeName(secondEmail);
+                                    users_already_messaged.add(secondEmail);
+                                    actualDirectMessages.add(channel);
+                                } else if (secondEmail.equals(currentUserEmail)){
+                                    channel.setFakeName(firstEmail);
+                                    users_already_messaged.add(firstEmail);
+                                    actualDirectMessages.add(channel);
+                                }
+                            } else {
+                                actualChannels.add(channel);
+                            }
+                        }
+                        //actualChannels = (ArrayList<Channel>) work.getChannels();
 
                         ChatActivity.this.runOnUiThread(new Runnable() {
                             @Override
@@ -434,28 +468,33 @@ public class ChatActivity extends BasicActivity {
                                     actualChannels.add(actual_channel);
                                 }*/
 
-                                if (!actualChannels.contains(actual_channel) && !actualChannels.isEmpty()) {
+                                if ((!actualChannels.contains(actual_channel) && !actualChannels.isEmpty())
+                                && !actualDirectMessages.contains(actual_channel)) {
                                     preference.saveActualChannel(actualChannels.get(0));
                                 }
 
                                 ChannelListAdapter adapter = new ChannelListAdapter(ChatActivity.this, actualChannels);
                                 mDrawerChannelsList.setAdapter(adapter);
+
+                                DirectListAdapter adapter_direct = new DirectListAdapter(ChatActivity.this, actualDirectMessages);
+                                mDrawerMessagesList.setAdapter(adapter_direct);
                                 //retrieveChats(workspaces.get(workspaces.indexOf(preference.getActualWorkspace())));
                                 loadMessagesActualChannel(preference.getActualChannel());
                                 setListenersChannels();
                                 for (User user:work.getUsers()) {
+                                    if (user.getEmail().equals(currentUserEmail) ||
+                                            user_already_messaged_in(users_already_messaged, user))
+                                        continue;
                                     directMessage.add(user.getEmail());
                                 }
                                 for (User user:work.getAdmins()) {
                                     workAdmins.add(user.getEmail());
                                 }
-
-                                mDrawerMessagesList.setAdapter(new ArrayAdapter<String>(ChatActivity.this,
-                                        R.layout.format_text_navigation, directMessage));
+                                /*mDrawerMessagesList.setAdapter(new ArrayAdapter<String>(ChatActivity.this,
+                                        R.layout.format_text_navigation, directMessage));*/
                             }
                         });
                     }
-                    Log.d("LOAD/CHANNEL", msg);
                 }catch (Exception e){
                     Log.d("LOAD/CHANNEL", e.getMessage());
                     finish();
@@ -469,6 +508,15 @@ public class ChatActivity extends BasicActivity {
                 finish();
             }
         });
+    }
+
+    private boolean user_already_messaged_in(final List<String> users, User user) {
+        for (String mail : users) {
+            if (mail.equals(user.getEmail()))
+                return true;
+        }
+
+        return false;
     }
 
     private void setListeners(){
@@ -573,7 +621,7 @@ public class ChatActivity extends BasicActivity {
             }
         });
 
-        buttonAddUser.setOnClickListener(new View.OnClickListener() {
+        /*buttonAddUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(workAdmins.contains(currentUserEmail)){
@@ -586,6 +634,20 @@ public class ChatActivity extends BasicActivity {
                     });
                 }
 
+            }
+        });*/
+
+        buttonAddUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), AddDirectChannelActivity.class);
+                Bundle b = new Bundle();
+                b.putStringArrayList("emails", directMessage);
+                b.putString("my_email", currentUserEmail);
+                intent.putExtras(b); //Put your id to your next Intent
+                v.getContext().startActivity(intent);
+                finish();
+                //changeActivity(ChatActivity.this,AddDirectChannelActivity.class);
             }
         });
     }
@@ -701,6 +763,21 @@ public class ChatActivity extends BasicActivity {
 
     private void setListenersChannels(){
         mDrawerChannelsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected item text from ListView
+                try {
+                    Channel selectedItem = (Channel) parent.getItemAtPosition(position);
+                    String channelName = selectedItem.getName();
+                    preference.saveActualChannel(new Channel(channelName));
+                    changeActivity(ChatActivity.this, ChatActivity.class);
+                }catch (Exception e){
+                    Log.d("ERROR", e.getMessage());
+                }
+            }
+        });
+
+        mDrawerMessagesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Get the selected item text from ListView
@@ -1004,6 +1081,7 @@ public class ChatActivity extends BasicActivity {
                 final User user = new Gson().fromJson(msg, User.class);
                 if (response.isSuccessful()) {
                     currentUserEmail = user.getEmail();
+                    retrieveWorkspaces();
                 }else{
                     changeActivity(ChatActivity.this,LoginActivity.class);
                 }
@@ -1046,7 +1124,9 @@ public class ChatActivity extends BasicActivity {
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 ChatActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
-                        Toast.makeText(ChatActivity.this, message[position], Toast.LENGTH_SHORT).show();
+                        Channel channel = actualDirectMessages.get(position);
+                        Toast.makeText(ChatActivity.this, channel.getName(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(ChatActivity.this, message[position], Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -1055,7 +1135,10 @@ public class ChatActivity extends BasicActivity {
         mDrawerMessagesList.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                String userEmail = directMessage.get(position);
+                // userEmail = directMessage.get(position);
+                Channel channel = actualDirectMessages.get(position);
+                //String userEmail = channel.getName();
+                String userEmail = channel.getFakeName();
                 if(userEmail.equals(currentUserEmail)){
                     changeActivityNotFinish(ChatActivity.this,ProfileActivity.class);
                 }else{
