@@ -1,14 +1,20 @@
 package com.taller2.droidclient.servicies;
 
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.taller2.droidclient.R;
+import com.taller2.droidclient.model.Channel;
 import com.taller2.droidclient.utils.JsonConverter;
 import com.taller2.droidclient.utils.SavedState;
 
@@ -50,6 +56,7 @@ public class MessagingService extends FirebaseMessagingService {
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            sendNotification(remoteMessage);
         }
 
         Intent intent = new Intent("Messages");
@@ -78,6 +85,26 @@ public class MessagingService extends FirebaseMessagingService {
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
+    }
+
+    private void sendNotification(RemoteMessage remoteMessage) {
+        SavedState preference = new SavedState(getApplicationContext());
+
+        preference.saveActualChannel(new Channel(remoteMessage.getNotification().getTitle()));
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, "channel_id")
+                .setContentTitle(remoteMessage.getNotification().getTitle())
+                .setContentText(remoteMessage.getNotification().getBody())
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setStyle(new NotificationCompat.BigTextStyle())
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setAutoCancel(true);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0, notificationBuilder.build());
     }
     /**
      * Called if InstanceID token is updated. This may occur if the security of
