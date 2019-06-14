@@ -440,7 +440,8 @@ public class ChatActivity extends BasicActivity {
                         Log.d("LOAD/CHANNEL", msg);
                         final List<String> users_already_messaged = new ArrayList<>();
                         for (Channel channel : work.getChannels()) {
-
+                            if (channel.getChannelType() == null)
+                                continue;
                             //Channel channel = new Channel(channelRes.getName(), channelRes.getChannelType());
 
                             if (channel.is_direct_channel()) {
