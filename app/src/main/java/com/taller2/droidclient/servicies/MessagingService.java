@@ -1,11 +1,14 @@
 package com.taller2.droidclient.servicies;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.RingtoneManager;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -14,7 +17,9 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.taller2.droidclient.R;
+import com.taller2.droidclient.activities.MainActivity;
 import com.taller2.droidclient.model.Channel;
+import com.taller2.droidclient.model.WorkspaceResponse;
 import com.taller2.droidclient.utils.JsonConverter;
 import com.taller2.droidclient.utils.SavedState;
 
@@ -23,6 +28,11 @@ import java.util.Map;
 public class MessagingService extends FirebaseMessagingService {
     private static final String TAG = "FIREBASE/MSG";
     private LocalBroadcastManager broadcaster;
+    private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
+    private static final int VIEW_TYPE_IMAGE_RECEIVED = 3;
+    private static final int VIEW_TYPE_MAP_RECEIVED = 4;
+    private static final int VIEW_TYPE_FILE_RECEIVED = 5;
+    private static final int VIEW_TYPE_SNIPPET_RECEIVED = 6;
 
     public MessagingService() {}
 
@@ -33,72 +43,82 @@ public class MessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        // ...
-
-        // TODO(developer): Handle FCM messages here.
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
-        // Check if message contains a data payload.
-        if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-
-            if (/* Check if data needs to be processed by long running job */ true) {
-                // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
-                //scheduleJob();
-            } else {
-                // Handle message within 10 seconds
-                //handleNow();
-            }
-
-        }
-
         // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
+        /*if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
             sendNotification(remoteMessage);
-        }
+        }*/
+
+        SavedState preference = new SavedState(getApplicationContext());
+        if (!preference.isAppRunning())
+            sendNotification(remoteMessage, preference);
 
         Intent intent = new Intent("Messages");
-        //intent.putExtra("msg", remoteMessage.getNotification().getBody());
 
-        /*data: {
-                    msg: message.text,
-                    createdAt: message.dateTime.toString(),
-                    workspace: workspace.name.toString(),
-                    channel: channel.name.toString(),
-                    sender_name: sender.name.toString(),
-                    sender_email: sender.email.toString(),
-                    sender_nickname: sender.nickname.toString()
-        }*/
         for (Map.Entry<String, String> entry : remoteMessage.getData().entrySet()) {
             intent.putExtra(entry.getKey(), entry.getValue());
         }
 
-        //intent.putExtra("msg", remoteMessage.getData().get("msg"));
-
-        /*intent.putExtra("sender", new JsonConverter().objectToJsonString(remoteMessage.getData().get("sender")));
-
-        intent.putExtra("sender", remoteMessage.getData().get("sender"));
-        intent.putExtra("createdAt", remoteMessage.getData().get("createdAt"));*/
         broadcaster.sendBroadcast(intent);
-
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
     }
 
-    private void sendNotification(RemoteMessage remoteMessage) {
-        SavedState preference = new SavedState(getApplicationContext());
+    private void sendNotification(RemoteMessage remoteMessage, SavedState preference) {
+        String channel_name = remoteMessage.getData().get("channel");
+        String workspace_name = remoteMessage.getData().get("workspace");
 
-        preference.saveActualChannel(new Channel(remoteMessage.getNotification().getTitle()));
+        preference.saveActualChannel(new Channel(channel_name));
+        preference.saveActualWorkspace(new WorkspaceResponse(workspace_name));
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, "channel_id")
-                .setContentTitle(remoteMessage.getNotification().getTitle())
-                .setContentText(remoteMessage.getNotification().getBody())
+        Log.d(TAG, channel_name);
+
+        String channel_type = remoteMessage.getData().get("channelType");
+        String title = workspace_name;
+
+        if (!channel_type.equals("users")) {
+            title += " - " + channel_name;
+        }
+
+        String text = "";
+
+        int msg_type = Integer.valueOf(remoteMessage.getData().get("msgType"));
+
+        switch (msg_type) {
+            case VIEW_TYPE_MESSAGE_RECEIVED: {
+                text = remoteMessage.getData().get("sender_name") + ": " +remoteMessage.getData().get("msg");
+                break;
+            }
+            case VIEW_TYPE_IMAGE_RECEIVED: {
+                text = remoteMessage.getData().get("sender_name") + " sent an image";
+                break;
+            }
+            case VIEW_TYPE_MAP_RECEIVED: {
+                text = remoteMessage.getData().get("sender_name") + " sent his/her location";
+                break;
+            }
+            case VIEW_TYPE_FILE_RECEIVED: {
+                text = remoteMessage.getData().get("sender_name") + " sent a file";
+                break;
+            }
+            case VIEW_TYPE_SNIPPET_RECEIVED: {
+                text = remoteMessage.getData().get("sender_name") + " sent a snippet of code";
+                break;
+            }
+        }
+
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(this, 0, intent, 0);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, getString(R.string.default_notification_channel_id))
+                .setContentTitle(title)
+                .setContentText(text/*remoteMessage.getNotification().getBody()*/)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setStyle(new NotificationCompat.BigTextStyle())
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
         NotificationManager notificationManager =
