@@ -120,6 +120,12 @@ public class ChatActivity extends BasicActivity {
     private final int REQUEST_LOC = 1;
     private final int REQUEST_STORAGE = 2;
 
+    private final String ID_BOT = "BOT_ID";
+    private final String NAME_BOT = "BOT_USER";
+    private final String EMAIL_BOT = "BOT@BOT.COM";
+    private final String URL_BOT_PHOTO = "https://static.giantbomb.com/uploads/square_medium/0/9266/1439593-team_gurren_logo_black_darkred.png";
+
+
     private RecyclerView mMessageRecycler;
     private MessageListAdapter mMessageAdapter;
 
@@ -952,25 +958,23 @@ public class ChatActivity extends BasicActivity {
                             }
 
                             for (int i = 0; i < msgs.size(); i++) {
+                                User infektedUser;
+                                String infektedUrl;
+                                String keyUser = msgs.get(i).getCreator();
+                                if (users_map.containsKey(keyUser)){
+                                    infektedUser =new User(users_map.get(keyUser).get_id(), users_map.get(keyUser).getName(),users_map.get(keyUser).getEmail(), users_map.get(keyUser).getNickname(),true);
+                                    infektedUrl = users_map.get(keyUser).getPhotoUrl();
+                                }else {
+                                    infektedUser = new User(ID_BOT,NAME_BOT,EMAIL_BOT,NAME_BOT,true);
+                                    infektedUrl = URL_BOT_PHOTO;
+                                }
                                 messageList.add(new UserMessage(
                                         msgs.get(i).get_id(),
                                         msgs.get(i).getText(),
-                                        new User(
-                                                /*"1",
-                                                "juan",
-                                                msgs.get(i).getCreator(),
-                                                "juan",
-                                                true*/
-                                                users_map.get(msgs.get(i).getCreator()).get_id(),
-                                                users_map.get(msgs.get(i).getCreator()).getName(),
-                                                users_map.get(msgs.get(i).getCreator()).getEmail(),
-                                                users_map.get(msgs.get(i).getCreator()).getNickname(),
-                                                true
-                                        ),
+                                        infektedUser,
                                         msgs.get(i).getDateTime(),
                                         Integer.valueOf(msgs.get(i).getType()),
-                                        users_map.get(msgs.get(i).getCreator()).getPhotoUrl()
-                                        ));
+                                        infektedUrl));
                             }
 
                             //messageList = msgs_save;
