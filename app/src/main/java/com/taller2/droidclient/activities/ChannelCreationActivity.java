@@ -96,7 +96,7 @@ public class ChannelCreationActivity extends BasicActivity {
                     loadingSpin.showDialog(ChannelCreationActivity.this);
                     List<String> users = new ArrayList<>();
                     users.add(currentUserEmail);
-                    NewChannel newChannel = new NewChannel(currentWorkspace,channel,welcome,description,users);
+                    NewChannel newChannel = new NewChannel(currentWorkspace,channel,welcome,description,users, "group");
 
                     createChannel(newChannel,token);
 

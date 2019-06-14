@@ -26,6 +26,11 @@ public class User {
         //this.photo_url = photo_url;
     }
 
+    public User(String _id, String email) {
+        this._id = _id;
+        this.email = email;
+    }
+
 
     public String getId() {
         return _id;

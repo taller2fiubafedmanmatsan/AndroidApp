@@ -110,7 +110,7 @@ public class WorkspaceCreationActivity extends BasicActivity {
                                 preference.saveActualWorkspace(new WorkspaceResponse(workspace.getName()));
                                 List<String> users = new ArrayList<>();
                                 users.add(currentUserEmail);
-                                NewChannel newChannel = new NewChannel(workspace.getName(),"General",users);
+                                NewChannel newChannel = new NewChannel(workspace.getName(),"General",users, "group");
                                 createChannel(newChannel,preference.getToken());
                             }
                         });
@@ -162,6 +162,7 @@ public class WorkspaceCreationActivity extends BasicActivity {
                 });
                 try{
                     String msg = response.body().string();
+                    Log.d("CreateWork/loadData", msg);
                     final Channel channel1 = new Gson().fromJson(msg,Channel.class);
 
                     if(response.isSuccessful()){
@@ -181,9 +182,9 @@ public class WorkspaceCreationActivity extends BasicActivity {
                             }
                         });
                     }
-                    Log.d("CreateWork/loadData", msg);
 
                 }catch (Exception e){
+                    Log.d("CreateWork/loadData", e.getMessage());
                     finish();
                 }
 

@@ -1,6 +1,8 @@
 package com.taller2.droidclient.activities;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -53,6 +55,9 @@ public class MainActivity extends BasicActivity {
         deleteActionBar();
 
         setContentView(R.layout.activity_main);
+
+        createNotificationChannel();
+
         userRequester = new UserRequester();
 
         button_login = findViewById(R.id.button_login);
@@ -97,12 +102,30 @@ public class MainActivity extends BasicActivity {
 
         if (preference.isLogged()) {
             //sendActualToken();
+            Log.d("INITIAL", preference.getActualChannel().getName());
             changeActivity(MainActivity.this,StartLoadingActivity.class);
         }
 
         setListeners();
         setCallbacksFacebook();
     }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.default_notification_channel_id);
+            String description = getString(R.string.default_notification_channel_id);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(getString(R.string.default_notification_channel_id), name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
     private void setCallbacksFacebook() {
         //Facebook integration
         callbackManager = CallbackManager.Factory.create();

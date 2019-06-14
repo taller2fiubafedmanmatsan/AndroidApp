@@ -63,4 +63,12 @@ public class SavedState {
     public String getActualFCM() {
         return preferences.getString("token_fmc", "");
     }
+
+    public void appRunning(Boolean running) {
+        preferences.edit().putBoolean("app_running", running).apply();
+    }
+
+    public Boolean isAppRunning() {
+        return preferences.getBoolean("app_running", false);
+    }
 }

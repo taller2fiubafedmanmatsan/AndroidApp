@@ -33,7 +33,22 @@ public class BasicActivity extends AppCompatActivity {
         setGoBackActionBar();
 
         preference = new SavedState(this);
+
+        preference.appRunning(true);
+
         loadingSpin = new LoadingSpin();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        preference.appRunning(true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        preference.appRunning(false);
     }
 
     public void deleteTitleBar() {

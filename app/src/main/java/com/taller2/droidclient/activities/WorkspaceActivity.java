@@ -51,6 +51,7 @@ public class WorkspaceActivity extends BasicActivity{
     private EditText name_workspace;
     private EditText welcome_workspace;
     private EditText description_workspace;
+    private Button button_add_user;
     private Button button_update_workspace;
     private Button button_delete_workspace;
     private ImageView workspace_picture;
@@ -83,6 +84,7 @@ public class WorkspaceActivity extends BasicActivity{
         workspace_picture = findViewById(R.id.workspace_picture);
         button_change_picture_workspace = findViewById(R.id.icon_edit_image);
         layoutLoadingBar = findViewById(R.id.layout_progress_bar);
+        button_add_user = findViewById(R.id.add_user_workspace);
 
         token = preference.getToken();
 
@@ -188,6 +190,7 @@ public class WorkspaceActivity extends BasicActivity{
                         if(!workData.getAdmins().contains(userdata)){
                             WorkspaceActivity.this.runOnUiThread(new Runnable() {
                                 public void run() {
+                                    button_add_user.setVisibility(View.GONE);
                                     button_change_picture_workspace.setVisibility(View.GONE);
                                     button_update_workspace.setVisibility(View.GONE);
                                     button_delete_workspace.setVisibility(View.GONE);
@@ -250,6 +253,13 @@ public class WorkspaceActivity extends BasicActivity{
             @Override
             public void onClick(View v) {
                 open_gallery();
+            }
+        });
+
+        button_add_user.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeActivityNotFinish(WorkspaceActivity.this,AddUserWorkspaceActivity.class);
             }
         });
     }
