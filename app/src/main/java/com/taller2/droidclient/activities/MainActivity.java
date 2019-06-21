@@ -20,6 +20,7 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.firebase.auth.AuthCredential;
@@ -141,22 +142,42 @@ public class MainActivity extends BasicActivity {
                 // App code
                 /*final AccessToken token*/ tokenfb = loginResult.getAccessToken();
 
-                AuthCredential credential = FacebookAuthProvider.getCredential(tokenfb.getToken());
+                //AuthCredential credential = FacebookAuthProvider.getCredential(tokenfb.getToken());
 
                 userRequester.facebookLogin(tokenfb.getToken(), new CallbackUserRequester() {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        if (response.isSuccessful()) {
+                        final String msg = response.body().string();
 
+                        if (response.isSuccessful()) {
+                            MainActivity.this.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    preference.saveLogin(msg);
+                                    changeActivity(MainActivity.this, StartLoadingActivity.class, msg);
+                                    Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                            LoginManager.getInstance().logOut();
+                            MainActivity.this.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
 
-                        Log.d("Facebook/Response", response.body().string());
+                        Log.d("Facebook/Response", msg);
                     }
 
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Log.d("Facebook/Failure", e.getMessage());
-                    }
+                        LoginManager.getInstance().logOut();
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
+                            }
+                        });                    }
                 });
 
                 /*GraphRequest request = GraphRequest.newMeRequest(
@@ -226,11 +247,13 @@ public class MainActivity extends BasicActivity {
             @Override
             public void onCancel() {
                 Toast.makeText(MainActivity.this, "Login cancelled", Toast.LENGTH_SHORT).show();
+                LoginManager.getInstance().logOut();
             }
 
             @Override
             public void onError(FacebookException exception) {
                 Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
+                LoginManager.getInstance().logOut();
             }
         });
     }
