@@ -53,4 +53,14 @@
             android:background="@drawable/ic_archive_black_24dp">
         </ImageView>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_message_time"
+        android:text="11:40"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        app:layout_constraintLeft_toRightOf="@+id/file_layout"
+        android:layout_marginTop="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/file_layout" />
 </android.support.constraint.ConstraintLayout>

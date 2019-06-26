@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
@@ -49,10 +50,13 @@ public class ReceivedMapHolder extends MessageListAdapter.MyViewHolder {
 
         context = itemView;
 
-        image = (ImageView) itemView.findViewById(R.id.image_message);
+        //image = (ImageView) itemView.findViewById(R.id.image_message);
         nameText = (TextView) itemView.findViewById(R.id.text_message_name);
         text = (TextView) itemView.findViewById(R.id.image_text);
         imageAndText = (LinearLayout) itemView.findViewById(R.id.location_layout);
+
+        timeText = (TextView) itemView.findViewById(R.id.text_message_time);
+        profileImage = (ImageView) itemView.findViewById(R.id.image_message_profile);
     }
 
     void bind(final UserMessage message) {
@@ -81,6 +85,24 @@ public class ReceivedMapHolder extends MessageListAdapter.MyViewHolder {
                 context.getContext().startActivity(intent);
             }
         });
+
+        timeText.setText(message.getDateTime().toLocaleString());
+
+        if (message.getPhotoUrl() == null || message.getPhotoUrl().isEmpty()) {
+            GlideApp.with(context)
+                    .load(context.getResources()
+                            .getIdentifier("default_profile_pic", "drawable", context.getContext().getPackageName()))
+                    //.centerCrop()
+                    .apply(centerCropTransform())
+                    .into(profileImage
+                    );
+        } else {
+            Glide.with(context)
+                    .load(message.getPhotoUrl())
+                    //.centerCrop()
+                    .apply(centerCropTransform())
+                    .into(profileImage);
+        }
         //Bitmap img = getMapImage(url);
 
         /*GlideApp.with(context)

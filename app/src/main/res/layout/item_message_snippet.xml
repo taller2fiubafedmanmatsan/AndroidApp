@@ -39,6 +39,7 @@
     <include
         layout="@layout/format_snippet"
         android:layout_width="200dp"
+        android:id="@+id/layout_snippet"
         android:layout_height="wrap_content"
         android:fillViewport="true"
         android:layout_marginTop="20dp"
@@ -79,4 +80,14 @@
                 android:scrollbarStyle="insideOverlay"/>
         </LinearLayout>
     </ScrollView>-->
+
+    <TextView
+        android:id="@+id/text_message_time"
+        android:text="11:40"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        app:layout_constraintLeft_toRightOf="@+id/layout_snippet"
+        android:layout_marginTop="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/layout_snippet" />
 </android.support.constraint.ConstraintLayout>

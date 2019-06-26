@@ -12,10 +12,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.activities.ChatActivity;
 import com.taller2.droidclient.activities.MapsActivity;
 import com.taller2.droidclient.model.UserMessage;
+import com.taller2.droidclient.utils.GlideApp;
+
+import static com.taller2.droidclient.utils.GlideOptions.centerCropTransform;
 
 public class ReceivedFileHolder extends MessageListAdapter.MyViewHolder {
     private TextView messageText, timeText, nameText;
@@ -32,6 +36,8 @@ public class ReceivedFileHolder extends MessageListAdapter.MyViewHolder {
         image = (ImageView) itemView.findViewById(R.id.file_image);
         nameText = (TextView) itemView.findViewById(R.id.text_message_name);
         text = (TextView) itemView.findViewById(R.id.file_text);
+        timeText = (TextView) itemView.findViewById(R.id.text_message_time);
+        profileImage = (ImageView) itemView.findViewById(R.id.image_message_profile);
     }
 
     void bind(final UserMessage message) {
@@ -51,5 +57,23 @@ public class ReceivedFileHolder extends MessageListAdapter.MyViewHolder {
                 }
             }
         });
+
+        timeText.setText(message.getDateTime().toLocaleString());
+
+        if (message.getPhotoUrl() == null || message.getPhotoUrl().isEmpty()) {
+            GlideApp.with(context)
+                    .load(context.getResources()
+                            .getIdentifier("default_profile_pic", "drawable", context.getContext().getPackageName()))
+                    //.centerCrop()
+                    .apply(centerCropTransform())
+                    .into(profileImage
+                    );
+        } else {
+            Glide.with(context)
+                    .load(message.getPhotoUrl())
+                    //.centerCrop()
+                    .apply(centerCropTransform())
+                    .into(profileImage);
+        }
     }
 }

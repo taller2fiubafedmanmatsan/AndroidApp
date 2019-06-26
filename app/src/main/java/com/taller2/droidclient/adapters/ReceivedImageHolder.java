@@ -28,6 +28,8 @@ public class ReceivedImageHolder extends MessageListAdapter.MyViewHolder {
 
         image = (ImageView) itemView.findViewById(R.id.image_message);
         nameText = (TextView) itemView.findViewById(R.id.text_message_name);
+        timeText = (TextView) itemView.findViewById(R.id.text_message_time);
+        profileImage = (ImageView) itemView.findViewById(R.id.image_message_profile);
 
         imagePopup = new ImagePopup(context.getContext());
         imagePopup.setWindowHeight(800); // Optional
@@ -59,5 +61,23 @@ public class ReceivedImageHolder extends MessageListAdapter.MyViewHolder {
 
             }
         });
+
+        timeText.setText(message.getDateTime().toLocaleString());
+
+        if (message.getPhotoUrl() == null || message.getPhotoUrl().isEmpty()) {
+            GlideApp.with(context)
+                    .load(context.getResources()
+                            .getIdentifier("default_profile_pic", "drawable", context.getContext().getPackageName()))
+                    //.centerCrop()
+                    .apply(centerCropTransform())
+                    .into(profileImage
+                    );
+        } else {
+            Glide.with(context)
+                    .load(message.getPhotoUrl())
+                    //.centerCrop()
+                    .apply(centerCropTransform())
+                    .into(profileImage);
+        }
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.View;
 
+import com.facebook.login.LoginManager;
 import com.taller2.droidclient.model.Channel;
 import com.taller2.droidclient.model.Workspace;
 import com.taller2.droidclient.model.WorkspaceResponse;
@@ -36,6 +37,7 @@ public class SavedState {
         preferences.edit().putBoolean("logged", false).apply();
         preferences.edit().putString("token", "").apply();
         preferences.edit().putString("workspace_name", "").apply();
+        LoginManager.getInstance().logOut();
     }
 
     public WorkspaceResponse getActualWorkspace() {

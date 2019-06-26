@@ -34,8 +34,9 @@ public class UserRequester {
     private String postUrl = basicUrl + "/api/users";
     private String recoverPassUrl = basicUrl + "/api/users/restorepassword";
     private String authUrl = basicUrl + "/api/auth/signin";
-    private String facebookUrl = basicUrl + "/api/auth/facebook";
+    private String facebookUrl = basicUrl + "/api/oauth/signin/facebook";
     private String fcmUrl = postUrl + "/fbtoken/";
+    private final String tokenfb = "EAAItmH8ApZBMBAH3pXGF9jGVYttY5kAaZAgKKuEZBImNVjHyh2ZBeZCwJOuJL7b45GT9jauB3H8LzZAzHlphlpQZC1bt40Wvn43rK0rbDxvbwAp8aaaujr6j4ZAywuGJvhzZBfyiME4uib68cXFhEsVdfZBTZB4Tb2UZCUicmJHzKCqLSMvOZBsQdkZCfLPUvxfLp4jBzgkCYUDi2BBKOzeFftEsCN";
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -75,10 +76,11 @@ public class UserRequester {
 
     public void facebookLogin(String token, CallbackUserRequester callback) {
         try {
-            /*Map<String, String> mapToken = new HashMap<String,String>();
-            mapToken.put("access_token",token);*/
+            Map<String, String> mapToken = new HashMap<String,String>();
+            mapToken.put("access_token",token);
 
-            postRequestFacebook(facebookUrl, token/*new JsonConverter().objectToJsonString(mapToken)*/, callback);
+            postRequest(facebookUrl, new JsonConverter().objectToJsonString(mapToken), callback);
+            //postRequestFacebook(facebookUrl, token/*new JsonConverter().objectToJsonString(mapToken)*/, callback);
         } catch (IOException e) {
             e.printStackTrace();
         }
