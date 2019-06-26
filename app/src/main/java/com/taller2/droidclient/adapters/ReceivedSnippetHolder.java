@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.ceylonlabs.imageviewpopup.ImagePopup;
 import com.taller2.droidclient.R;
 import com.taller2.droidclient.model.UserMessage;
@@ -36,6 +37,9 @@ public class ReceivedSnippetHolder extends MessageListAdapter.MyViewHolder {
         //codeView = (CodeView) itemView.findViewById(R.id.code_view);
         numbers = (TextView) itemView.findViewById(R.id.code_number);
         code = (EditText) itemView.findViewById(R.id.code_view);
+
+        timeText = (TextView) itemView.findViewById(R.id.text_message_time);
+        profileImage = (ImageView) itemView.findViewById(R.id.image_message_profile);
 
         code.setFocusable(false);
         code.setClickable(true);
@@ -110,7 +114,23 @@ public class ReceivedSnippetHolder extends MessageListAdapter.MyViewHolder {
         }*/
 
         //numbers.setText("1");
+        timeText.setText(message.getDateTime().toLocaleString());
 
+        if (message.getPhotoUrl() == null || message.getPhotoUrl().isEmpty()) {
+            GlideApp.with(context)
+                    .load(context.getResources()
+                            .getIdentifier("default_profile_pic", "drawable", context.getContext().getPackageName()))
+                    //.centerCrop()
+                    .apply(centerCropTransform())
+                    .into(profileImage
+                    );
+        } else {
+            Glide.with(context)
+                    .load(message.getPhotoUrl())
+                    //.centerCrop()
+                    .apply(centerCropTransform())
+                    .into(profileImage);
+        }
 
     }
 }

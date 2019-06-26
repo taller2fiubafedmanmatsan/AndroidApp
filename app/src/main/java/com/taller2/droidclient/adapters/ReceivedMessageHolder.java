@@ -33,7 +33,7 @@ public class ReceivedMessageHolder extends MessageListAdapter.MyViewHolder {
         messageText.setText(message.getMessage());
 
         // Format the stored timestamp into a readable String using method.
-        timeText.setText(message.getDateTime().toString());
+        timeText.setText(message.getDateTime().toLocaleString());
         nameText.setText(message.getCreator().getNickname());
 
         if (message.getPhotoUrl() == null || message.getPhotoUrl().isEmpty()) {
